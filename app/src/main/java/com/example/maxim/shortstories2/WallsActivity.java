@@ -98,7 +98,7 @@ public class WallsActivity extends AppCompatActivity  implements SearchView.OnQu
 
             if (newText.length() > 1 && name.toLowerCase().contains(newText)) {
                 String marker = "+ ";
-                for (WallVk wall : DataHolder.walls) {
+                for (Wall wall : DataHolder.walls) {
                     if (wall.toString().equals(name)) {
                         marker = "- ";
                     }

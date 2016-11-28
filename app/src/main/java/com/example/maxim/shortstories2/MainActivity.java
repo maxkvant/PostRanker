@@ -21,7 +21,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     void addVkWall(String name ) {
-        List<WallVk> walls = DataHolder.walls;
+        List<Wall> walls = DataHolder.walls;
         walls.add(walls.size(), new WallVk(name));
     }
 

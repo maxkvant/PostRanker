@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
 
-public class WallVk {
+public class WallVk implements Wall {
     private String name;
 
     @Override
@@ -68,8 +68,13 @@ public class WallVk {
                         post.text = (Html.fromHtml(curJsonObject.get("text").toString())).toString();
                         post.date = Long.parseLong(curJsonObject.get("date").toString());
                         post.wall = wallName;
+                        String likes = curJsonObject.getJSONObject("likes").get("count").toString();
+
+                        System.out.println(likes);
+                        post.rating = Integer.parseInt(likes);
                         res.add(post);
                     }
+
                 }
                 Log.d("tag", String.valueOf(jsonArray.length()));
             }
