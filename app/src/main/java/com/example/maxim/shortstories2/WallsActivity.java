@@ -28,6 +28,8 @@ import java.util.List;
 import static com.example.maxim.shortstories2.DataHolder.walls;
 
 public class WallsActivity extends AppCompatActivity  implements SearchView.OnQueryTextListener {
+    private String lastText = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +67,7 @@ public class WallsActivity extends AppCompatActivity  implements SearchView.OnQu
                     walls.add(curWall);
                 }
             }
+            onQueryTextChange(lastText);
         }
     }
 
@@ -75,7 +78,6 @@ public class WallsActivity extends AppCompatActivity  implements SearchView.OnQu
         MenuItem searchItem = menu.findItem(R.id.search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(this);
-
         Log.d("Create", "search menu");
 
         return super.onCreateOptionsMenu(menu);
@@ -88,6 +90,7 @@ public class WallsActivity extends AppCompatActivity  implements SearchView.OnQu
 
     @Override
     public boolean onQueryTextChange(String newText) {
+        lastText = newText;
         newText = newText.toLowerCase();
         ListView listView = (ListView)findViewById(R.id.walls_list);
         List<String> search_walls = new ArrayList<>(Arrays.asList("Подслушано", "Just Story", "New Story"));
@@ -115,7 +118,7 @@ public class WallsActivity extends AppCompatActivity  implements SearchView.OnQu
             list.add("Ничего не надено");
         }
 
-        listView.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_item, list));
+        listView.setAdapter(new ArrayAdapter<>(this, R.layout.search_list_item, list));
         listView.setOnItemClickListener(new ItemClickListener());
         return false;
     }
