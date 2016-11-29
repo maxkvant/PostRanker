@@ -98,7 +98,7 @@ public class WallsActivity extends AppCompatActivity  implements SearchView.OnQu
         lastText = newText;
         newText = newText.toLowerCase();
         ListView listView = (ListView)findViewById(R.id.walls_list);
-        List<String> search_walls = new ArrayList<>(Arrays.asList("Подслушано", "Just Story", "New Story"));
+        List<String> search_walls = new ArrayList<>(Arrays.asList("Подслушано", "Just Story", "New Story", "Убойные Истории"));
         newText = newText.toLowerCase();
         List<String> list = new ArrayList<>();
         for (String name : search_walls) {

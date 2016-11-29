@@ -1,5 +1,7 @@
 package com.example.maxim.shortstories2;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,7 +17,13 @@ public class WallTop implements Wall {
         List<Post> posts = new ArrayList<>();
         for (Wall wall : DataHolder.walls) {
             if (wall instanceof WallVk) {
-                posts.addAll(wall.getPosts());
+                List<Post> wallPosts = new ArrayList<>();
+                try {
+                    wallPosts = wall.getPosts();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                posts.addAll(wallPosts);
             }
         }
         Collections.sort(posts, new Comparator<Post>() {

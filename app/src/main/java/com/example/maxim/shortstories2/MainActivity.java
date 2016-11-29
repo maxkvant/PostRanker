@@ -17,6 +17,8 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,7 +83,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             ListView feed = (ListView)findViewById(R.id.feed_list);
-            List<Post> posts = DataHolder.walls.get(position).getPosts();
+            List<Post> posts = new ArrayList<>();
+            try {
+                posts = DataHolder.walls.get(position).getPosts();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             PostsAdapter adapter = new PostsAdapter(getApplicationContext(), posts);
             feed.setAdapter(adapter);
         }
