@@ -26,6 +26,13 @@ public class MainActivity extends AppCompatActivity {
         walls.add(walls.size(), new WallVk(name));
     }
 
+    /*@Override
+    public void onResume() {
+    //    ListAdapter adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, DataHolder.walls);
+    //    ListView leftDrawer = (ListView) findViewById(R.id.left_drawer);
+    //    leftDrawer.setAdapter(adapterDrawer);
+    }*/
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         ListAdapter adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, DataHolder.walls);
         ListView leftDrawer = (ListView) findViewById(R.id.left_drawer);
+        leftDrawer.setAdapter(adapterDrawer);
 
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_main);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -45,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        leftDrawer.setAdapter(adapterDrawer);
         leftDrawer.setOnItemClickListener(new DrawerItemClickListener());
 
         Button button = (Button) findViewById(R.id.button_goto_walls);
@@ -54,10 +61,20 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, WallsActivity.class);
                 drawer.closeDrawer(GravityCompat.START);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
         Log.d("Create", "MainActivity");
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("MainActivity", "onActivityResult");
+        ListAdapter adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, DataHolder.walls);
+        ListView leftDrawer = (ListView) findViewById(R.id.left_drawer);
+        leftDrawer.setAdapter(adapterDrawer);
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {

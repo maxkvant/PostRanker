@@ -2,6 +2,7 @@ package com.example.maxim.shortstories2;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -49,6 +50,10 @@ public class WallsActivity extends AppCompatActivity  implements SearchView.OnQu
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle arrow click here
         if (item.getItemId() == android.R.id.home) {
+            Intent intent = new Intent();
+            intent.putExtra("name", "");
+            setResult(RESULT_OK, intent);
+            super.onResume();
             finish(); // close this activity and return to preview activity (if there is any)
         }
         return super.onOptionsItemSelected(item);
@@ -60,7 +65,7 @@ public class WallsActivity extends AppCompatActivity  implements SearchView.OnQu
             String text = ((TextView)view).getText().toString();
             WallVk curWall = new WallVk(text.substring(2));
             if (text.substring(0, 1).equals("-")) {
-                walls.remove(new WallVk(text.substring(2)));
+                walls.remove(curWall);
             }
             if (text.substring(0, 1).equals("+")) {
                 if (!walls.contains(curWall)) {
@@ -97,8 +102,6 @@ public class WallsActivity extends AppCompatActivity  implements SearchView.OnQu
         newText = newText.toLowerCase();
         List<String> list = new ArrayList<>();
         for (String name : search_walls) {
-            boolean has = false;
-
             if (newText.length() > 1 && name.toLowerCase().contains(newText)) {
                 String marker = "+ ";
                 for (Wall wall : DataHolder.walls) {
