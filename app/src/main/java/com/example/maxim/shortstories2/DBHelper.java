@@ -43,7 +43,6 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put("wall", post.wall);
         values.put("date", post.date);
         values.put("rating", post.rating);
-        Log.d("DBHelper", values.toString());
 
         db.insert(TABLE_POSTS, null, values);
         db.close();
@@ -65,5 +64,12 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         db.close();
         return res;
+    }
+
+    public void execSQL(String query) {
+        Log.d("DBHelper", query);
+        SQLiteDatabase db = this.getReadableDatabase();
+        db.execSQL(query);
+        db.close();
     }
 }

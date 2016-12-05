@@ -10,6 +10,12 @@ public class WallAll implements Wall {
     @Override
     public List<Post> getPosts() {
         DBHelper dbHelper = new DBHelper();
-        return dbHelper.getPosts("select * from " + DBHelper.TABLE_POSTS);
+        return dbHelper.getPosts("select * from " + DBHelper.TABLE_POSTS + " " +
+                " order by date desc");
+    }
+
+    @Override
+    public void deletePosts() {
+
     }
 }

@@ -23,18 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    void addVkWall(String name ) {
-        List<Wall> walls = DataHolder.walls;
-        walls.add(walls.size(), new WallVk(name));
-    }
-
-    /*@Override
-    public void onResume() {
-    //    ListAdapter adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, DataHolder.walls);
-    //    ListView leftDrawer = (ListView) findViewById(R.id.left_drawer);
-    //    leftDrawer.setAdapter(adapterDrawer);
-    }*/
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

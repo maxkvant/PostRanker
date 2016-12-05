@@ -74,7 +74,8 @@ public class WallVk implements Wall {
     public List<Post> getPosts() {
         DBHelper dbHelper = new DBHelper();
         return dbHelper.getPosts("select * from " + dbHelper.TABLE_POSTS +
-        " where wall = \'" + name + "\';");
+                " where wall = \'" + name + "\'" +
+                "order by date desc;");
     }
 
     private void onJsonResponse(JSONObject jsonObject) {
@@ -111,6 +112,12 @@ public class WallVk implements Wall {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void deletePosts() {
+        DBHelper dbHelper = new DBHelper();
+        dbHelper.execSQL("delete from " + DBHelper.TABLE_POSTS + " where wall = \'" + name + "\';");
     }
 
     @Override

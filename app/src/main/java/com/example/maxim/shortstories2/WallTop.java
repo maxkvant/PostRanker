@@ -18,4 +18,9 @@ public class WallTop implements Wall {
         return dbHelper.getPosts("select * from " + DBHelper.TABLE_POSTS +
         " order by rating desc;");
     }
+
+    @Override
+    public void deletePosts() {
+
+    }
 }

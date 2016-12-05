@@ -48,13 +48,12 @@ public class WallsActivity extends AppCompatActivity  implements SearchView.OnQu
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // handle arrow click here
         if (item.getItemId() == android.R.id.home) {
             Intent intent = new Intent();
             intent.putExtra("name", "");
             setResult(RESULT_OK, intent);
             super.onResume();
-            finish(); // close this activity and return to preview activity (if there is any)
+            finish();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -63,11 +62,21 @@ public class WallsActivity extends AppCompatActivity  implements SearchView.OnQu
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             String text = ((TextView)view).getText().toString();
-            WallVk curWall = new WallVk(text.substring(2));
+            String name = text.substring(2, text.length());
             if (text.substring(0, 1).equals("-")) {
-                walls.remove(curWall);
+                Log.d("-", name);
+                for (int i = 0; i < walls.size(); i++) {
+                    if (walls.get(i).toString().equals(name)) {
+                        Log.d("-", String.valueOf(i));
+                        walls.get(i).deletePosts();
+                        walls.remove(i);
+                        break;
+                    }
+                }
             }
             if (text.substring(0, 1).equals("+")) {
+                Log.d("+", "+");
+                Wall curWall = new WallVk(name);
                 if (!walls.contains(curWall)) {
                     walls.add(curWall);
                 }
