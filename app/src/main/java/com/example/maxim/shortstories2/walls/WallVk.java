@@ -1,14 +1,10 @@
-package com.example.maxim.shortstories2;
+package com.example.maxim.shortstories2.walls;
 
-import android.content.Intent;
-import android.support.annotation.IntegerRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringDef;
-import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.text.Html;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.example.maxim.shortstories2.DBHelper;
+import com.example.maxim.shortstories2.post.Post;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -17,26 +13,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Objects;
 
 public class WallVk implements Wall {
     private String name;
     private long id;
-    private List<Post> posts = new ArrayList<>();
 
     @Override
     public String toString() {
         return this.name;
     }
 
-
-
     public WallVk(String name) {
-        Log.d("WallVK", "Constructor " + name);
         this.name = name;
         switch (name) {
             case "Подслушано":
@@ -50,6 +38,17 @@ public class WallVk implements Wall {
             case "New Story":
                 this.id = -127509226;
         }
+        update();
+    }
+
+    @Override
+    public void deletePosts() {
+        DBHelper dbHelper = new DBHelper();
+        dbHelper.execSQL("delete from " + DBHelper.TABLE_POSTS + " where wall = \'" + name + "\';");
+    }
+
+    @Override
+    public void update() {
         getResponse();
     }
 
@@ -80,8 +79,6 @@ public class WallVk implements Wall {
 
     private void onJsonResponse(JSONObject jsonObject) {
         DBHelper dbHelper = new DBHelper();
-        Log.d("WallVk", jsonObject.toString());
-
         try {
             if(jsonObject.has("response")) {
                 JSONObject response = jsonObject.getJSONObject("response");
@@ -101,27 +98,13 @@ public class WallVk implements Wall {
                         post.date = Integer.parseInt(curJsonObject.get("date").toString());
                         post.wall = wallName;
                         String likes = curJsonObject.getJSONObject("likes").get("count").toString();
-                        System.out.println(likes);
                         post.rating = Integer.parseInt(likes);
                         dbHelper.insertPost(post);
                     }
-
                 }
-                Log.d("tag", String.valueOf(jsonArray.length()));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void deletePosts() {
-        DBHelper dbHelper = new DBHelper();
-        dbHelper.execSQL("delete from " + DBHelper.TABLE_POSTS + " where wall = \'" + name + "\';");
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o != null && o.toString().equals(this.name);
     }
 }

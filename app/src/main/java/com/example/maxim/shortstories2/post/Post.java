@@ -1,4 +1,4 @@
-package com.example.maxim.shortstories2;
+package com.example.maxim.shortstories2.post;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

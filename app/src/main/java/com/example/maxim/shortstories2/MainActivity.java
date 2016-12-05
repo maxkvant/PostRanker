@@ -1,6 +1,5 @@
 package com.example.maxim.shortstories2;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -17,10 +16,16 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import org.json.JSONException;
+import com.example.maxim.shortstories2.post.Post;
+import com.example.maxim.shortstories2.post.PostsAdapter;
+import com.example.maxim.shortstories2.walls.Wall;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+
+import static com.example.maxim.shortstories2.MyApplication.walls;
 
 public class MainActivity extends AppCompatActivity {
     @Override
@@ -31,13 +36,11 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         setTitle("Feed");
 
-        System.out.print("h\ne\nl\nl\no\n");
-
-        ListAdapter adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, DataHolder.walls);
+        ListAdapter adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, walls);
         ListView leftDrawer = (ListView) findViewById(R.id.left_drawer);
         leftDrawer.setAdapter(adapterDrawer);
-
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_main);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -45,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
         leftDrawer.setOnItemClickListener(new DrawerItemClickListener());
 
-        Button button = (Button) findViewById(R.id.button_goto_walls);
-        button.setOnClickListener(new View.OnClickListener() {
+        Button buttonWalls = (Button) findViewById(R.id.button_goto_walls);
+        buttonWalls.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, WallsActivity.class);
@@ -54,14 +57,24 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
-        Log.d("Create", "MainActivity");
-    }
 
+        Button buttonUpdate = (Button) findViewById(R.id.button_update);
+        buttonUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (Wall wall : walls) {
+                    setPostsAdapter(Collections.<Post> emptyList());
+                    wall.update();
+                }
+            }
+        });
+
+        setPostsAdapter(walls.get(1).getPosts());
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("MainActivity", "onActivityResult");
-        ListAdapter adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, DataHolder.walls);
+        ListAdapter adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, walls);
         ListView leftDrawer = (ListView) findViewById(R.id.left_drawer);
         leftDrawer.setAdapter(adapterDrawer);
         super.onActivityResult(requestCode, resultCode, data);
@@ -70,15 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            ListView feed = (ListView)findViewById(R.id.feed_list);
-            List<Post> posts = new ArrayList<>();
-            try {
-                posts = DataHolder.walls.get(position).getPosts();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            PostsAdapter adapter = new PostsAdapter(getApplicationContext(), posts);
-            feed.setAdapter(adapter);
+            setPostsAdapter(walls.get(position).getPosts());
         }
     }
 
@@ -86,5 +91,11 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main_activity, menu);
         return true;
+    }
+
+    private void setPostsAdapter(List<Post> posts) {
+        ListView feed = (ListView)findViewById(R.id.feed_list);
+        PostsAdapter adapter = new PostsAdapter(getApplicationContext(), posts);
+        feed.setAdapter(adapter);
     }
 }

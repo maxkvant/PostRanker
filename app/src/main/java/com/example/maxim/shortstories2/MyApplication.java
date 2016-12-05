@@ -1,28 +1,27 @@
 package com.example.maxim.shortstories2;
 
 
-import android.annotation.SuppressLint;
 import android.app.Application;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.lang.reflect.Array;
+import com.example.maxim.shortstories2.walls.Wall;
+import com.example.maxim.shortstories2.walls.WallLatest;
+import com.example.maxim.shortstories2.walls.WallTop;
+import com.example.maxim.shortstories2.walls.WallVk;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class DataHolder extends Application {
-    private static DataHolder instance;
+public class MyApplication extends Application {
+    private static MyApplication instance;
 
-    public DataHolder() {
+    public MyApplication() {
         instance = this;
     }
 
-    public static Context getContext() {
+    public static MyApplication getInstance() {
         return instance;
     }
 
@@ -33,8 +32,7 @@ public class DataHolder extends Application {
 
     public static List<Wall> walls = new ArrayList<>();
     static {
-        Log.d("DataHolder", "static");
-        walls.addAll(Arrays.asList(new WallTop(), new WallAll()));
+        walls.addAll(Arrays.asList(new WallTop(), new WallLatest()));
         walls.addAll(Arrays.asList(new WallVk("Подслушано"), new WallVk("Just Story")));
     }
 }

@@ -36,10 +36,17 @@
         android:background="@color/colorPrimaryDark">
 
         <Button
-            android:text="walls"
+            android:text="+ - wall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/button_goto_walls"
+            android:textSize="5pt"/>
+
+        <Button
+            android:text="обновить"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_update"
             android:textSize="5pt"/>
 
         <ListView android:id="@+id/left_drawer"

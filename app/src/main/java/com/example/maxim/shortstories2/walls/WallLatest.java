@@ -1,11 +1,14 @@
-package com.example.maxim.shortstories2;
+package com.example.maxim.shortstories2.walls;
+
+import com.example.maxim.shortstories2.DBHelper;
+import com.example.maxim.shortstories2.post.Post;
 
 import java.util.List;
 
-public class WallAll implements Wall {
+public class WallLatest implements Wall {
     @Override
     public String toString() {
-        return "Всё подряд";
+        return "Последние";
     }
     @Override
     public List<Post> getPosts() {
@@ -15,7 +18,8 @@ public class WallAll implements Wall {
     }
 
     @Override
-    public void deletePosts() {
+    public void deletePosts() {}
 
-    }
+    @Override
+    public void update() {}
 }

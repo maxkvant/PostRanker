@@ -1,7 +1,6 @@
-package com.example.maxim.shortstories2;
+package com.example.maxim.shortstories2.post;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,10 +8,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
+import com.example.maxim.shortstories2.R;
+
 import java.util.Date;
 import java.util.List;
-import java.util.StringTokenizer;
 
 public class PostsAdapter extends BaseAdapter {
     private Context ctx;

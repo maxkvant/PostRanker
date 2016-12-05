@@ -1,7 +1,5 @@
 package com.example.maxim.shortstories2;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -9,24 +7,23 @@ import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.StringBuilderPrinter;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.lang.reflect.Array;
+import com.example.maxim.shortstories2.walls.Wall;
+import com.example.maxim.shortstories2.walls.WallVk;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static com.example.maxim.shortstories2.DataHolder.walls;
+import static com.example.maxim.shortstories2.MyApplication.walls;
 
 public class WallsActivity extends AppCompatActivity  implements SearchView.OnQueryTextListener {
     private String lastText = "";
@@ -58,42 +55,12 @@ public class WallsActivity extends AppCompatActivity  implements SearchView.OnQu
         return super.onOptionsItemSelected(item);
     }
 
-    private class ItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String text = ((TextView)view).getText().toString();
-            String name = text.substring(2, text.length());
-            if (text.substring(0, 1).equals("-")) {
-                Log.d("-", name);
-                for (int i = 0; i < walls.size(); i++) {
-                    if (walls.get(i).toString().equals(name)) {
-                        Log.d("-", String.valueOf(i));
-                        walls.get(i).deletePosts();
-                        walls.remove(i);
-                        break;
-                    }
-                }
-            }
-            if (text.substring(0, 1).equals("+")) {
-                Log.d("+", "+");
-                Wall curWall = new WallVk(name);
-                if (!walls.contains(curWall)) {
-                    walls.add(curWall);
-                }
-            }
-            onQueryTextChange(lastText);
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_search, menu);
-
         MenuItem searchItem = menu.findItem(R.id.search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(this);
-        Log.d("Create", "search menu");
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -107,13 +74,15 @@ public class WallsActivity extends AppCompatActivity  implements SearchView.OnQu
         lastText = newText;
         newText = newText.toLowerCase();
         ListView listView = (ListView)findViewById(R.id.walls_list);
+
         List<String> search_walls = new ArrayList<>(Arrays.asList("Подслушано", "Just Story", "New Story", "Убойные Истории"));
+
         newText = newText.toLowerCase();
         List<String> list = new ArrayList<>();
         for (String name : search_walls) {
             if (newText.length() > 1 && name.toLowerCase().contains(newText)) {
                 String marker = "+ ";
-                for (Wall wall : DataHolder.walls) {
+                for (Wall wall : walls) {
                     if (wall.toString().equals(name)) {
                         marker = "- ";
                     }
@@ -125,7 +94,6 @@ public class WallsActivity extends AppCompatActivity  implements SearchView.OnQu
         Collections.sort(list);
         Collections.reverse(list);
 
-
         if (list.size() == 0) {
             list.add("Ничего не надено");
         }
@@ -133,5 +101,26 @@ public class WallsActivity extends AppCompatActivity  implements SearchView.OnQu
         listView.setAdapter(new ArrayAdapter<>(this, R.layout.search_list_item, list));
         listView.setOnItemClickListener(new ItemClickListener());
         return false;
+    }
+
+    private class ItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            String text = ((TextView)view).getText().toString();
+            String name = text.substring(2, text.length());
+            if (text.substring(0, 1).equals("-")) {
+                for (int i = 0; i < walls.size(); i++) {
+                    if (walls.get(i).toString().equals(name)) {
+                        walls.get(i).deletePosts();
+                        walls.remove(i);
+                        break;
+                    }
+                }
+            }
+            if (text.substring(0, 1).equals("+")) {
+                walls.add(new WallVk(name));
+            }
+            onQueryTextChange(lastText);
+        }
     }
 }
