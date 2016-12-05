@@ -1,7 +1,10 @@
 package com.example.maxim.shortstories2;
 
+import android.content.Intent;
 import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringDef;
+import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.text.Html;
 import android.util.Log;
 import android.widget.Toast;
@@ -22,7 +25,7 @@ import java.util.Objects;
 
 public class WallVk implements Wall {
     private String name;
-
+    private long id;
     private List<Post> posts = new ArrayList<>();
 
     @Override
@@ -30,57 +33,54 @@ public class WallVk implements Wall {
         return this.name;
     }
 
+
+
     public WallVk(String name) {
+        Log.d("WallVK", "Constructor " + name);
         this.name = name;
-        String curResponse = "";
         switch (name) {
             case "Подслушано":
-                getResponse("-34215577");
+                this.id = -34215577;
                 break;
             case "Убойные Истории":
-                getResponse("-55544604");
+                this.id = -55544604;
             case "Just Story":
-                getResponse("-106084026");
+                this.id = -106084026;
                 break;
             case "New Story":
-                getResponse("-127509226");
+                this.id = -127509226;
         }
-        try {
-            parseJsonResponse(new JSONObject(curResponse));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        getResponse();
     }
 
-    private void getResponse(String id) {
+    private void getResponse() {
         final String queryUrl = "https://api.vk.com/method/wall.get?count=11&filter=owner&extended=1"
-                + "&owner_id=" + id;
+                + "&owner_id=" + String.valueOf(id);
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(queryUrl,
                 new JsonHttpResponseHandler() {
-
                     @Override
                     public void onSuccess(JSONObject jsonObject) {
-                            parseJsonResponse(jsonObject);
+                        onJsonResponse(jsonObject);
                     }
 
                     @Override
                     public void onFailure(int statusCode, Throwable throwable, JSONObject error) {
-                        // Display a "Toast" message
-                        // to announce the failure
-                        // Log error message
-                        // to help solve any problems
                         Log.e("error http query", statusCode + " " + throwable.getMessage());
                     }
                 });
     }
 
     public List<Post> getPosts() {
-        return this.posts;
+        DBHelper dbHelper = new DBHelper();
+        return dbHelper.getPosts("select * from " + dbHelper.TABLE_POSTS +
+        " where wall = \'" + name + "\';");
     }
 
-    private void parseJsonResponse(JSONObject jsonObject) {
-        ArrayList<Post> res = new ArrayList<>();
+    private void onJsonResponse(JSONObject jsonObject) {
+        DBHelper dbHelper = new DBHelper();
+        Log.d("WallVk", jsonObject.toString());
+
         try {
             if(jsonObject.has("response")) {
                 JSONObject response = jsonObject.getJSONObject("response");
@@ -97,13 +97,12 @@ public class WallVk implements Wall {
                     if (curJsonObject.has("text")) {
                         Post post = new Post();
                         post.text = (Html.fromHtml(curJsonObject.get("text").toString())).toString();
-                        post.date = Long.parseLong(curJsonObject.get("date").toString());
+                        post.date = Integer.parseInt(curJsonObject.get("date").toString());
                         post.wall = wallName;
                         String likes = curJsonObject.getJSONObject("likes").get("count").toString();
-
                         System.out.println(likes);
                         post.rating = Integer.parseInt(likes);
-                        res.add(post);
+                        dbHelper.insertPost(post);
                     }
 
                 }
@@ -112,7 +111,6 @@ public class WallVk implements Wall {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        posts = res;
     }
 
     @Override

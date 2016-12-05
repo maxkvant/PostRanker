@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -47,7 +49,7 @@ public class PostsAdapter extends BaseAdapter {
         ((TextView) convertView.findViewById(R.id.feed_item_wall)).setText(item.wall);
         ((TextView) convertView.findViewById(R.id.feed_item_text)).setText(item.text);
         ((TextView) convertView.findViewById(R.id.feed_item_date))
-                .setText(String.valueOf(item.date));
+                .setText(String.valueOf(new Date((long)item.date * 1000)));
         return convertView;
     }
 }
