@@ -6,16 +6,21 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.maxim.shortstories2.walls.Wall;
-import com.example.maxim.shortstories2.walls.WallLatest;
-import com.example.maxim.shortstories2.walls.WallTop;
-import com.example.maxim.shortstories2.walls.WallVk;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 
 public class MyApplication extends Application {
     private static MyApplication instance;
+    public static final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+            .connectTimeout(2, TimeUnit.SECONDS)
+            .build();
+    public static List<Wall> walls;
+
 
     public MyApplication() {
         instance = this;
@@ -30,9 +35,5 @@ public class MyApplication extends Application {
         super.attachBaseContext(base);
     }
 
-    public static List<Wall> walls = new ArrayList<>();
-    static {
-        walls.addAll(Arrays.asList(new WallTop(), new WallLatest()));
-        walls.addAll(Arrays.asList(new WallVk("Подслушано"), new WallVk("Just Story")));
-    }
+
 }

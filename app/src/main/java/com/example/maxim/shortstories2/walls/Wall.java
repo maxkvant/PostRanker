@@ -6,7 +6,6 @@ import org.json.JSONException;
 import java.util.List;
 
 public interface Wall {
-    public List<Post> getPosts();
-    public void deletePosts();
-    public void update();
+    List<Post> getPosts(int offset, int mode);
+    void update();
 }

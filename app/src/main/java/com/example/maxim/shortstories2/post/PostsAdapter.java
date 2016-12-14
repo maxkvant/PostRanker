@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import com.example.maxim.shortstories2.R;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,10 +19,12 @@ public class PostsAdapter extends BaseAdapter {
     private Context ctx;
     private LayoutInflater inflater;
     private List<Post> items;
+    public final int mode;
 
-    public PostsAdapter(Context context, List<Post> items) {
+    public PostsAdapter(Context context, int mode, List<Post> items) {
+        this.mode = mode;
         this.ctx = context;
-        this.items = items;
+        this.items = new ArrayList<>(items);
         inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -45,10 +49,15 @@ public class PostsAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.feed_item, null);
         }
         Post item = items.get(position);
-        ((TextView) convertView.findViewById(R.id.feed_item_wall)).setText(item.wall);
+        ((TextView) convertView.findViewById(R.id.feed_item_wall)).setText(item.wall_name);
         ((TextView) convertView.findViewById(R.id.feed_item_text)).setText(item.text);
         ((TextView) convertView.findViewById(R.id.feed_item_date))
                 .setText(String.valueOf(new Date((long)item.date * 1000)));
         return convertView;
+    }
+
+    public void addPosts(List<Post> list) {
+        items.addAll(list);
+        this.notifyDataSetChanged();
     }
 }

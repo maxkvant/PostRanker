@@ -72,55 +72,14 @@ public class WallsActivity extends AppCompatActivity  implements SearchView.OnQu
     @Override
     public boolean onQueryTextChange(String newText) {
         lastText = newText;
-        newText = newText.toLowerCase();
-        ListView listView = (ListView)findViewById(R.id.walls_list);
-
-        List<String> search_walls = new ArrayList<>(Arrays.asList("Подслушано", "Just Story", "New Story", "Убойные Истории"));
-
-        newText = newText.toLowerCase();
-        List<String> list = new ArrayList<>();
-        for (String name : search_walls) {
-            if (newText.length() > 1 && name.toLowerCase().contains(newText)) {
-                String marker = "+ ";
-                for (Wall wall : walls) {
-                    if (wall.toString().equals(name)) {
-                        marker = "- ";
-                    }
-                }
-                list.add(marker + name);
-            }
-        }
-
-        Collections.sort(list);
-        Collections.reverse(list);
-
-        if (list.size() == 0) {
-            list.add("Ничего не надено");
-        }
-
-        listView.setAdapter(new ArrayAdapter<>(this, R.layout.search_list_item, list));
-        listView.setOnItemClickListener(new ItemClickListener());
+        //TODO
         return false;
     }
 
     private class ItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String text = ((TextView)view).getText().toString();
-            String name = text.substring(2, text.length());
-            if (text.substring(0, 1).equals("-")) {
-                for (int i = 0; i < walls.size(); i++) {
-                    if (walls.get(i).toString().equals(name)) {
-                        walls.get(i).deletePosts();
-                        walls.remove(i);
-                        break;
-                    }
-                }
-            }
-            if (text.substring(0, 1).equals("+")) {
-                walls.add(new WallVk(name));
-            }
-            onQueryTextChange(lastText);
+            //TODO
         }
     }
 }
