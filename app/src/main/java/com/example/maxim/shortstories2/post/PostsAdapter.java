@@ -9,8 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.maxim.shortstories2.R;
+import com.example.maxim.shortstories2.walls.WALL_MODE;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,12 +19,12 @@ public class PostsAdapter extends BaseAdapter {
     private Context ctx;
     private LayoutInflater inflater;
     private List<Post> items;
-    public final int mode;
+    public final WALL_MODE mode;
 
-    public PostsAdapter(Context context, int mode, List<Post> items) {
+    public PostsAdapter(Context context, WALL_MODE mode) {
         this.mode = mode;
         this.ctx = context;
-        this.items = new ArrayList<>(items);
+        this.items = new ArrayList<>();
         inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 

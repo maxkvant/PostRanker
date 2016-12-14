@@ -4,13 +4,11 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.example.maxim.shortstories2.post.Post;
+import com.example.maxim.shortstories2.walls.WALL_MODE;
 import com.example.maxim.shortstories2.walls.Wall;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -47,11 +45,13 @@ public class DBHelper extends SQLiteOpenHelper {
                 "priority integer)";
         db.execSQL(tableWalls);
 
-        List<String> values = Arrays.asList(
+        List<String> values = Arrays.asList(MyApplication.getInstance().getBaseContext()
+                .getResources().getStringArray(R.array.table_walls_default_items));
+        /*Arrays.asList(
                 "(0, \"Новости\", \"WallAll\", 0)",
                 "(-34215577, \"Подслушано\", \"WallVk\", 2)",
                 "(-106084026,  \"Just Story\", \"WallVk\", 2)"
-         );
+         );*/
 
         String insertInWallsPrefix = "insert into " + TABLE_WALLS + " values ";
 
@@ -78,7 +78,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public List<Post> getPosts(int offset, int mode, String query) {
+    public List<Post> getPosts(int offset, WALL_MODE mode, String query) {
         List<Post> res = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -136,27 +136,27 @@ public class DBHelper extends SQLiteOpenHelper {
         return res;
     }
 
-    private String getModeSql(int mode) {
+    private String getModeSql(WALL_MODE mode) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
         long oneDayBefore = (cal.getTimeInMillis() / 1000);
 
         String res = "";
         switch (mode) {
-            case 0:
+            case BY_DATE:
                 res = " order by date desc ";
                 break;
-            case 1:
+            case TOP_DAILY:
                 cal.add(Calendar.DAY_OF_YEAR,-1);
                 res = " and date > " + (cal.getTimeInMillis() / 1000) +
                         " order by rating desc ";
                 break;
-            case 2:
+            case TOP_WEEKLY:
                 cal.add(Calendar.DAY_OF_WEEK, -1);
                 res = " and date > " + (cal.getTimeInMillis() / 1000) +
                         " order by rating desc ";
                 break;
-            case 3:
+            case TOP_MONTHLY:
                 cal.add(Calendar.DAY_OF_WEEK, -1);
                 res = " and date > " + (cal.getTimeInMillis() / 1000) +
                         " order by rating desc ";

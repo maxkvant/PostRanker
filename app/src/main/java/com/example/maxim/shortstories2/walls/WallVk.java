@@ -5,19 +5,15 @@ import android.util.Log;
 
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.post.Post;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Request;
-import okhttp3.Response;
 
 import static com.example.maxim.shortstories2.MyApplication.okHttpClient;
 
@@ -36,7 +32,7 @@ public class WallVk implements Wall {
         this.id = id;
     }
 
-    public List<Post> getPosts(int offset, int mode) {
+    public List<Post> getPosts(int offset, WALL_MODE mode) {
         DBHelper dbHelper = new DBHelper();
 
         return dbHelper.getPosts(offset, mode,

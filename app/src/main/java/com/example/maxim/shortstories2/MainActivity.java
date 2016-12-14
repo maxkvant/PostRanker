@@ -2,43 +2,41 @@ package com.example.maxim.shortstories2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.AsyncTask;
-import android.support.v4.os.AsyncTaskCompat;
-import android.support.v4.view.AsyncLayoutInflater;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.view.WindowAnimationFrameStats;
 import android.widget.AbsListView;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.example.maxim.shortstories2.post.Post;
 import com.example.maxim.shortstories2.post.PostsAdapter;
+import com.example.maxim.shortstories2.walls.WALL_MODE;
 import com.example.maxim.shortstories2.walls.Wall;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import static com.example.maxim.shortstories2.MyApplication.walls;
+import static com.example.maxim.shortstories2.walls.WALL_MODE.BY_DATE;
+import static com.example.maxim.shortstories2.walls.WALL_MODE.TOP_DAILY;
+import static com.example.maxim.shortstories2.walls.WALL_MODE.TOP_MONTHLY;
+import static com.example.maxim.shortstories2.walls.WALL_MODE.TOP_WEEKLY;
 
 public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout refreshLayout;
@@ -46,8 +44,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean hasAsyncTask = false;
     private View footerView;
     private Wall currentWall;
-    private int currentMode = 0;
+    private WALL_MODE currentMode = BY_DATE;
     private Spinner spinner;
+    private final List<WALL_MODE> modes = Arrays.asList(WALL_MODE.values());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +61,18 @@ public class MainActivity extends AppCompatActivity {
 
         spinner = (Spinner)findViewById(R.id.spinner_nav);
 
-        String[] spinnerItems = new String[]{"Всё Подряд", "Топ за день", "Топ за неделю", "Топ за месяц"};
+        EnumMap<WALL_MODE,String> mapModes = new EnumMap<WALL_MODE, String>(WALL_MODE.class);
+        Resources res = getResources();
+        mapModes.put(BY_DATE, getResources().getString(R.string.by_date));
+        mapModes.put(TOP_DAILY, getResources().getString(R.string.top_daily));
+        mapModes.put(TOP_WEEKLY, getResources().getString(R.string.top_weekly));
+        mapModes.put(TOP_MONTHLY, getResources().getString(R.string.top_monthly));
+
+        List<String> spinnerItems = new ArrayList<>();
+        for (WALL_MODE mode : modes) {
+            spinnerItems.add(mapModes.get(mode));
+        }
+
         ArrayAdapter adapterSpinner = new ArrayAdapter<>(this, R.layout.spinner_item, spinnerItems);
         spinner.setAdapter(adapterSpinner);
         spinner.setOnItemSelectedListener(new SpinnerItemClickListener());
@@ -133,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            currentMode = 0;
+            currentMode = BY_DATE;
             setPostsAdapter(walls.get(position));
         }
     }
@@ -141,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
     private class SpinnerItemClickListener implements AdapterView.OnItemSelectedListener {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            currentMode = position;
+            currentMode = modes.get(position);
             setPostsAdapter(currentWall);
         }
 
@@ -157,9 +167,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setPostsAdapter(final Wall wall) {
-        spinner.setSelection(currentMode);
+        spinner.setSelection(modes.indexOf(currentMode));
         final ListView feed = (ListView)findViewById(R.id.feed_list);
-        final PostsAdapter adapter = new PostsAdapter(getApplicationContext(), currentMode, Collections.EMPTY_LIST);
+        final PostsAdapter adapter = new PostsAdapter(getApplicationContext(), currentMode);
         feed.setAdapter(adapter);
         new WallScroll(feed, wall, adapter).execute();
         currentWall = wall;

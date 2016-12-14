@@ -5,10 +5,7 @@ import android.util.Log;
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.post.Post;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import static com.example.maxim.shortstories2.MyApplication.walls;
 
@@ -25,7 +22,7 @@ public class WallAll implements Wall {
         return this.name;
     }
     @Override
-    public List<Post> getPosts(int offset, int mode) {
+    public List<Post> getPosts(int offset, WALL_MODE mode) {
         DBHelper dbHelper = new DBHelper();
         return dbHelper.getPosts(offset, mode, "");
     }
