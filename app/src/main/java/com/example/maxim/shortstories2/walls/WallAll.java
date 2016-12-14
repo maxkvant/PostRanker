@@ -21,6 +21,7 @@ public class WallAll implements Wall {
     public String toString() {
         return this.name;
     }
+
     @Override
     public List<Post> getPosts(int offset, WALL_MODE mode) {
         DBHelper dbHelper = new DBHelper();

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.maxim.shortstories2.walls.Wall;
+import com.vk.sdk.VKSdk;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,11 +17,20 @@ import okhttp3.OkHttpClient;
 
 public class MyApplication extends Application {
     private static MyApplication instance;
+    public static List<Wall> walls;
     public static final OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .connectTimeout(2, TimeUnit.SECONDS)
             .build();
-    public static List<Wall> walls;
 
+    @Override
+    public void onCreate() {
+        VKSdk.initialize(this);
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+    }
 
     public MyApplication() {
         instance = this;
@@ -30,10 +40,13 @@ public class MyApplication extends Application {
         return instance;
     }
 
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
+    private static String accessToken;
+    public static void setAccessToken(String accessToken) {
+        MyApplication.accessToken = accessToken;
     }
 
+    public static String getAccessToken() {
+        return accessToken;
+    }
 
 }

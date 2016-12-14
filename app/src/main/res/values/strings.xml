@@ -17,4 +17,6 @@
         <item>(-34215577, \"Подслушано\", \"WallVk\", 2)</item>
         <item>(-106084026,  \"Just Story\", \"WallVk\", 2)</item>
     </string-array>
+
+    <integer name="com_vk_sdk_AppId">5772831</integer>
 </resources>

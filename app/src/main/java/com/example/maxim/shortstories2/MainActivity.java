@@ -26,6 +26,11 @@ import com.example.maxim.shortstories2.post.Post;
 import com.example.maxim.shortstories2.post.PostsAdapter;
 import com.example.maxim.shortstories2.walls.WALL_MODE;
 import com.example.maxim.shortstories2.walls.Wall;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKCallback;
+import com.vk.sdk.VKSdk;
+import com.vk.sdk.api.VKError;
+import com.vk.sdk.util.VKUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter adapterDrawer;
     private boolean hasAsyncTask = false;
     private View footerView;
+    private Toolbar toolbar;
     private Wall currentWall;
     private WALL_MODE currentMode = BY_DATE;
     private Spinner spinner;
@@ -52,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        VKSdk.login(this);
+
         walls = (new DBHelper()).getAllWalls();
 
         setContentView(R.layout.activity_main);
@@ -60,9 +68,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         spinner = (Spinner)findViewById(R.id.spinner_nav);
-
         EnumMap<WALL_MODE,String> mapModes = new EnumMap<WALL_MODE, String>(WALL_MODE.class);
-        Resources res = getResources();
         mapModes.put(BY_DATE, getResources().getString(R.string.by_date));
         mapModes.put(TOP_DAILY, getResources().getString(R.string.top_daily));
         mapModes.put(TOP_WEEKLY, getResources().getString(R.string.top_weekly));
@@ -77,18 +83,16 @@ public class MainActivity extends AppCompatActivity {
         spinner.setAdapter(adapterSpinner);
         spinner.setOnItemSelectedListener(new SpinnerItemClickListener());
 
-
         adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, walls);
         ListView leftDrawer = (ListView)findViewById(R.id.left_drawer);
         leftDrawer.setAdapter(adapterDrawer);
         final DrawerLayout drawer = (DrawerLayout)findViewById(R.id.activity_main);
+        leftDrawer.setOnItemClickListener(new DrawerItemClickListener());
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
-        leftDrawer.setOnItemClickListener(new DrawerItemClickListener());
 
         Button buttonWalls = (Button) findViewById(R.id.button_goto_walls);
         buttonWalls.setOnClickListener(new View.OnClickListener() {
@@ -105,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                      Log.d("MainActivity", "onRefresh");
-
                     refreshLayout.setRefreshing(true);
 
                     new AsyncTask<Void, Void, Void>() {
@@ -135,9 +138,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main_activity, menu);
+        return true;
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        adapterDrawer.notifyDataSetChanged();
-        super.onActivityResult(requestCode, resultCode, data);
+        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
+            @Override
+            public void onResult(VKAccessToken res) {
+                MyApplication.setAccessToken(res.accessToken);
+            }
+            @Override
+            public void onError(VKError error) {}
+        })) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
@@ -160,18 +177,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main_activity, menu);
-        return true;
-    }
-
     private void setPostsAdapter(final Wall wall) {
         spinner.setSelection(modes.indexOf(currentMode));
         final ListView feed = (ListView)findViewById(R.id.feed_list);
         final PostsAdapter adapter = new PostsAdapter(getApplicationContext(), currentMode);
         feed.setAdapter(adapter);
-        new WallScroll(feed, wall, adapter).execute();
+        new OnScrollTask(feed, wall, adapter).execute();
         currentWall = wall;
         feed.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -180,19 +191,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 if (!hasAsyncTask && view.getLastVisiblePosition() == feed.getCount() - 1) {
-                    new WallScroll(feed, wall, adapter).execute();
+                    new OnScrollTask(feed, wall, adapter).execute();
                 }
             }
         });
     }
 
-    private class WallScroll extends AsyncTask<Void, Void, List<Post>> {
+    private class OnScrollTask extends AsyncTask<Void, Void, List<Post>> {
         private final PostsAdapter adapter;
         private final ListView feed;
         private final Wall wall;
         private final int count;
 
-        WallScroll(ListView feed, Wall wall, PostsAdapter adapter) {
+        OnScrollTask(ListView feed, Wall wall, PostsAdapter adapter) {
             this.feed = feed;
             this.wall = wall;
             this.adapter = adapter;
@@ -221,5 +232,9 @@ public class MainActivity extends AppCompatActivity {
             adapter.addPosts(result);
             hasAsyncTask = false;
         }
+    }
+
+    private void toolbarInit() {
+
     }
 }

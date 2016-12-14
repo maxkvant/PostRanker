@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.maxim.shortstories2.post.Post;
 import com.example.maxim.shortstories2.walls.WALL_MODE;
@@ -19,7 +20,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public final static String TABLE_POSTS = "Posts";
     public final static String TABLE_WALLS = "Walls";
 
-    private final static int POSTS_PER_GET = 1;
+    private final static int POSTS_PER_GET = 50;
     private final static String DB_NAME = "ShortStoriesDB";
     private final static String wallPath = "com.example.maxim.shortstories2.walls.";
 
@@ -47,11 +48,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
         List<String> values = Arrays.asList(MyApplication.getInstance().getBaseContext()
                 .getResources().getStringArray(R.array.table_walls_default_items));
-        /*Arrays.asList(
-                "(0, \"Новости\", \"WallAll\", 0)",
-                "(-34215577, \"Подслушано\", \"WallVk\", 2)",
-                "(-106084026,  \"Just Story\", \"WallVk\", 2)"
-         );*/
 
         String insertInWallsPrefix = "insert into " + TABLE_WALLS + " values ";
 
@@ -64,17 +60,20 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 
-    public void insertPost(Post post) {
+    public void insertPosts(List<Post> posts) {
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("id", post.id);
-        values.put("text", post.text);
-        values.put("wall_id", post.wall_id);
-        values.put("date", post.date);
-        values.put("rating", post.rating);
-        values.put("load_date", post.load_date);
-
-        db.insertWithOnConflict(TABLE_POSTS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        db.beginTransaction();
+        for (Post post : posts) {
+            ContentValues values = new ContentValues();
+            values.put("id", post.id);
+            values.put("text", post.text);
+            values.put("wall_id", post.wall_id);
+            values.put("date", post.date);
+            values.put("rating", post.rating);
+            values.put("load_date", post.load_date);
+            db.insertWithOnConflict(TABLE_POSTS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        }
+        db.endTransaction();
         db.close();
     }
 
@@ -92,6 +91,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 " limit " + offset + "," + POSTS_PER_GET + ";";
 
         String sql = queryPrefix + query + querySuffix;
+        Log.d("DBHelper getPosts", sql);
         Cursor cursor = db.rawQuery(queryPrefix + query + querySuffix, null);
         if (cursor.moveToFirst()) {
             do {
@@ -152,12 +152,12 @@ public class DBHelper extends SQLiteOpenHelper {
                         " order by rating desc ";
                 break;
             case TOP_WEEKLY:
-                cal.add(Calendar.DAY_OF_WEEK, -1);
+                cal.add(Calendar.WEEK_OF_YEAR, -1);
                 res = " and date > " + (cal.getTimeInMillis() / 1000) +
                         " order by rating desc ";
                 break;
             case TOP_MONTHLY:
-                cal.add(Calendar.DAY_OF_WEEK, -1);
+                cal.add(Calendar.MONTH, -1);
                 res = " and date > " + (cal.getTimeInMillis() / 1000) +
                         " order by rating desc ";
                 break;
