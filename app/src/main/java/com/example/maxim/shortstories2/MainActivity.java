@@ -120,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         protected void onPostExecute(Void result) {
-                            hasGetAsyncTask = false;
                             refreshLayout.setRefreshing(false);
                             setPostsAdapter(currentWall);
                         }
