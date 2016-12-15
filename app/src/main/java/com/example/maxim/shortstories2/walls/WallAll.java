@@ -13,7 +13,6 @@ public class WallAll implements Wall {
     private final String name;
 
     public WallAll(String name, long id) {
-        Log.d("WallAll", "construct: " + name + " " + id);
         this.name = name;
     }
 

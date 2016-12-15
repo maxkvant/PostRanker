@@ -20,7 +20,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public final static String TABLE_POSTS = "Posts";
     public final static String TABLE_WALLS = "Walls";
 
-    private final static int POSTS_PER_GET = 50;
+    private final static int POSTS_PER_GET = 20;
     private final static String DB_NAME = "ShortStoriesDB";
     private final static String wallPath = "com.example.maxim.shortstories2.walls.";
 
@@ -50,7 +50,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 .getResources().getStringArray(R.array.table_walls_default_items));
 
         String insertInWallsPrefix = "insert into " + TABLE_WALLS + " values ";
-
         for (String value : values) {
             String sql = insertInWallsPrefix + value + ";";
             db.execSQL(sql);
@@ -77,7 +76,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public List<Post> getPosts(int offset, WALL_MODE mode, String query) {
+    public List<Post> getPosts(int offset, WALL_MODE mode, String filter) {
         List<Post> res = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -90,9 +89,8 @@ public class DBHelper extends SQLiteOpenHelper {
         String querySuffix = getModeSql(mode) +
                 " limit " + offset + "," + POSTS_PER_GET + ";";
 
-        String sql = queryPrefix + query + querySuffix;
-        Log.d("DBHelper getPosts", sql);
-        Cursor cursor = db.rawQuery(queryPrefix + query + querySuffix, null);
+        String sql = queryPrefix + filter + querySuffix;
+        Cursor cursor = db.rawQuery(sql, null);
         if (cursor.moveToFirst()) {
             do {
                 Post post = new Post(
@@ -139,7 +137,6 @@ public class DBHelper extends SQLiteOpenHelper {
     private String getModeSql(WALL_MODE mode) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        long oneDayBefore = (cal.getTimeInMillis() / 1000);
 
         String res = "";
         switch (mode) {

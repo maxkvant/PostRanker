@@ -18,6 +18,7 @@ import okhttp3.OkHttpClient;
 public class MyApplication extends Application {
     private static MyApplication instance;
     public static List<Wall> walls;
+    private static String accessToken;
     public static final OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .connectTimeout(2, TimeUnit.SECONDS)
             .build();
@@ -40,7 +41,6 @@ public class MyApplication extends Application {
         return instance;
     }
 
-    private static String accessToken;
     public static void setAccessToken(String accessToken) {
         MyApplication.accessToken = accessToken;
     }

@@ -46,7 +46,7 @@ import static com.example.maxim.shortstories2.walls.WALL_MODE.TOP_WEEKLY;
 public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout refreshLayout;
     private ArrayAdapter adapterDrawer;
-    private boolean hasAsyncTask = false;
+    private boolean hasGetAsyncTask = false;
     private View footerView;
     private Toolbar toolbar;
     private Wall currentWall;
@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         VKSdk.login(this);
-
         walls = (new DBHelper()).getAllWalls();
 
         setContentView(R.layout.activity_main);
@@ -67,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        spinner = (Spinner)findViewById(R.id.spinner_nav);
+        spinner = (Spinner) findViewById(R.id.spinner_nav);
         EnumMap<WALL_MODE,String> mapModes = new EnumMap<WALL_MODE, String>(WALL_MODE.class);
         mapModes.put(BY_DATE, getResources().getString(R.string.by_date));
         mapModes.put(TOP_DAILY, getResources().getString(R.string.top_daily));
@@ -84,9 +83,9 @@ public class MainActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new SpinnerItemClickListener());
 
         adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, walls);
-        ListView leftDrawer = (ListView)findViewById(R.id.left_drawer);
+        ListView leftDrawer = (ListView) findViewById(R.id.left_drawer);
         leftDrawer.setAdapter(adapterDrawer);
-        final DrawerLayout drawer = (DrawerLayout)findViewById(R.id.activity_main);
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_main);
         leftDrawer.setOnItemClickListener(new DrawerItemClickListener());
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -104,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        refreshLayout = (SwipeRefreshLayout)findViewById(R.id.refresh);
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
         refreshLayout.setOnRefreshListener(new  SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -121,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         protected void onPostExecute(Void result) {
-                            hasAsyncTask = false;
+                            hasGetAsyncTask = false;
                             refreshLayout.setRefreshing(false);
                             setPostsAdapter(currentWall);
                         }
@@ -129,10 +128,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        footerView = ((LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+        footerView = ((LayoutInflater )getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                 .inflate(R.layout.progress_bar, null);
-
 
         setPostsAdapter(walls.get(1));
     }
@@ -179,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setPostsAdapter(final Wall wall) {
         spinner.setSelection(modes.indexOf(currentMode));
-        final ListView feed = (ListView)findViewById(R.id.feed_list);
+        final ListView feed = (ListView) findViewById(R.id.feed_list);
         final PostsAdapter adapter = new PostsAdapter(getApplicationContext(), currentMode);
         feed.setAdapter(adapter);
         new OnScrollTask(feed, wall, adapter).execute();
@@ -190,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (!hasAsyncTask && view.getLastVisiblePosition() == feed.getCount() - 1) {
+                if (!hasGetAsyncTask && view.getLastVisiblePosition() == feed.getCount() - 1) {
                     new OnScrollTask(feed, wall, adapter).execute();
                 }
             }
@@ -208,11 +205,10 @@ public class MainActivity extends AppCompatActivity {
             this.wall = wall;
             this.adapter = adapter;
             this.count = adapter.getCount();
-            hasAsyncTask = true;
+            hasGetAsyncTask = true;
         }
         @Override
         protected void onPreExecute () {
-            hasAsyncTask = true;
             feed.addFooterView(footerView);
         }
 
@@ -230,11 +226,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute (List<Post> result) {
             feed.removeFooterView(footerView);
             adapter.addPosts(result);
-            hasAsyncTask = false;
+            hasGetAsyncTask = false;
         }
-    }
-
-    private void toolbarInit() {
-
     }
 }
