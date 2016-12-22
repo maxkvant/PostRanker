@@ -37,18 +37,19 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 
+import static com.example.maxim.shortstories2.MyApplication.getAccessToken;
 import static com.example.maxim.shortstories2.MyApplication.walls;
 import static com.example.maxim.shortstories2.walls.WALL_MODE.BY_DATE;
 import static com.example.maxim.shortstories2.walls.WALL_MODE.TOP_DAILY;
 import static com.example.maxim.shortstories2.walls.WALL_MODE.TOP_MONTHLY;
 import static com.example.maxim.shortstories2.walls.WALL_MODE.TOP_WEEKLY;
+import static com.example.maxim.shortstories2.walls.WALL_MODE.TOP_ALL;
 
 public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout refreshLayout;
     private ArrayAdapter adapterDrawer;
     private boolean hasGetAsyncTask = false;
     private View footerView;
-    private Toolbar toolbar;
     private Wall currentWall;
     private WALL_MODE currentMode = BY_DATE;
     private Spinner spinner;
@@ -58,7 +59,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        VKSdk.login(this);
+        if (getAccessToken() == null) {
+            VKSdk.login(this, "friends", "groups");
+        }
         walls = (new DBHelper()).getAllWalls();
 
         setContentView(R.layout.activity_main);
@@ -67,11 +70,12 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         spinner = (Spinner) findViewById(R.id.spinner_nav);
-        EnumMap<WALL_MODE,String> mapModes = new EnumMap<WALL_MODE, String>(WALL_MODE.class);
+        EnumMap<WALL_MODE,String> mapModes = new EnumMap<>(WALL_MODE.class);
         mapModes.put(BY_DATE, getResources().getString(R.string.by_date));
         mapModes.put(TOP_DAILY, getResources().getString(R.string.top_daily));
         mapModes.put(TOP_WEEKLY, getResources().getString(R.string.top_weekly));
         mapModes.put(TOP_MONTHLY, getResources().getString(R.string.top_monthly));
+        mapModes.put(TOP_ALL, getResources().getString(R.string.top_all));
 
         List<String> spinnerItems = new ArrayList<>();
         for (WALL_MODE mode : modes) {
@@ -149,6 +153,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onError(VKError error) {}
         })) {
+            walls = new DBHelper().getAllWalls();
+            adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, walls);
+            ListView leftDrawer = (ListView) findViewById(R.id.left_drawer);
+            leftDrawer.setAdapter(adapterDrawer);
             super.onActivityResult(requestCode, resultCode, data);
         }
     }

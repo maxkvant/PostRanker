@@ -16,11 +16,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static java.lang.StrictMath.max;
+
 public class DBHelper extends SQLiteOpenHelper {
     public final static String TABLE_POSTS = "Posts";
     public final static String TABLE_WALLS = "Walls";
 
     private final static int POSTS_PER_GET = 20;
+    private final static int POSTS_PER_GET_TOP = 200;
     private final static String DB_NAME = "ShortStoriesDB";
     private final static String wallPath = "com.example.maxim.shortstories2.walls.";
 
@@ -72,6 +75,7 @@ public class DBHelper extends SQLiteOpenHelper {
             values.put("load_date", post.load_date);
             db.insertWithOnConflict(TABLE_POSTS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         }
+        db.setTransactionSuccessful();
         db.endTransaction();
         db.close();
     }
@@ -86,8 +90,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 TABLE_POSTS + ".wall_id = " + TABLE_WALLS + ".id " +
                 " where 1";
 
-        String querySuffix = getModeSql(mode) +
-                " limit " + offset + "," + POSTS_PER_GET + ";";
+        String querySuffix = getModeSql(offset, mode);
 
         String sql = queryPrefix + filter + querySuffix;
         Cursor cursor = db.rawQuery(sql, null);
@@ -134,14 +137,36 @@ public class DBHelper extends SQLiteOpenHelper {
         return res;
     }
 
-    private String getModeSql(WALL_MODE mode) {
+    public void insertWall(Wall wall) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("id", wall.getId());
+        values.put("name", wall.toString());
+        values.put("class", wall.getClass().getSimpleName());
+        values.put("priority", 3);
+        db.insertWithOnConflict(TABLE_WALLS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        db.close();
+    }
+
+    public void deleteWall(long wallId) {
+        if (wallId == 0) {
+            return;
+        }
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(" delete from " + TABLE_WALLS +
+                " where id = " + wallId + ";" );
+    }
+
+    private String getModeSql(int offset, WALL_MODE mode) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
 
         String res = "";
+        int offset_if_top = max(0, POSTS_PER_GET_TOP - offset);
         switch (mode) {
             case BY_DATE:
-                res = " order by date desc ";
+                res = " order by date desc " +
+                      " limit " + offset + "," + POSTS_PER_GET + ";";
                 break;
             case TOP_DAILY:
                 cal.add(Calendar.DAY_OF_YEAR,-1);
@@ -151,13 +176,18 @@ public class DBHelper extends SQLiteOpenHelper {
             case TOP_WEEKLY:
                 cal.add(Calendar.WEEK_OF_YEAR, -1);
                 res = " and date > " + (cal.getTimeInMillis() / 1000) +
-                        " order by rating desc ";
+                      " order by rating desc " +
+                      " limit " + offset + "," + offset_if_top + ";";
                 break;
             case TOP_MONTHLY:
                 cal.add(Calendar.MONTH, -1);
                 res = " and date > " + (cal.getTimeInMillis() / 1000) +
-                        " order by rating desc ";
+                      " order by rating desc " +
+                      " limit " + offset + "," + offset_if_top + ";";
                 break;
+            case TOP_ALL:
+                res = " order by rating desc" +
+                      " limit " + offset + "," + offset_if_top + ";";
         }
         return res;
     }

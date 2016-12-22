@@ -11,6 +11,8 @@
     <string name="top_daily">Лучшее за день</string>
     <string name="top_weekly">Лучшее за неделю</string>
     <string name="top_monthly">Лучшее за месяц</string>
+    <string name="top_all">Лучшее</string>
+    <string name="adding">Добавляем</string>
 
     <string-array name="table_walls_default_items">
         <item>(0, \"Новости\", \"WallAll\", 0)</item>

@@ -45,7 +45,7 @@ public class WallVk implements Wall {
     }
 
     @Override
-    public void update() {
+    public boolean update() {
         String responseStr = "";
         try {
             String url = HttpUrl.parse("https://api.vk.com/method/execute.getPostsMonthly")
@@ -59,9 +59,14 @@ public class WallVk implements Wall {
             Thread.sleep(1000 / 3);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+            return false;
         }
         List<Post> posts = parsePosts(responseStr);
+        if (posts == null) {
+            return false;
+        }
         (new DBHelper()).insertPosts(posts);
+        return true;
     }
 
     private List<Post> parsePosts(String responseStr) {
@@ -86,7 +91,13 @@ public class WallVk implements Wall {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+            return null;
         }
         return posts;
+    }
+
+    @Override
+    public long getId() {
+        return id;
     }
 }
