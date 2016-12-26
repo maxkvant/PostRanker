@@ -3,6 +3,7 @@ package com.example.maxim.shortstories2;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Vibrator;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -144,6 +145,7 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
                 Wall wall = walls.get(position);
                 walls.clear();
                 new DBHelper().deleteWall(wall.getId());
+                ((Vibrator) WallsActivity.this.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
                 adapterWallsList.notifyDataSetChanged();
                 walls.addAll(new DBHelper().getAllWalls());
             }
