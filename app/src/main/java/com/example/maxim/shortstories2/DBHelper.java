@@ -243,7 +243,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(" delete from " + TABLE_WALLS +
-                " where id = " + wallId + ";" );
+                " where id = " + wallId + ";");
     }
 
     public List<Comment> getComments(long post_id) {
