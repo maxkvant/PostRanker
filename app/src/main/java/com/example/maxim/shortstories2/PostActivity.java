@@ -45,7 +45,7 @@ public class PostActivity extends AppCompatActivity {
 
         List<Comment> comments = new DBHelper().getComments(post.id);
         if (comments.size() == 0) {
-            editText.setText(getResources().getString(R.string.commented));
+            editText.setText(getResources().getString(R.string.default_comment));
         } else {
             editText.setText(comments.get(comments.size() - 1).text);
         }

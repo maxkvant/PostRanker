@@ -21,7 +21,10 @@
     </string-array>
 
     <integer name="com_vk_sdk_AppId">5772831</integer>
-    <string name="title_activity_post">PostActivity</string>
+
+    <string name="title_activity_post">Post</string>
+
     <string name="comment">комментарий</string>
     <string name="commented">с комментарием</string>
+    <string name="default_comment">* комментарий *</string>
 </resources>

@@ -61,7 +61,6 @@ public class PostsAdapter extends BaseAdapter {
             public void onClick(View v) {
                 Intent intent = new Intent(ctx, PostActivity.class);
                 intent.putExtra("Post", item);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 ctx.startActivity(intent);
             }
         });

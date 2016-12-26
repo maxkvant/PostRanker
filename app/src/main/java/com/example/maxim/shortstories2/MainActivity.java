@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
     private void setPostsAdapter(final Wall wall) {
         spinner.setSelection(modes.indexOf(currentMode));
         final ListView feed = (ListView) findViewById(R.id.feed_list);
-        final PostsAdapter adapter = new PostsAdapter(getApplicationContext(), currentMode);
+        final PostsAdapter adapter = new PostsAdapter(this, currentMode);
         feed.setAdapter(adapter);
         new OnScrollTask(feed, wall, adapter).execute();
         currentWall = wall;
