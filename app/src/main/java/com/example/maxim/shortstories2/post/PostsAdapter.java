@@ -2,17 +2,22 @@ package com.example.maxim.shortstories2.post;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.maxim.shortstories2.MainActivity;
+import com.example.maxim.shortstories2.PostActivity;
 import com.example.maxim.shortstories2.R;
 import com.example.maxim.shortstories2.walls.WALL_MODE;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.InputMismatchException;
 import java.util.List;
 
 public class PostsAdapter extends BaseAdapter {
@@ -48,12 +53,26 @@ public class PostsAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.feed_item, null);
         }
-        Post item = items.get(position);
+        final Post item = items.get(position);
+        initView(convertView, item);
+        Button buttonComment = (Button) convertView.findViewById(R.id.feed_item_comment);
+        buttonComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ctx, PostActivity.class);
+                intent.putExtra("Post", item);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                ctx.startActivity(intent);
+            }
+        });
+        return convertView;
+    }
+
+    public static void initView(View convertView, Post item) {
         ((TextView) convertView.findViewById(R.id.feed_item_wall)).setText(item.wall_name);
         ((TextView) convertView.findViewById(R.id.feed_item_text)).setText(item.text);
         ((TextView) convertView.findViewById(R.id.feed_item_date))
                 .setText(String.valueOf(new Date((long) item.date * 1000)));
-        return convertView;
     }
 
     public void addPosts(List<Post> list) {

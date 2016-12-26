@@ -51,7 +51,7 @@ import static android.R.attr.thickness;
 import static com.example.maxim.shortstories2.MyApplication.okHttpClient;
 import static com.example.maxim.shortstories2.MyApplication.walls;
 
-public class WallsActivity extends AppCompatActivity  implements SearchView.OnQueryTextListener {
+public class WallsActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     private String lastText = "";
     private LinearLayout progressBarFill;
     ListView wallsList;

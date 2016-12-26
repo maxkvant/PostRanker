@@ -40,6 +40,7 @@ import java.util.List;
 import static com.example.maxim.shortstories2.MyApplication.getAccessToken;
 import static com.example.maxim.shortstories2.MyApplication.walls;
 import static com.example.maxim.shortstories2.walls.WALL_MODE.BY_DATE;
+import static com.example.maxim.shortstories2.walls.WALL_MODE.COMMENTED;
 import static com.example.maxim.shortstories2.walls.WALL_MODE.TOP_DAILY;
 import static com.example.maxim.shortstories2.walls.WALL_MODE.TOP_MONTHLY;
 import static com.example.maxim.shortstories2.walls.WALL_MODE.TOP_WEEKLY;
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         mapModes.put(TOP_WEEKLY, getResources().getString(R.string.top_weekly));
         mapModes.put(TOP_MONTHLY, getResources().getString(R.string.top_monthly));
         mapModes.put(TOP_ALL, getResources().getString(R.string.top_all));
+        mapModes.put(COMMENTED, getResources().getString(R.string.commented));
 
         List<String> spinnerItems = new ArrayList<>();
         for (WALL_MODE mode : modes) {

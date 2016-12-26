@@ -22,19 +22,9 @@ import okhttp3.Request;
 
 import static com.example.maxim.shortstories2.MyApplication.okHttpClient;
 
-public class WallVk implements Wall {
-    private final String name;
-    private final long id;
-
+public class WallVk extends AbstractWall {
     public WallVk(String name, long id) {
-        Log.d("WallVk", "construct: " + name + " " + id);
-        this.name = name;
-        this.id = id;
-    }
-
-    @Override
-    public String toString() {
-        return this.name;
+        super(name,id);
     }
 
     @Override
@@ -46,7 +36,7 @@ public class WallVk implements Wall {
 
     @Override
     public boolean update() {
-        String responseStr = "";
+        String responseStr;
         try {
             String url = HttpUrl.parse("https://api.vk.com/method/execute.getPostsMonthly")
                     .newBuilder()
@@ -94,10 +84,5 @@ public class WallVk implements Wall {
             return null;
         }
         return posts;
-    }
-
-    @Override
-    public long getId() {
-        return id;
     }
 }

@@ -21,4 +21,7 @@
     </string-array>
 
     <integer name="com_vk_sdk_AppId">5772831</integer>
+    <string name="title_activity_post">PostActivity</string>
+    <string name="comment">комментарий</string>
+    <string name="commented">с комментарием</string>
 </resources>

@@ -11,18 +11,9 @@ import java.util.StringTokenizer;
 import static android.content.Context.WALLPAPER_SERVICE;
 import static com.example.maxim.shortstories2.MyApplication.walls;
 
-public class WallAll implements Wall {
-    private final String name;
-    private final long id;
-
+public class WallAll extends AbstractWall {
     public WallAll(String name, long id) {
-        this.id = id;
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return this.name;
+        super(name, id);
     }
 
     @Override
@@ -41,19 +32,5 @@ public class WallAll implements Wall {
             }
         }
         return true;
-    }
-
-    @Override
-    public long getId() {
-        return id;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (object instanceof Wall) {
-            return false;
-        }
-        Wall wall = (Wall)object;
-        return wall.getId() == id;
     }
 }

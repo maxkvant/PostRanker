@@ -1,11 +1,12 @@
 package com.example.maxim.shortstories2.post;
 
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 
-public class Post {
+public class Post implements Serializable {
     public final String text;
     public final long wall_id;
     public final String wall_name;
