@@ -4,3 +4,6 @@
 
 #### about
 mit.spbau.ru/sewiki/index.php/Short_stories
+
+### video
+goo.gl/BBZx78
