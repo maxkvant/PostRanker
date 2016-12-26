@@ -12,6 +12,7 @@
     <string name="top_weekly">Лучшее за неделю</string>
     <string name="top_monthly">Лучшее за месяц</string>
     <string name="top_all">Лучшее</string>
+
     <string name="adding">Добавляем</string>
 
     <string-array name="table_walls_default_items">
@@ -28,4 +29,5 @@
     <string name="comment">комментарий</string>
     <string name="commented">с комментарием</string>
     <string name="default_comment">* комментарий *</string>
+    <string name="offline_mode">оффлайн режим</string>
 </resources>

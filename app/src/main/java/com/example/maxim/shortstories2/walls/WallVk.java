@@ -25,8 +25,8 @@ import static com.example.maxim.shortstories2.MyApplication.walls;
 import static java.lang.StrictMath.max;
 
 public class WallVk extends AbstractWall {
-    public WallVk(String name, long id, double ratio) {
-        super(name, id, ratio);
+    public WallVk(String name, long id, double ratio, long updated) {
+        super(name, id, ratio, updated);
     }
 
     @Override
@@ -39,11 +39,15 @@ public class WallVk extends AbstractWall {
     @Override
     public boolean update() {
         String responseStr;
+
+        long beforeGet = new Date().getTime();
+
         try {
-            String url = HttpUrl.parse("https://api.vk.com/method/execute.getPostsMonthly")
+            String url = HttpUrl.parse("https://api.vk.com/method/execute.getPostsMonthlySince")
                     .newBuilder()
                     .addQueryParameter("v", "5.60")
-                    .addQueryParameter("id", String.valueOf(id))
+                    .addQueryParameter("id", id + "")
+                    .addQueryParameter("date", updated + "")
                     .addQueryParameter("access_token", MyApplication.getAccessToken())
                     .toString();
             Request request = new Request.Builder().url(url).build();
@@ -77,6 +81,8 @@ public class WallVk extends AbstractWall {
                     post.rating * ratio
             ));
         }
+
+        updated = beforeGet;
         new DBHelper().insertWall(this);
         Log.d("update", "rating[0] = " + posts2.get(0).rating);
         (new DBHelper()).insertPosts(posts2);

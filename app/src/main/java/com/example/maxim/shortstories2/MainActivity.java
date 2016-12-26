@@ -3,6 +3,8 @@ package com.example.maxim.shortstories2;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -21,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.maxim.shortstories2.post.Post;
 import com.example.maxim.shortstories2.post.PostsAdapter;
@@ -60,8 +63,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getAccessToken() == null) {
-            VKSdk.login(this, "friends", "groups");
+        if (checkInternetConnection()) {
+            if (getAccessToken() == null) {
+                VKSdk.login(this, "friends", "groups");
+            }
+        } else {
+            Toast.makeText(this, getResources().getString(R.string.offline_mode), Toast.LENGTH_SHORT);
         }
         walls = (new DBHelper()).getAllWalls();
 
@@ -136,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
         footerView = ((LayoutInflater )getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                 .inflate(R.layout.progress_bar, null);
 
+        Log.d("onCreate, walls-size", walls.size() + "");
         setPostsAdapter(walls.get(1));
     }
 
@@ -238,4 +246,13 @@ public class MainActivity extends AppCompatActivity {
             hasGetAsyncTask = false;
         }
     }
+
+    private boolean checkInternetConnection() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null
+                && cm.getActiveNetworkInfo().isAvailable()
+                && cm.getActiveNetworkInfo().isConnected();
+    }
+
+
 }

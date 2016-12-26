@@ -18,9 +18,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import static android.R.attr.longClickable;
 import static android.R.attr.name;
 import static android.R.attr.rating;
 import static com.example.maxim.shortstories2.walls.WALL_MODE.COMMENTED;
+import static java.lang.StrictMath.log;
 import static java.lang.StrictMath.max;
 import static java.lang.StrictMath.nextAfter;
 
@@ -67,6 +69,8 @@ public class DBHelper extends SQLiteOpenHelper {
         List<String> values = Arrays.asList(MyApplication.getInstance().getBaseContext()
                 .getResources().getStringArray(R.array.table_walls_default_items));
 
+
+        Log.d("DBHelper onCreate", "d");
         String insertInWallsPrefix = "insert into " + TABLE_WALLS + " values ";
         for (String value : values) {
             String sql = insertInWallsPrefix + value + ";";
@@ -139,7 +143,6 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         db.close();
-        //Log.d("getPosts", res.size() + "" );
         return res;
     }
 
@@ -205,10 +208,11 @@ public class DBHelper extends SQLiteOpenHelper {
                 String name = cursor.getString(cursor.getColumnIndex("name"));
                 double ratio = cursor.getDouble(cursor.getColumnIndex("ratio"));
                 long id = cursor.getLong(cursor.getColumnIndex("id"));
+                long updated = cursor.getLong(cursor.getColumnIndex("updated"));
                 try {
                     res.add((Wall)Class.forName(wallPath + className)
-                            .getConstructor(String.class, long.class, double.class)
-                            .newInstance(name, id, ratio)
+                            .getConstructor(String.class, long.class, double.class, long.class)
+                            .newInstance(name, id, ratio, updated)
                     );
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -228,7 +232,7 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put("class", wall.getClass().getSimpleName());
         values.put("priority", 3);
         values.put("ratio", wall.getRatio());
-        values.put("updated", (new Date().getTime()) / 1000);
+        values.put("updated", wall.getUpdated());
         db.insertWithOnConflict(TABLE_WALLS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }

@@ -12,8 +12,8 @@ import static android.content.Context.WALLPAPER_SERVICE;
 import static com.example.maxim.shortstories2.MyApplication.walls;
 
 public class WallAll extends AbstractWall {
-    public WallAll(String name, long id, double ratio) {
-        super(name, id, ratio);
+    public WallAll(String name, long id, double ratio, long updated) {
+        super(name, id, ratio, updated);
     }
 
     @Override

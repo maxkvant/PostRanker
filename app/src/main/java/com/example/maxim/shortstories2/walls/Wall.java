@@ -9,6 +9,7 @@ import java.util.StringTokenizer;
 public interface Wall {
     long getId();
     double getRatio();
+    long getUpdated();
     List<Post> getPosts(int offset, WALL_MODE mode);
     boolean update();
 }
