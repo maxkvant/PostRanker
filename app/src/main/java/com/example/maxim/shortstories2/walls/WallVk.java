@@ -21,10 +21,12 @@ import okhttp3.HttpUrl;
 import okhttp3.Request;
 
 import static com.example.maxim.shortstories2.MyApplication.okHttpClient;
+import static com.example.maxim.shortstories2.MyApplication.walls;
+import static java.lang.StrictMath.max;
 
 public class WallVk extends AbstractWall {
-    public WallVk(String name, long id) {
-        super(name,id);
+    public WallVk(String name, long id, double ratio) {
+        super(name, id, ratio);
     }
 
     @Override
@@ -51,11 +53,33 @@ public class WallVk extends AbstractWall {
             e.printStackTrace();
             return false;
         }
+
         List<Post> posts = parsePosts(responseStr);
         if (posts == null) {
             return false;
         }
-        (new DBHelper()).insertPosts(posts);
+
+        if (ratio == 0) {
+            double ratingSum = 0;
+            for (Post post : posts) {
+                ratingSum += post.rating + 1.0;
+            }
+            ratio = posts.size() / max(ratingSum, 1.0);
+        }
+        Log.d("update", "ratio = " + String.valueOf(ratio));
+        List<Post> posts2 = new ArrayList<>();
+        for (Post post : posts) {
+            posts2.add(new Post(
+                    post.text,
+                    id,
+                    name,
+                    post.date,
+                    post.rating * ratio
+            ));
+        }
+        new DBHelper().insertWall(this);
+        Log.d("update", "rating[0] = " + posts2.get(0).rating);
+        (new DBHelper()).insertPosts(posts2);
         return true;
     }
 
@@ -70,12 +94,14 @@ public class WallVk extends AbstractWall {
                     String likes = jsonObject.getJSONObject("likes").get("count").toString();
                     String text = (Html.fromHtml(jsonObject.get("text").toString())).toString();
                     int date = Integer.parseInt(jsonObject.get("date").toString());
+                    double rating = Integer.parseInt(likes);
+                    rating = rating * rating;
                     posts.add(new Post(
                             text,
                             id,
                             name,
                             date,
-                            Integer.parseInt(likes)
+                            rating
                     ));
                 }
             }

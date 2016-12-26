@@ -12,10 +12,10 @@ public class Post implements Serializable {
     public final String wall_name;
     public final int date;
     public final int load_date;
-    public final int rating;
+    public final double rating;
     public final int id;
 
-    public Post(String text, long wall_id, String wall_name, int date, int rating) {
+    public Post(String text, long wall_id, String wall_name, int date, double rating) {
         this.text = text;
         this.wall_id = wall_id;
         this.wall_name = wall_name;

@@ -121,7 +121,7 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (wasSearch) {
                 SearchItem searchItem = (SearchItem) parent.getItemAtPosition(position);
-                final Wall wall = new WallVk(searchItem.name, searchItem.id);
+                final Wall wall = new WallVk(searchItem.name, searchItem.id, 0);
                 new AsyncTask<Void,Void,Void>() {
                     @Override
                     protected void onPreExecute() {

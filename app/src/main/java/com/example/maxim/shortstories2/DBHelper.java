@@ -16,9 +16,13 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.StringTokenizer;
 
+import static android.R.attr.name;
+import static android.R.attr.rating;
 import static com.example.maxim.shortstories2.walls.WALL_MODE.COMMENTED;
 import static java.lang.StrictMath.max;
+import static java.lang.StrictMath.nextAfter;
 
 public class DBHelper extends SQLiteOpenHelper {
     private final static String TABLE_POSTS = "Posts";
@@ -42,7 +46,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "wall_id integer," +
                 "date integer," +
                 "load_date integer," +
-                "rating integer)";
+                "rating real)";
         db.execSQL(tablePosts);
 
         String tableComments = "create table " + TABLE_COMMENTS + "(" +
@@ -55,7 +59,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 "id integer primary key," +
                 "name text ," +
                 "class text," +
-                "priority integer)";
+                "priority integer," +
+                "updated integer," +
+                "ratio real)";
         db.execSQL(tableWalls);
 
         List<String> values = Arrays.asList(MyApplication.getInstance().getBaseContext()
@@ -72,6 +78,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 
     public void insertPosts(List<Post> posts) {
+        Log.d("insertPosts", "" + posts.size());
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
         for (Post post : posts) {
@@ -125,60 +132,15 @@ public class DBHelper extends SQLiteOpenHelper {
                         cursor.getLong(cursor.getColumnIndex("wall_id")),
                         cursor.getString(cursor.getColumnIndex("name")),
                         cursor.getInt(cursor.getColumnIndex("date")),
-                        cursor.getInt(cursor.getColumnIndex("rating"))
+                        cursor.getDouble(cursor.getColumnIndex("rating"))
                 );
                 res.add(post);
             } while (cursor.moveToNext());
         }
         cursor.close();
         db.close();
+        //Log.d("getPosts", res.size() + "" );
         return res;
-    }
-
-    public List<Wall> getAllWalls() {
-        List<Wall> res = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "select * from " + TABLE_WALLS + " order by priority;";
-        Cursor cursor = db.rawQuery(sql, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                String className = cursor.getString(cursor.getColumnIndex("class"));
-                String name = cursor.getString(cursor.getColumnIndex("name"));
-                long id = cursor.getLong(cursor.getColumnIndex("id"));
-                try {
-                    res.add((Wall)Class.forName(wallPath + className)
-                            .getConstructor(String.class, long.class)
-                            .newInstance(name, id)
-                    );
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        db.close();
-        return res;
-    }
-
-    public void insertWall(Wall wall) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("id", wall.getId());
-        values.put("name", wall.toString());
-        values.put("class", wall.getClass().getSimpleName());
-        values.put("priority", 3);
-        db.insertWithOnConflict(TABLE_WALLS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-        db.close();
-    }
-
-    public void deleteWall(long wallId) {
-        if (wallId == 0) {
-            return;
-        }
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL(" delete from " + TABLE_WALLS +
-                " where id = " + wallId + ";" );
     }
 
     private String getModeSql(int offset, WALL_MODE mode) {
@@ -229,6 +191,55 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put("post_id", comment.post_id);
         db.insertWithOnConflict(TABLE_COMMENTS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
+    }
+
+    public List<Wall> getAllWalls() {
+        List<Wall> res = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql = "select * from " + TABLE_WALLS + " order by priority;";
+        Cursor cursor = db.rawQuery(sql, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String className = cursor.getString(cursor.getColumnIndex("class"));
+                String name = cursor.getString(cursor.getColumnIndex("name"));
+                double ratio = cursor.getDouble(cursor.getColumnIndex("ratio"));
+                long id = cursor.getLong(cursor.getColumnIndex("id"));
+                try {
+                    res.add((Wall)Class.forName(wallPath + className)
+                            .getConstructor(String.class, long.class, double.class)
+                            .newInstance(name, id, ratio)
+                    );
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return res;
+    }
+
+    public void insertWall(Wall wall) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("id", wall.getId());
+        values.put("name", wall.toString());
+        values.put("class", wall.getClass().getSimpleName());
+        values.put("priority", 3);
+        values.put("ratio", wall.getRatio());
+        values.put("updated", (new Date().getTime()) / 1000);
+        db.insertWithOnConflict(TABLE_WALLS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        db.close();
+    }
+
+    public void deleteWall(long wallId) {
+        if (wallId == 0) {
+            return;
+        }
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(" delete from " + TABLE_WALLS +
+                " where id = " + wallId + ";" );
     }
 
     public List<Comment> getComments(long post_id) {
