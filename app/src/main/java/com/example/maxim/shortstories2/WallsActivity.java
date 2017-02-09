@@ -58,11 +58,10 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
     ListView wallsList;
     ArrayAdapter adapterWallsList;
     boolean wasSearch = false;
-
+    private Helper helper = new Helper();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_walls);
 
@@ -112,7 +111,17 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
     @Override
     public boolean onQueryTextChange(String newText) {
         lastText = newText;
-        new SearchTask(newText).execute();
+        helper.searchWalls(newText, new Consumer<List<SearchItem>>() {
+            @Override
+            public void accept(List<SearchItem> searchItems) {
+                if (searchItems == null) {
+                    searchItems = Collections.singletonList(new SearchItem("Ничего не найдено", 0, ""));
+                }
+                ListAdapter adapterSearchList = new SearchItemAdapter(WallsActivity.this, searchItems);
+                wallsList.setAdapter(adapterSearchList);
+                wasSearch = true;
+            }
+        });
         return false;
     }
 
@@ -121,101 +130,149 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (wasSearch) {
                 SearchItem searchItem = (SearchItem) parent.getItemAtPosition(position);
-                final Wall wall = new WallVk(searchItem.name, searchItem.id, 0, 0);
-                new AsyncTask<Void,Void,Void>() {
-                    @Override
-                    protected void onPreExecute() {
-                        progressBarFill.setVisibility(View.VISIBLE);
-                        wallsList.setVisibility(View.GONE);
-                    }
-                    @Override
-                    protected Void doInBackground(Void... params) {
-                        if (wall.update()) {
-                            new DBHelper().insertWall(wall);
-                        }
-                        return null;
-                    }
-                    @Override
-                    protected void onPostExecute(Void result) {
-                        wallsList.setVisibility(View.VISIBLE);
-                        progressBarFill.setVisibility(View.GONE);
-                    }
-                }.execute();
+                helper.addWall(
+                        searchItem
+                        , new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressBarFill.setVisibility(View.VISIBLE);
+                                    wallsList.setVisibility(View.GONE);
+                                }
+                            }
+                        , new Runnable() {
+                                @Override
+                                public void run() {
+                                    wallsList.setVisibility(View.VISIBLE);
+                                    progressBarFill.setVisibility(View.GONE);
+                                }
+                            });
             } else {
-                Wall wall = walls.get(position);
-                walls.clear();
-                new DBHelper().deleteWall(wall.getId());
-                ((Vibrator) WallsActivity.this.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
-                adapterWallsList.notifyDataSetChanged();
-                walls.addAll(new DBHelper().getAllWalls());
+                helper.deleteWall(walls.get(position), new Runnable() {
+                    @Override
+                    public void run() {
+                        ((Vibrator) WallsActivity.this.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
+                        adapterWallsList.notifyDataSetChanged();
+                    }
+                });
             }
         }
     }
 
-    class SearchTask extends AsyncTask<Void, Void, List<SearchItem> > {
-        final String query;
-        SearchTask(String query) {
-            this.query = query;
-        }
-        @Override
-        protected List<SearchItem> doInBackground(Void... params) {
-            String url = HttpUrl.parse("https://api.vk.com/method/search.getHints")
-                    .newBuilder()
-                    .addQueryParameter("v", "5.60")
-                    .addQueryParameter("q", query)
-                    .addQueryParameter("limit", 20 + "")
-                    .addQueryParameter("search_global", "1")
-                    .addQueryParameter("access_token", MyApplication.getAccessToken())
-                    .toString();
-
-            Request request = new Request.Builder().url(url).build();
-            try {
-                String responseStr = okHttpClient.newCall(request).execute().body().string();
-                Log.d("SearchTask response", responseStr);
-
-                return parseSearch(responseStr);
-            } catch (IOException e) {
-                return null;
-            }
+    public static class Helper {
+        public void deleteWall(Wall wall, Runnable afterWallsDeleted) {
+            DBHelper dbHelper = new DBHelper();
+            dbHelper.deleteWall(wall.getId());
+            walls.clear();
+            walls.addAll(dbHelper.getAllWalls());
+            afterWallsDeleted.run();
         }
 
-        @Override
-        protected void onPostExecute(List<SearchItem> result) {
-            if (result == null) {
-                result = Collections.singletonList(new SearchItem("Ничего не найдено", 0, ""));
-            }
-            ListAdapter adapterSearchList = new SearchItemAdapter(WallsActivity.this, result);
-            wallsList.setAdapter(adapterSearchList);
-            wasSearch = true;
-        }
-
-        private List<SearchItem> parseSearch(String responseStr) {
-            List<SearchItem> res = new ArrayList<>();
-            try {
-                JSONArray jsonArray = new JSONObject(responseStr).getJSONArray("response");
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject cur = jsonArray.getJSONObject(i);
-                    long id;
-                    String name;
-                    String type = cur.getString("type");
-                    String description = cur.get("description") + "";
-                    cur = cur.getJSONObject(type);
-                    if (type.equals("group")) {
-                        id = -cur.getInt("id");
-                        name = cur.getString("name");
-                    } else {
-                        id = cur.getInt("id");
-                        String firstName = cur.getString("first_name");
-                        String lastName = cur.getString("last_name");
-                        name = firstName + " " + lastName;
-                    }
-                    res.add(new SearchItem(name, id, description));
+        public void addWall(SearchItem searchItem, final Runnable beforeAdd, final Runnable afterAdd) {
+            final Wall wall = new WallVk(searchItem.name, searchItem.id, 0, 0);
+            new AsyncTask<Void,Void,Void>() {
+                @Override
+                protected void onPreExecute() {
+                    beforeAdd.run();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return null;
+                @Override
+                protected Void doInBackground(Void... params) {
+                    DBHelper dbHelper = new DBHelper();
+                    if (wall.update()) {
+                        dbHelper.insertWall(wall);
+                    }
+                    walls = dbHelper.getAllWalls();
+                    return null;
+                }
+                @Override
+                protected void onPostExecute(Void result) {
+                    afterAdd.run();
+                }
+            }.execute();
+        }
+
+        public void searchWalls(String query, Consumer<List<SearchItem>> afterSearch) {
+            new SearchTask(query, afterSearch).execute();
+        }
+
+        private class SearchTask extends AsyncTask<Void, Void, List<SearchItem> > {
+            final String query;
+            final Consumer<List<SearchItem>> afterSearch;
+
+            SearchTask(String query, Consumer<List<SearchItem>> afterSearch) {
+                this.query = query;
+                this.afterSearch = afterSearch;
             }
-            return res;
+
+            @Override
+            protected List<SearchItem> doInBackground(Void... params) {
+                String search_url = "https://api.vk.com/method/search.getHints";
+                String version_api_param_name = "v";
+                String version_api = "5.60";
+                String query_param_name = "q";
+                String max_size_param_name = "limit";
+                String access_token_param_name = "access_token";
+                String search_type_param_name = "search_global";
+
+                String url = HttpUrl.parse(search_url)
+                        .newBuilder()
+                        .addQueryParameter(version_api_param_name, version_api)
+                        .addQueryParameter(query_param_name, query)
+                        .addQueryParameter(max_size_param_name, 20 + "")
+                        .addQueryParameter(search_type_param_name, "1")
+                        .addQueryParameter(access_token_param_name, MyApplication.getAccessToken())
+                        .toString();
+
+                Request request = new Request.Builder().url(url).build();
+                try {
+                    String responseStr = okHttpClient.newCall(request).execute().body().string();
+                    Log.d("SearchTask response", responseStr);
+
+                    return parseSearch(responseStr);
+                } catch (IOException e) {
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(List<SearchItem> result) {
+                afterSearch.accept(result);
+            }
+
+            private List<SearchItem> parseSearch(String responseStr) {
+                List<SearchItem> res = new ArrayList<>();
+                try {
+                    JSONArray jsonArray = new JSONObject(responseStr).getJSONArray("response");
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        try {
+                            JSONObject cur = jsonArray.getJSONObject(i);
+                            long id;
+                            String name;
+                            String type = cur.getString("type");
+                            String description = "";
+                            if (cur.has("description")) {
+                                description = cur.get("description") + "";
+                            }
+                            cur = cur.getJSONObject(type);
+                            if (type.equals("group")) {
+                                id = -cur.getInt("id");
+                                name = cur.getString("name");
+                            } else {
+                                id = cur.getInt("id");
+                                String firstName = cur.getString("first_name");
+                                String lastName = cur.getString("last_name");
+                                name = firstName + " " + lastName;
+                            }
+                            res.add(new SearchItem(name, id, description));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+                return res;
+            }
         }
     }
 }
@@ -223,7 +280,7 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
 class SearchItem {
     public final String name;
     public final long id;
-    final String description;
+    public final String description;
     SearchItem(String name, long id, String description) {
         this.name = name;
         this.id = id;
@@ -238,7 +295,6 @@ class SearchItem {
 class SearchItemAdapter extends BaseAdapter {
     private final List<SearchItem> items;
     private LayoutInflater inflater;
-
 
     SearchItemAdapter(Context context, List<SearchItem> lst) {
         items = lst;

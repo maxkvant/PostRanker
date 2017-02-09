@@ -229,59 +229,59 @@ public class MainActivity extends AppCompatActivity {
                 && cm.getActiveNetworkInfo().isAvailable()
                 && cm.getActiveNetworkInfo().isConnected();
     }
-}
 
-class Helper {
-    private boolean hasAsyncTask;
-    public final Wall wall;
-    public final WALL_MODE mode;
-    private int count;
+    public static class Helper {
+        private boolean hasAsyncTask;
+        public final Wall wall;
+        public final WALL_MODE mode;
+        private int count;
 
-    Helper(Wall wall, WALL_MODE mode) {
-        this.wall = wall;
-        this.mode = mode;
-    }
+        Helper(Wall wall, WALL_MODE mode) {
+            this.wall = wall;
+            this.mode = mode;
+        }
 
-    public void refresh(final Runnable onRefresh) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                Log.d("MainActivity", "before update");
-                wall.update();
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void result) {
-                onRefresh.run();
-            }
-        }.execute();
-    }
-
-    public void getPosts(final Consumer<List<Post> > onGetPosts) {
-        if (!hasAsyncTask) {
-            hasAsyncTask = true;
-
-            new AsyncTask<Void, Void, List<Post>>() {
-                private final int count = Helper.this.count;
-
+        public void refresh(final Runnable onRefresh) {
+            new AsyncTask<Void, Void, Void>() {
                 @Override
-                protected List<Post> doInBackground(Void... walls) {
-                    try {
-                        Thread.sleep(300);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    return wall.getPosts(count, mode);
+                protected Void doInBackground(Void... params) {
+                    Log.d("MainActivity", "before update");
+                    wall.update();
+                    return null;
                 }
 
                 @Override
-                protected void onPostExecute(List<Post> result) {
-                    Helper.this.count += result.size();
-                    onGetPosts.accept(result);
-                    hasAsyncTask = false;
+                protected void onPostExecute(Void result) {
+                    onRefresh.run();
                 }
             }.execute();
+        }
+
+        public void getPosts(final Consumer<List<Post> > onGetPosts) {
+            if (!hasAsyncTask) {
+                hasAsyncTask = true;
+
+                new AsyncTask<Void, Void, List<Post>>() {
+                    private final int count = Helper.this.count;
+
+                    @Override
+                    protected List<Post> doInBackground(Void... walls) {
+                        try {
+                            Thread.sleep(300);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        return wall.getPosts(count, mode);
+                    }
+
+                    @Override
+                    protected void onPostExecute(List<Post> result) {
+                        Helper.this.count += result.size();
+                        onGetPosts.accept(result);
+                        hasAsyncTask = false;
+                    }
+                }.execute();
+            }
         }
     }
 }
