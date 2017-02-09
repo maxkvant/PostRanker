@@ -58,58 +58,20 @@ public class MainActivity extends AppCompatActivity {
     private Spinner spinner;
     List<WALL_MODE> modes = Arrays.asList(WALL_MODE.values());
     private Helper helper;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        spinner = (Spinner) findViewById(R.id.spinner_nav);
-        EnumMap<WALL_MODE,String> mapModes = new EnumMap<>(WALL_MODE.class);
-        mapModes.put(BY_DATE, getResources().getString(R.string.by_date));
-        mapModes.put(TOP_DAILY, getResources().getString(R.string.top_daily));
-        mapModes.put(TOP_WEEKLY, getResources().getString(R.string.top_weekly));
-        mapModes.put(TOP_MONTHLY, getResources().getString(R.string.top_monthly));
-        mapModes.put(TOP_ALL, getResources().getString(R.string.top_all));
-        mapModes.put(COMMENTED, getResources().getString(R.string.commented));
-
-        List<String> spinnerItems = new ArrayList<>();
-        for (WALL_MODE mode : modes) {
-            spinnerItems.add(mapModes.get(mode));
-        }
-
-        ArrayAdapter adapterSpinner = new ArrayAdapter<>(this, R.layout.spinner_item, spinnerItems);
-        spinner.setAdapter(adapterSpinner);
-        spinner.setOnItemSelectedListener(new SpinnerItemClickListener());
-
         walls = new DBHelper().getAllWalls();
-
-        adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, walls);
-        ListView leftDrawer = (ListView) findViewById(R.id.left_drawer);
-        leftDrawer.setAdapter(adapterDrawer);
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_main);
-        leftDrawer.setOnItemClickListener(new DrawerItemClickListener());
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        Button buttonWalls = (Button) findViewById(R.id.button_goto_walls);
-        buttonWalls.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, WallsActivity.class);
-                drawer.closeDrawer(GravityCompat.START);
-                startActivityForResult(intent, 1);
-            }
-        });
-
         helper = new Helper(walls.get(0), BY_DATE);
+
+        initToolbar();
+        initSpinner();
+        initDrawer();
+        initSwipeRefresh();
+
         if (checkInternetConnection()) {
             if (getAccessToken() == null) {
                 VKSdk.login(MainActivity.this, "friends", "groups");
@@ -117,25 +79,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(MainActivity.this, getResources().getString(R.string.offline_mode), Toast.LENGTH_SHORT).show();
         }
-
-        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
-        refreshLayout.setOnRefreshListener(new  SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                    Log.d("MainActivity", "onRefresh");
-                    refreshLayout.setRefreshing(true);
-                    helper.refresh(new Runnable() {
-                        @Override
-                        public void run() {
-                            refreshLayout.setRefreshing(false);
-                            setPostsAdapter();
-                        }
-                    });
-            }
-        });
-
-        footerView = ((LayoutInflater )getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-                .inflate(R.layout.progress_bar, null);
 
         Log.d("onCreate, walls-size", walls.size() + "");
     }
@@ -164,12 +107,62 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void initToolbar() {
+        setContentView(R.layout.activity_main);
+        toolbar = (Toolbar) findViewById(R.id.toolbar2);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+    }
+
+    private void initDrawer() {
+        adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, walls);
+        ListView leftDrawer = (ListView) findViewById(R.id.left_drawer);
+        leftDrawer.setAdapter(adapterDrawer);
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_main);
+        leftDrawer.setOnItemClickListener(new DrawerItemClickListener());
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        Button buttonWalls = (Button) findViewById(R.id.button_goto_walls);
+        buttonWalls.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, WallsActivity.class);
+                drawer.closeDrawer(GravityCompat.START);
+                startActivityForResult(intent, 1);
+            }
+        });
+    }
+
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             helper = new Helper(walls.get(position), BY_DATE);
             setPostsAdapter();
         }
+    }
+
+    private void initSpinner() {
+        spinner = (Spinner) findViewById(R.id.spinner_nav);
+        EnumMap<WALL_MODE,String> mapModes = new EnumMap<>(WALL_MODE.class);
+        mapModes.put(BY_DATE, getResources().getString(R.string.by_date));
+        mapModes.put(TOP_DAILY, getResources().getString(R.string.top_daily));
+        mapModes.put(TOP_WEEKLY, getResources().getString(R.string.top_weekly));
+        mapModes.put(TOP_MONTHLY, getResources().getString(R.string.top_monthly));
+        mapModes.put(TOP_ALL, getResources().getString(R.string.top_all));
+        mapModes.put(COMMENTED, getResources().getString(R.string.commented));
+
+        List<String> spinnerItems = new ArrayList<>();
+        for (WALL_MODE mode : modes) {
+            spinnerItems.add(mapModes.get(mode));
+        }
+
+        ArrayAdapter adapterSpinner = new ArrayAdapter<>(this, R.layout.spinner_item, spinnerItems);
+        spinner.setAdapter(adapterSpinner);
+        spinner.setOnItemSelectedListener(new SpinnerItemClickListener());
     }
 
     private class SpinnerItemClickListener implements AdapterView.OnItemSelectedListener {
@@ -182,6 +175,27 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onNothingSelected(AdapterView<?> parent) {
         }
+    }
+
+    private void initSwipeRefresh() {
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
+        refreshLayout.setOnRefreshListener(new  SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.d("MainActivity", "onRefresh");
+                refreshLayout.setRefreshing(true);
+                helper.refresh(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                        setPostsAdapter();
+                    }
+                });
+            }
+        });
+
+        footerView = ((LayoutInflater )getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                .inflate(R.layout.progress_bar, null);
     }
 
     private void setPostsAdapter() {
