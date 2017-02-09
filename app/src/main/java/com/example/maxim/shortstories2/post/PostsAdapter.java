@@ -24,10 +24,8 @@ public class PostsAdapter extends BaseAdapter {
     private Context ctx;
     private LayoutInflater inflater;
     private List<Post> items;
-    public final WALL_MODE mode;
 
-    public PostsAdapter(Context context, WALL_MODE mode) {
-        this.mode = mode;
+    public PostsAdapter(Context context) {
         this.ctx = context;
         this.items = new ArrayList<>();
         inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

@@ -84,7 +84,6 @@ public class WallVk extends AbstractWall {
 
         updated = beforeGet;
         new DBHelper().insertWall(this);
-        Log.d("update", "rating[0] = " + posts2.get(0).rating);
         (new DBHelper()).insertPosts(posts2);
         return true;
     }
@@ -98,7 +97,7 @@ public class WallVk extends AbstractWall {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 if (jsonObject.has("text")) {
                     String likes = jsonObject.getJSONObject("likes").get("count").toString();
-                    String text = (Html.fromHtml(jsonObject.get("text").toString())).toString();
+                    String text = jsonObject.get("text").toString().replace("\\\n", System.getProperty("line.separator"));
                     int date = Integer.parseInt(jsonObject.get("date").toString());
                     double rating = Integer.parseInt(likes);
                     rating = rating * rating;

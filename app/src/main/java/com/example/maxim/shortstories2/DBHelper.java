@@ -242,8 +242,7 @@ public class DBHelper extends SQLiteOpenHelper {
             return;
         }
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL(" delete from " + TABLE_WALLS +
-                " where id = " + wallId + ";");
+        db.delete(TABLE_WALLS, "id = " + wallId, null);
     }
 
     public List<Comment> getComments(long post_id) {

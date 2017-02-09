@@ -38,10 +38,7 @@ public class PostActivity extends AppCompatActivity {
         View postView = findViewById(R.id.feed_item);
         PostsAdapter.initView(postView, post);
 
-
-
         editText = (EditText) findViewById(R.id.comment_text);
-
 
         List<Comment> comments = new DBHelper().getComments(post.id);
         if (comments.size() == 0) {

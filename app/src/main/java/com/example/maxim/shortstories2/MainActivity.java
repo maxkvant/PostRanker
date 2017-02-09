@@ -3,6 +3,7 @@ package com.example.maxim.shortstories2;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.media.effect.Effect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -14,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -52,25 +54,14 @@ import static com.example.maxim.shortstories2.walls.WALL_MODE.TOP_ALL;
 public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout refreshLayout;
     private ArrayAdapter adapterDrawer;
-    private boolean hasGetAsyncTask = false;
     private View footerView;
-    private Wall currentWall;
-    private WALL_MODE currentMode = BY_DATE;
     private Spinner spinner;
-    private final List<WALL_MODE> modes = Arrays.asList(WALL_MODE.values());
+    List<WALL_MODE> modes = Arrays.asList(WALL_MODE.values());
+    private Helper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (checkInternetConnection()) {
-            if (getAccessToken() == null) {
-                VKSdk.login(this, "friends", "groups");
-            }
-        } else {
-            Toast.makeText(this, getResources().getString(R.string.offline_mode), Toast.LENGTH_SHORT);
-        }
-        walls = (new DBHelper()).getAllWalls();
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
@@ -95,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
         spinner.setAdapter(adapterSpinner);
         spinner.setOnItemSelectedListener(new SpinnerItemClickListener());
 
+        walls = new DBHelper().getAllWalls();
+
         adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, walls);
         ListView leftDrawer = (ListView) findViewById(R.id.left_drawer);
         leftDrawer.setAdapter(adapterDrawer);
@@ -116,27 +109,28 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        helper = new Helper(walls.get(0), BY_DATE);
+        if (checkInternetConnection()) {
+            if (getAccessToken() == null) {
+                VKSdk.login(MainActivity.this, "friends", "groups");
+            }
+        } else {
+            Toast.makeText(MainActivity.this, getResources().getString(R.string.offline_mode), Toast.LENGTH_SHORT).show();
+        }
+
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
         refreshLayout.setOnRefreshListener(new  SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                     Log.d("MainActivity", "onRefresh");
+                    Log.d("MainActivity", "onRefresh");
                     refreshLayout.setRefreshing(true);
-
-                    new AsyncTask<Void, Void, Void>() {
+                    helper.refresh(new Runnable() {
                         @Override
-                        protected Void doInBackground(Void... params) {
-                            Log.d("MainActivity", "before update");
-                            currentWall.update();
-                            return null;
-                        }
-
-                        @Override
-                        protected void onPostExecute(Void result) {
+                        public void run() {
                             refreshLayout.setRefreshing(false);
-                            setPostsAdapter(currentWall);
+                            setPostsAdapter();
                         }
-                    }.execute();
+                    });
             }
         });
 
@@ -144,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
                 .inflate(R.layout.progress_bar, null);
 
         Log.d("onCreate, walls-size", walls.size() + "");
-        setPostsAdapter(walls.get(1));
     }
 
     @Override
@@ -174,16 +167,16 @@ public class MainActivity extends AppCompatActivity {
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            currentMode = BY_DATE;
-            setPostsAdapter(walls.get(position));
+            helper = new Helper(walls.get(position), BY_DATE);
+            setPostsAdapter();
         }
     }
 
     private class SpinnerItemClickListener implements AdapterView.OnItemSelectedListener {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            currentMode = modes.get(position);
-            setPostsAdapter(currentWall);
+            helper = new Helper(helper.wall, modes.get(position));
+            setPostsAdapter();
         }
 
         @Override
@@ -191,60 +184,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setPostsAdapter(final Wall wall) {
-        spinner.setSelection(modes.indexOf(currentMode));
+    private void setPostsAdapter() {
+        spinner.setSelection(modes.indexOf(helper.mode));
         final ListView feed = (ListView) findViewById(R.id.feed_list);
-        final PostsAdapter adapter = new PostsAdapter(this, currentMode);
+        final PostsAdapter adapter = new PostsAdapter(this);
         feed.setAdapter(adapter);
-        new OnScrollTask(feed, wall, adapter).execute();
-        currentWall = wall;
         feed.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {}
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (!hasGetAsyncTask && view.getLastVisiblePosition() == feed.getCount() - 1) {
-                    new OnScrollTask(feed, wall, adapter).execute();
+                if (view.getLastVisiblePosition() == feed.getCount() - 1) {
+                    feed.addFooterView(footerView);
+                    helper.getPosts(new Consumer<List<Post>>() {
+                        @Override
+                        public void accept(List<Post> posts) {
+                            feed.removeFooterView(footerView);
+                            adapter.addPosts(posts);
+                        }
+                    });
                 }
             }
         });
-    }
-
-    private class OnScrollTask extends AsyncTask<Void, Void, List<Post>> {
-        private final PostsAdapter adapter;
-        private final ListView feed;
-        private final Wall wall;
-        private final int count;
-
-        OnScrollTask(ListView feed, Wall wall, PostsAdapter adapter) {
-            this.feed = feed;
-            this.wall = wall;
-            this.adapter = adapter;
-            this.count = adapter.getCount();
-            hasGetAsyncTask = true;
-        }
-        @Override
-        protected void onPreExecute () {
-            feed.addFooterView(footerView);
-        }
-
-        @Override
-        protected List<Post> doInBackground (Void ...walls){
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return wall.getPosts(count, adapter.mode);
-        }
-
-        @Override
-        protected void onPostExecute (List<Post> result) {
-            feed.removeFooterView(footerView);
-            adapter.addPosts(result);
-            hasGetAsyncTask = false;
-        }
     }
 
     private boolean checkInternetConnection() {
@@ -253,6 +215,59 @@ public class MainActivity extends AppCompatActivity {
                 && cm.getActiveNetworkInfo().isAvailable()
                 && cm.getActiveNetworkInfo().isConnected();
     }
+}
 
+class Helper {
+    private boolean hasAsyncTask;
+    public final Wall wall;
+    public final WALL_MODE mode;
+    private int count;
 
+    Helper(Wall wall, WALL_MODE mode) {
+        this.wall = wall;
+        this.mode = mode;
+    }
+
+    public void refresh(final Runnable onRefresh) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                Log.d("MainActivity", "before update");
+                wall.update();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                onRefresh.run();
+            }
+        }.execute();
+    }
+
+    public void getPosts(final Consumer<List<Post> > onGetPosts) {
+        if (!hasAsyncTask) {
+            hasAsyncTask = true;
+
+            new AsyncTask<Void, Void, List<Post>>() {
+                private final int count = Helper.this.count;
+
+                @Override
+                protected List<Post> doInBackground(Void... walls) {
+                    try {
+                        Thread.sleep(300);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    return wall.getPosts(count, mode);
+                }
+
+                @Override
+                protected void onPostExecute(List<Post> result) {
+                    Helper.this.count += result.size();
+                    onGetPosts.accept(result);
+                    hasAsyncTask = false;
+                }
+            }.execute();
+        }
+    }
 }

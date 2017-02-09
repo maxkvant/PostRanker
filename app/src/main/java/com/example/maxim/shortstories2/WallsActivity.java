@@ -163,7 +163,7 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
                     .newBuilder()
                     .addQueryParameter("v", "5.60")
                     .addQueryParameter("q", query)
-                    .addQueryParameter("limit", 4 + "")
+                    .addQueryParameter("limit", 20 + "")
                     .addQueryParameter("search_global", "1")
                     .addQueryParameter("access_token", MyApplication.getAccessToken())
                     .toString();
