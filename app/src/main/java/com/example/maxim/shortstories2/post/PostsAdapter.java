@@ -10,14 +10,11 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.maxim.shortstories2.MainActivity;
 import com.example.maxim.shortstories2.PostActivity;
 import com.example.maxim.shortstories2.R;
-import com.example.maxim.shortstories2.walls.WALL_MODE;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.InputMismatchException;
 import java.util.List;
 
 public class PostsAdapter extends BaseAdapter {

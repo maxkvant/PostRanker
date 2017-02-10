@@ -9,7 +9,7 @@ import android.util.Log;
 
 import com.example.maxim.shortstories2.post.Comment;
 import com.example.maxim.shortstories2.post.Post;
-import com.example.maxim.shortstories2.walls.WALL_MODE;
+import com.example.maxim.shortstories2.walls.WallMode;
 import com.example.maxim.shortstories2.walls.Wall;
 
 import java.util.ArrayList;
@@ -17,14 +17,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Stack;
-import java.util.StringTokenizer;
 
-import static android.R.attr.longClickable;
-import static android.R.attr.name;
-import static android.R.attr.rating;
-import static com.example.maxim.shortstories2.walls.WALL_MODE.COMMENTED;
-import static java.lang.StrictMath.log;
+import static com.example.maxim.shortstories2.walls.WallMode.COMMENTED;
 import static java.lang.StrictMath.max;
 import static java.lang.StrictMath.nextAfter;
 
@@ -103,7 +97,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public List<Post> getPosts(int offset, WALL_MODE mode, String filter) {
+    public List<Post> getPosts(int offset, WallMode mode, String filter) {
         List<Post> res = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -149,7 +143,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return res;
     }
 
-    private String getModeSql(int offset, WALL_MODE mode) {
+    private String getModeSql(int offset, WallMode mode) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
 

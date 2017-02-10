@@ -1,6 +1,5 @@
 package com.example.maxim.shortstories2.walls;
 
-import android.text.Html;
 import android.util.Log;
 
 import com.example.maxim.shortstories2.DBHelper;
@@ -15,13 +14,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 
 import static com.example.maxim.shortstories2.MyApplication.okHttpClient;
-import static com.example.maxim.shortstories2.MyApplication.walls;
 import static java.lang.StrictMath.max;
 
 public class WallVk extends AbstractWall {
@@ -30,7 +27,7 @@ public class WallVk extends AbstractWall {
     }
 
     @Override
-    public List<Post> getPosts(int offset, WALL_MODE mode) {
+    public List<Post> getPosts(int offset, WallMode mode) {
         DBHelper dbHelper = new DBHelper();
         return dbHelper.getPosts(offset, mode,
                 " and wall_id = " + id + " ");

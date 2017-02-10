@@ -2,10 +2,7 @@ package com.example.maxim.shortstories2;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.media.effect.Effect;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -29,13 +25,12 @@ import android.widget.Toast;
 
 import com.example.maxim.shortstories2.post.Post;
 import com.example.maxim.shortstories2.post.PostsAdapter;
-import com.example.maxim.shortstories2.walls.WALL_MODE;
+import com.example.maxim.shortstories2.walls.WallMode;
 import com.example.maxim.shortstories2.walls.Wall;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
-import com.vk.sdk.util.VKUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,19 +39,19 @@ import java.util.List;
 
 import static com.example.maxim.shortstories2.MyApplication.getAccessToken;
 import static com.example.maxim.shortstories2.MyApplication.walls;
-import static com.example.maxim.shortstories2.walls.WALL_MODE.BY_DATE;
-import static com.example.maxim.shortstories2.walls.WALL_MODE.COMMENTED;
-import static com.example.maxim.shortstories2.walls.WALL_MODE.TOP_DAILY;
-import static com.example.maxim.shortstories2.walls.WALL_MODE.TOP_MONTHLY;
-import static com.example.maxim.shortstories2.walls.WALL_MODE.TOP_WEEKLY;
-import static com.example.maxim.shortstories2.walls.WALL_MODE.TOP_ALL;
+import static com.example.maxim.shortstories2.walls.WallMode.BY_DATE;
+import static com.example.maxim.shortstories2.walls.WallMode.COMMENTED;
+import static com.example.maxim.shortstories2.walls.WallMode.TOP_DAILY;
+import static com.example.maxim.shortstories2.walls.WallMode.TOP_MONTHLY;
+import static com.example.maxim.shortstories2.walls.WallMode.TOP_WEEKLY;
+import static com.example.maxim.shortstories2.walls.WallMode.TOP_ALL;
 
 public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout refreshLayout;
     private ArrayAdapter adapterDrawer;
     private View footerView;
     private Spinner spinner;
-    List<WALL_MODE> modes = Arrays.asList(WALL_MODE.values());
+    List<WallMode> modes = Arrays.asList(WallMode.values());
     private Helper helper;
     private Toolbar toolbar;
 
@@ -147,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initSpinner() {
         spinner = (Spinner) findViewById(R.id.spinner_nav);
-        EnumMap<WALL_MODE,String> mapModes = new EnumMap<>(WALL_MODE.class);
+        EnumMap<WallMode,String> mapModes = new EnumMap<>(WallMode.class);
         mapModes.put(BY_DATE, getResources().getString(R.string.by_date));
         mapModes.put(TOP_DAILY, getResources().getString(R.string.top_daily));
         mapModes.put(TOP_WEEKLY, getResources().getString(R.string.top_weekly));
@@ -156,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
         mapModes.put(COMMENTED, getResources().getString(R.string.commented));
 
         List<String> spinnerItems = new ArrayList<>();
-        for (WALL_MODE mode : modes) {
+        for (WallMode mode : modes) {
             spinnerItems.add(mapModes.get(mode));
         }
 
@@ -233,10 +228,10 @@ public class MainActivity extends AppCompatActivity {
     public static class Helper {
         private boolean hasAsyncTask;
         public final Wall wall;
-        public final WALL_MODE mode;
+        public final WallMode mode;
         private int count;
 
-        Helper(Wall wall, WALL_MODE mode) {
+        Helper(Wall wall, WallMode mode) {
             this.wall = wall;
             this.mode = mode;
         }
@@ -253,6 +248,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 protected void onPostExecute(Void result) {
                     onRefresh.run();
+                    count = 0;
                 }
             }.execute();
         }

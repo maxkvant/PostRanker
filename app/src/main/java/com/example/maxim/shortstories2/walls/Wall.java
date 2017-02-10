@@ -1,17 +1,15 @@
 package com.example.maxim.shortstories2.walls;
-import android.os.Bundle;
 import android.provider.BaseColumns;
 
 import com.example.maxim.shortstories2.post.Post;
 
 import java.util.List;
-import java.util.StringTokenizer;
 
 public interface Wall {
     long getId();
     double getRatio();
     long getUpdated();
-    List<Post> getPosts(int offset, WALL_MODE mode);
+    List<Post> getPosts(int offset, WallMode mode);
     boolean update();
 
     final class WallsEntry implements BaseColumns {

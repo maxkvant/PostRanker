@@ -15,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -24,8 +23,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.maxim.shortstories2.post.Post;
-import com.example.maxim.shortstories2.walls.WALL_MODE;
 import com.example.maxim.shortstories2.walls.Wall;
 import com.example.maxim.shortstories2.walls.WallVk;
 
@@ -35,20 +32,12 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 
-import static android.R.attr.description;
-import static android.R.attr.id;
-import static android.R.attr.name;
-import static android.R.attr.priority;
-import static android.R.attr.thickness;
 import static com.example.maxim.shortstories2.MyApplication.okHttpClient;
 import static com.example.maxim.shortstories2.MyApplication.walls;
 
