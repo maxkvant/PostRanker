@@ -1,5 +1,7 @@
 package com.example.maxim.shortstories2.post;
 
+import android.provider.BaseColumns;
+
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,5 +25,15 @@ public class Post implements Serializable {
         this.rating = rating;
         this.load_date = (int)(new Date().getTime() / 1000);
         this.id = text.hashCode();
+    }
+
+    public final static class PostsEntry implements BaseColumns {
+        final public static String TABLE_NAME = "Posts";
+        final public static String COLUMN_NAME_ID = "id";
+        final public static String COLUMN_NAME_TEXT = "text";
+        final public static String COLUMN_NAME_WALL_ID = "wall_id";
+        final public static String COLUMN_NAME_DATE = "date";
+        final public static String COLUMN_NAME_LOAD_DATE = "load_date";
+        final public static String COLUMN_NAME_RATING = "rating";
     }
 }
