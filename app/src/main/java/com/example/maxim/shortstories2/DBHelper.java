@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static com.example.maxim.shortstories2.walls.WallMode.BY_DATE;
 import static com.example.maxim.shortstories2.walls.WallMode.COMMENTED;
 import static java.lang.StrictMath.max;
 import static java.lang.StrictMath.nextAfter;
@@ -48,10 +49,10 @@ public class DBHelper extends SQLiteOpenHelper {
                 Post.PostsEntry.COLUMN_NAME_RATING + REAL_TYPE + ")";
         db.execSQL(tablePosts);
 
-        String tableComments = "create table " + CommentsEntry.TABLE_NAME + "(" +
-                CommentsEntry.COLUMN_NAME_ID + INT_TYPE + PRIMARY_KEY + COMA_STEP +
-                CommentsEntry.COLUMN_NAME_TEXT + TEXT_TYPE + COMA_STEP +
-                CommentsEntry.COLUMN_NAME_POST_ID + INT_TYPE + ")";
+        String tableComments = "create table " + Comment.CommentsEntry.TABLE_NAME + "(" +
+                Comment.CommentsEntry.COLUMN_NAME_ID + INT_TYPE + PRIMARY_KEY + COMA_STEP +
+                Comment.CommentsEntry.COLUMN_NAME_TEXT + TEXT_TYPE + COMA_STEP +
+                Comment.CommentsEntry.COLUMN_NAME_POST_ID + INT_TYPE + ")";
         db.execSQL(tableComments);
 
         String tableWalls = "create table " + Wall.WallsEntry.TABLE_NAME + "(" +
@@ -101,39 +102,42 @@ public class DBHelper extends SQLiteOpenHelper {
         List<Post> res = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String queryPrefix = "select " +
-                    Post.PostsEntry.TABLE_NAME + ".text," +
-                    Post.PostsEntry.TABLE_NAME + ".text," +
-                    Post.PostsEntry.TABLE_NAME + ".wall_id," +
-                    Wall.WallsEntry.TABLE_NAME + ".name," +
-                    Post.PostsEntry.TABLE_NAME + ".date," +
-                    Post.PostsEntry.TABLE_NAME + ".rating" +
-                " from " + Post.PostsEntry.TABLE_NAME +
-                " inner join " + Wall.WallsEntry.TABLE_NAME +
+        String [] projection = {
+            Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_TEXT,
+            Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_WALL_ID,
+            Wall.WallsEntry.TABLE_NAME + "." + Wall.WallsEntry.COLUMN_NAME_NAME,
+            Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_DATE,
+            Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_RATING
+        };
+
+        String table = Post.PostsEntry.TABLE_NAME + " inner join " + Wall.WallsEntry.TABLE_NAME +
                 " on " +
-                Post.PostsEntry.TABLE_NAME + ".wall_id = " + Wall.WallsEntry.TABLE_NAME + ".id ";
+                Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_WALL_ID
+                + " = " + Wall.WallsEntry.TABLE_NAME + "." + Wall.WallsEntry.COLUMN_NAME_ID;
 
         if (mode == COMMENTED) {
-            queryPrefix = queryPrefix +
-                    " inner join " + CommentsEntry.TABLE_NAME +
+            table += " inner join " + Comment.CommentsEntry.TABLE_NAME +
                     " on " +
-                    Post.PostsEntry.TABLE_NAME + ".id = " + CommentsEntry.TABLE_NAME + ".post_id ";
+                    Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_ID
+                    + " = " + Comment.CommentsEntry.TABLE_NAME + "." + Comment.CommentsEntry.COLUMN_NAME_POST_ID;
         }
 
-        queryPrefix = queryPrefix + " where 1";
-
-        String querySuffix = getModeSql(offset, mode);
-
-        String sql = queryPrefix + filter + querySuffix;
-        Cursor cursor = db.rawQuery(sql, null);
+        Cursor cursor = db.query(table
+                , projection
+                , "1" + filter + getModeFilter(mode)
+                , null
+                , null
+                , null
+                , getModeOrdering(mode)
+                , getModeLimit(offset, mode));
         if (cursor.moveToFirst()) {
             do {
                 Post post = new Post(
-                        cursor.getString(cursor.getColumnIndex("text")),
-                        cursor.getLong(cursor.getColumnIndex("wall_id")),
-                        cursor.getString(cursor.getColumnIndex("name")),
-                        cursor.getInt(cursor.getColumnIndex("date")),
-                        cursor.getDouble(cursor.getColumnIndex("rating"))
+                        cursor.getString(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_TEXT)),
+                        cursor.getLong(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_WALL_ID)),
+                        cursor.getString(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_NAME)),
+                        cursor.getInt(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_DATE)),
+                        cursor.getDouble(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_RATING))
                 );
                 res.add(post);
             } while (cursor.moveToNext());
@@ -143,69 +147,35 @@ public class DBHelper extends SQLiteOpenHelper {
         return res;
     }
 
-    private String getModeSql(int offset, WallMode mode) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-
-        String res = "";
-        int offset_if_top = (offset == 0 ? POSTS_PER_GET_TOP : 0);
-        switch (mode) {
-            case BY_DATE:
-                res = " order by date desc " +
-                      " limit " + offset + COMA_STEP + POSTS_PER_GET + ";";
-                break;
-            case TOP_DAILY:
-                cal.add(Calendar.DAY_OF_YEAR,-1);
-                res = " and date > " + (cal.getTimeInMillis() / 1000) +
-                        " order by rating desc ";
-                break;
-            case TOP_WEEKLY:
-                cal.add(Calendar.WEEK_OF_YEAR, -1);
-                res = " and date > " + (cal.getTimeInMillis() / 1000) +
-                      " order by rating desc " +
-                      " limit " + offset + COMA_STEP + offset_if_top + ";";
-                break;
-            case TOP_MONTHLY:
-                cal.add(Calendar.MONTH, -1);
-                res = " and date > " + (cal.getTimeInMillis() / 1000) +
-                      " order by rating desc " +
-                      " limit " + offset + COMA_STEP + offset_if_top + ";";
-                break;
-            case TOP_ALL:
-                res = " order by rating desc" +
-                      " limit " + offset + COMA_STEP + offset_if_top + ";";
-                break;
-            case COMMENTED:
-                res = " order by date desc " +
-                      " limit " + offset + COMA_STEP + offset_if_top + ";";
-                break;
-        }
-        return res;
-    }
-
     public void insertComment(Comment comment) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put("id", comment.id);
-        values.put("text", comment.text);
-        values.put("post_id", comment.post_id);
-        db.insertWithOnConflict(CommentsEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        values.put(Comment.CommentsEntry.COLUMN_NAME_ID, comment.id);
+        values.put(Comment.CommentsEntry.COLUMN_NAME_TEXT, comment.text);
+        values.put(Comment.CommentsEntry.COLUMN_NAME_POST_ID, comment.post_id);
+        db.insertWithOnConflict(Comment.CommentsEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
     public List<Wall> getAllWalls() {
         List<Wall> res = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "select * from " + Wall.WallsEntry.TABLE_NAME + " order by priority;";
-        Cursor cursor = db.rawQuery(sql, null);
+        Cursor cursor = db.query(Wall.WallsEntry.TABLE_NAME
+                , null
+                , null
+                , null
+                , null
+                , null
+                , Wall.WallsEntry.COLUMN_NAME_PRIORITY);
+
 
         if (cursor.moveToFirst()) {
             do {
-                String className = cursor.getString(cursor.getColumnIndex("class"));
-                String name = cursor.getString(cursor.getColumnIndex("name"));
-                double ratio = cursor.getDouble(cursor.getColumnIndex("ratio"));
-                long id = cursor.getLong(cursor.getColumnIndex("id"));
-                long updated = cursor.getLong(cursor.getColumnIndex("updated"));
+                String className = cursor.getString(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_CLASS));
+                String name = cursor.getString(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_NAME));
+                double ratio = cursor.getDouble(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_RATIO));
+                long id = cursor.getLong(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_ID));
+                long updated = cursor.getLong(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_PRIORITY));
                 try {
                     res.add((Wall)Class.forName(wallPath + className)
                             .getConstructor(String.class, long.class, double.class, long.class)
@@ -243,17 +213,20 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public List<Comment> getComments(long post_id) {
-        String sql = "select * from " + CommentsEntry.TABLE_NAME +
-                " where post_id = " + post_id + ";";
-
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(sql, null);
+        Cursor cursor = db.query(Comment.CommentsEntry.TABLE_NAME
+                , null
+                , Comment.CommentsEntry.COLUMN_NAME_POST_ID + " = " + post_id
+                , null
+                , null
+                , null
+                , null);
         List<Comment> res = new ArrayList<>();
 
         if (cursor.moveToFirst()) {
             do {
-                long id = cursor.getLong(cursor.getColumnIndex(CommentsEntry.COLUMN_NAME_TEXT));
-                String text = cursor.getString(cursor.getColumnIndex(CommentsEntry.COLUMN_NAME_TEXT));
+                long id = cursor.getLong(cursor.getColumnIndex(Comment.CommentsEntry.COLUMN_NAME_TEXT));
+                String text = cursor.getString(cursor.getColumnIndex(Comment.CommentsEntry.COLUMN_NAME_TEXT));
                 try {
                     res.add(new Comment(id, text, post_id));
                 } catch (Exception e) {
@@ -265,12 +238,42 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         return res;
     }
-    
-    public final static class CommentsEntry implements BaseColumns {
-        final public static String TABLE_NAME = "comments";
-        final public static String COLUMN_NAME_ID = "id";
-        final public static String COLUMN_NAME_TEXT = "text";
-        final public static String COLUMN_NAME_POST_ID = "post_id";
+
+    private String getModeLimit(int offset, WallMode mode) {
+        if (mode == COMMENTED || mode == BY_DATE) {
+            return offset + COMA_STEP + POSTS_PER_GET;
+        } else {
+            int offset_if_top = (offset == 0 ? POSTS_PER_GET_TOP : 0);
+            return offset + COMA_STEP + offset_if_top;
+        }
     }
+
+    private String getModeFilter(WallMode mode) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        String prefix = " and " + Post.PostsEntry.COLUMN_NAME_DATE + " > ";
+        switch (mode) {
+            case TOP_DAILY:
+                cal.add(Calendar.DAY_OF_YEAR, -1);
+                return prefix + (cal.getTimeInMillis() / 1000);
+            case TOP_WEEKLY:
+                cal.add(Calendar.WEEK_OF_YEAR, -1);
+                return prefix + (cal.getTimeInMillis() / 1000);
+            case TOP_MONTHLY:
+                cal.add(Calendar.MONTH, -1);
+                return prefix + (cal.getTimeInMillis() / 1000);
+            default:
+                return " and 1";
+        }
+    }
+
+    private String getModeOrdering(WallMode mode) {
+        if (mode == BY_DATE || mode == COMMENTED) {
+            return " date desc ";
+        } else {
+            return " rating desc ";
+        }
+    }
+
 }
 
