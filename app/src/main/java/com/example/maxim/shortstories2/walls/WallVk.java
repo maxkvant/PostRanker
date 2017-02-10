@@ -41,12 +41,12 @@ public class WallVk extends AbstractWall {
         long beforeGet = new Date().getTime();
 
         try {
-            String url = HttpUrl.parse(url_get)
+            String url = HttpUrl.parse(URL_GET)
                     .newBuilder()
-                    .addQueryParameter(param_name_version, version_api)
-                    .addQueryParameter(param_name_id, id + "")
-                    .addQueryParameter(param_name_date, updated + "")
-                    .addQueryParameter(param_name_access_token, MyApplication.getAccessToken())
+                    .addQueryParameter(PARAM_NAME_VERSION, VERSION_API)
+                    .addQueryParameter(PARAM_NAME_ID, id + "")
+                    .addQueryParameter(PARAM_NAME_DATE, updated + "")
+                    .addQueryParameter(PARAM_NAME_ACCESS_TOKEN, MyApplication.getAccessToken())
                     .toString();
             Request request = new Request.Builder().url(url).build();
             responseStr = okHttpClient.newCall(request).execute().body().string();
@@ -90,13 +90,13 @@ public class WallVk extends AbstractWall {
         List<Post> posts = new ArrayList<>();
         try {
             JSONObject responseJsonObject = new JSONObject(responseStr);
-            JSONArray jsonArray = responseJsonObject.getJSONArray(json_response);
+            JSONArray jsonArray = responseJsonObject.getJSONArray(JSON_RESPONSE);
             for (int i = 1; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                if (jsonObject.has(json_text)) {
-                    String likes = jsonObject.getJSONObject(json_likes).get(json_count).toString();
-                    String text = jsonObject.get(json_text).toString().replace("\\\n", System.getProperty("line.separator"));
-                    int date = Integer.parseInt(jsonObject.get(json_date).toString());
+                if (jsonObject.has(JSON_TEXT)) {
+                    String likes = jsonObject.getJSONObject(JSON_LIKES).get(JSON_COUNT).toString();
+                    String text = jsonObject.get(JSON_TEXT).toString().replace("\\\n", System.getProperty("line.separator"));
+                    int date = Integer.parseInt(jsonObject.get(JSON_DATE).toString());
                     double rating = Integer.parseInt(likes);
                     rating = rating * rating;
                     posts.add(new Post(

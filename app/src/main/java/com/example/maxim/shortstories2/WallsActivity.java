@@ -195,13 +195,13 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
 
             @Override
             protected List<SearchItem> doInBackground(Void... params) {
-                String url = HttpUrl.parse(url_search)
+                String url = HttpUrl.parse(URL_SEARCH)
                         .newBuilder()
-                        .addQueryParameter(param_name_version, version_api)
-                        .addQueryParameter(param_name_query, query)
-                        .addQueryParameter(param_name_limit, 20 + "")
-                        .addQueryParameter(param_name_search_type, "1")
-                        .addQueryParameter(param_name_access_token, MyApplication.getAccessToken())
+                        .addQueryParameter(PARAM_NAME_VERSION, VERSION_API)
+                        .addQueryParameter(PARAM_NAME_QUERY, query)
+                        .addQueryParameter(PARAM_NAME_LIMIT, 20 + "")
+                        .addQueryParameter(PARAM_NAME_SEARCH_TYPE, "1")
+                        .addQueryParameter(PARAM_NAME_ACCESS_TOKEN, MyApplication.getAccessToken())
                         .toString();
 
                 Request request = new Request.Builder().url(url).build();
@@ -223,25 +223,25 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
             private List<SearchItem> parseSearch(String responseStr) {
                 List<SearchItem> res = new ArrayList<>();
                 try {
-                    JSONArray jsonArray = new JSONObject(responseStr).getJSONArray(json_response);
+                    JSONArray jsonArray = new JSONObject(responseStr).getJSONArray(JSON_RESPONSE);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         try {
                             JSONObject cur = jsonArray.getJSONObject(i);
                             long id;
                             String name;
-                            String type = cur.getString(json_type);
+                            String type = cur.getString(JSON_TYPE);
                             String description = "";
-                            if (cur.has(json_description)) {
-                                description = cur.get(json_description) + "";
+                            if (cur.has(JSON_DESCRIPTION)) {
+                                description = cur.get(JSON_DESCRIPTION) + "";
                             }
                             cur = cur.getJSONObject(type);
-                            if (type.equals(group_item_type)) {
-                                id = -cur.getInt(json_id);
-                                name = cur.getString(json_name);
+                            if (type.equals(GROUP_ITEM_TYPE)) {
+                                id = -cur.getInt(JSON_ID);
+                                name = cur.getString(JSON_NAME);
                             } else {
-                                id = cur.getInt(json_id);
-                                String firstName = cur.getString(json_first_name);
-                                String lastName = cur.getString(json_last_name);
+                                id = cur.getInt(JSON_ID);
+                                String firstName = cur.getString(JSON_FIRST_NAME);
+                                String lastName = cur.getString(JSON_LAST_NAME);
                                 name = firstName + " " + lastName;
                             }
                             res.add(new SearchItem(name, id, description));

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.example.maxim.shortstories2.Strings.post_intent;
+import static com.example.maxim.shortstories2.Strings.POST_INTENT;
 
 public class PostsAdapter extends BaseAdapter {
     private Context ctx;
@@ -57,7 +57,7 @@ public class PostsAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ctx, PostActivity.class);
-                intent.putExtra(post_intent, item);
+                intent.putExtra(POST_INTENT, item);
                 ctx.startActivity(intent);
             }
         });

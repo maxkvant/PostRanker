@@ -1,29 +1,29 @@
 package com.example.maxim.shortstories2.walls;
 
 public abstract class VkStrings {
-    public final static String url_search = "https://api.vk.com/method/search.getHints";
-    public final static String url_get = "https://api.vk.com/method/execute.getPostsMonthlySince";
+    public final static String URL_SEARCH = "https://api.vk.com/method/search.getHints";
+    public final static String URL_GET = "https://api.vk.com/method/execute.getPostsMonthlySince";
 
-    public final static String param_name_version = "v";
-    public final static String param_name_query = "q";
-    public final static String param_name_limit = "limit";
-    public final static String param_name_access_token = "access_token";
-    public final static String param_name_search_type = "search_global";
-    public final static String param_name_id = "id";
-    public final static String param_name_date = "date";
+    public final static String PARAM_NAME_VERSION = "v";
+    public final static String PARAM_NAME_QUERY = "q";
+    public final static String PARAM_NAME_LIMIT = "limit";
+    public final static String PARAM_NAME_ACCESS_TOKEN = "access_token";
+    public final static String PARAM_NAME_SEARCH_TYPE = "search_global";
+    public final static String PARAM_NAME_ID = "id";
+    public final static String PARAM_NAME_DATE = "date";
 
-    public final static String version_api = "5.60";
-    public final static String group_item_type = "group";
+    public final static String VERSION_API = "5.60";
+    public final static String GROUP_ITEM_TYPE = "group";
 
-    public final static String json_response = "response";
-    public final static String json_text = "text";
-    public final static String json_date = "date";
-    public final static String json_likes = "likes";
-    public final static String json_count = "count";
-    public final static String json_type = "type";
-    public final static String json_description = "description";
-    public final static String json_id = "id";
-    public final static String json_name = "name";
-    public final static String json_first_name = "first_name";
-    public final static String json_last_name = "last_name";
+    public final static String JSON_RESPONSE = "response";
+    public final static String JSON_TEXT = "text";
+    public final static String JSON_DATE = "date";
+    public final static String JSON_LIKES = "likes";
+    public final static String JSON_COUNT = "count";
+    public final static String JSON_TYPE = "type";
+    public final static String JSON_DESCRIPTION = "description";
+    public final static String JSON_ID = "id";
+    public final static String JSON_NAME = "name";
+    public final static String JSON_FIRST_NAME = "first_name";
+    public final static String JSON_LAST_NAME = "last_name";
 }
