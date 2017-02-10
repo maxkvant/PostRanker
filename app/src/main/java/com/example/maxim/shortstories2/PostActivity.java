@@ -22,6 +22,8 @@ import com.example.maxim.shortstories2.post.PostsAdapter;
 import java.security.PublicKey;
 import java.util.List;
 
+import static com.example.maxim.shortstories2.Strings.post_intent;
+
 public class PostActivity extends AppCompatActivity {
     private Post post;
     EditText editText;
@@ -34,7 +36,7 @@ public class PostActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        post = (Post) getIntent().getSerializableExtra("Post");
+        post = (Post) getIntent().getSerializableExtra(post_intent);
         View postView = findViewById(R.id.feed_item);
         PostsAdapter.initView(postView, post);
 

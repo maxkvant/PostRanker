@@ -19,6 +19,7 @@ import okhttp3.HttpUrl;
 import okhttp3.Request;
 
 import static com.example.maxim.shortstories2.MyApplication.okHttpClient;
+import static com.example.maxim.shortstories2.walls.VkStrings.*;
 import static java.lang.StrictMath.max;
 
 public class WallVk extends AbstractWall {
@@ -30,7 +31,7 @@ public class WallVk extends AbstractWall {
     public List<Post> getPosts(int offset, WallMode mode) {
         DBHelper dbHelper = new DBHelper();
         return dbHelper.getPosts(offset, mode,
-                " and wall_id = " + id + " ");
+                " and " + Post.PostsEntry.COLUMN_NAME_WALL_ID + " = " + id + " ");
     }
 
     @Override
@@ -40,12 +41,12 @@ public class WallVk extends AbstractWall {
         long beforeGet = new Date().getTime();
 
         try {
-            String url = HttpUrl.parse("https://api.vk.com/method/execute.getPostsMonthlySince")
+            String url = HttpUrl.parse(url_get)
                     .newBuilder()
-                    .addQueryParameter("v", "5.60")
-                    .addQueryParameter("id", id + "")
-                    .addQueryParameter("date", updated + "")
-                    .addQueryParameter("access_token", MyApplication.getAccessToken())
+                    .addQueryParameter(param_name_version, version_api)
+                    .addQueryParameter(param_name_id, id + "")
+                    .addQueryParameter(param_name_date, updated + "")
+                    .addQueryParameter(param_name_access_token, MyApplication.getAccessToken())
                     .toString();
             Request request = new Request.Builder().url(url).build();
             responseStr = okHttpClient.newCall(request).execute().body().string();
@@ -89,13 +90,13 @@ public class WallVk extends AbstractWall {
         List<Post> posts = new ArrayList<>();
         try {
             JSONObject responseJsonObject = new JSONObject(responseStr);
-            JSONArray jsonArray = responseJsonObject.getJSONArray("response");
+            JSONArray jsonArray = responseJsonObject.getJSONArray(json_response);
             for (int i = 1; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                if (jsonObject.has("text")) {
-                    String likes = jsonObject.getJSONObject("likes").get("count").toString();
-                    String text = jsonObject.get("text").toString().replace("\\\n", System.getProperty("line.separator"));
-                    int date = Integer.parseInt(jsonObject.get("date").toString());
+                if (jsonObject.has(json_text)) {
+                    String likes = jsonObject.getJSONObject(json_likes).get(json_count).toString();
+                    String text = jsonObject.get(json_text).toString().replace("\\\n", System.getProperty("line.separator"));
+                    int date = Integer.parseInt(jsonObject.get(json_date).toString());
                     double rating = Integer.parseInt(likes);
                     rating = rating * rating;
                     posts.add(new Post(

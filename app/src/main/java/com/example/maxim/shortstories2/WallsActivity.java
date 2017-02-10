@@ -40,6 +40,8 @@ import okhttp3.Request;
 
 import static com.example.maxim.shortstories2.MyApplication.okHttpClient;
 import static com.example.maxim.shortstories2.MyApplication.walls;
+import static com.example.maxim.shortstories2.walls.VkStrings.*;
+
 
 public class WallsActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     private String lastText = "";
@@ -75,7 +77,6 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             Intent intent = new Intent();
-            intent.putExtra("name", "");
             setResult(RESULT_OK, intent);
             super.onResume();
             finish();
@@ -194,21 +195,13 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
 
             @Override
             protected List<SearchItem> doInBackground(Void... params) {
-                String search_url = "https://api.vk.com/method/search.getHints";
-                String version_api_param_name = "v";
-                String version_api = "5.60";
-                String query_param_name = "q";
-                String max_size_param_name = "limit";
-                String access_token_param_name = "access_token";
-                String search_type_param_name = "search_global";
-
-                String url = HttpUrl.parse(search_url)
+                String url = HttpUrl.parse(url_search)
                         .newBuilder()
-                        .addQueryParameter(version_api_param_name, version_api)
-                        .addQueryParameter(query_param_name, query)
-                        .addQueryParameter(max_size_param_name, 20 + "")
-                        .addQueryParameter(search_type_param_name, "1")
-                        .addQueryParameter(access_token_param_name, MyApplication.getAccessToken())
+                        .addQueryParameter(param_name_version, version_api)
+                        .addQueryParameter(param_name_query, query)
+                        .addQueryParameter(param_name_limit, 20 + "")
+                        .addQueryParameter(param_name_search_type, "1")
+                        .addQueryParameter(param_name_access_token, MyApplication.getAccessToken())
                         .toString();
 
                 Request request = new Request.Builder().url(url).build();
@@ -230,25 +223,25 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
             private List<SearchItem> parseSearch(String responseStr) {
                 List<SearchItem> res = new ArrayList<>();
                 try {
-                    JSONArray jsonArray = new JSONObject(responseStr).getJSONArray("response");
+                    JSONArray jsonArray = new JSONObject(responseStr).getJSONArray(json_response);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         try {
                             JSONObject cur = jsonArray.getJSONObject(i);
                             long id;
                             String name;
-                            String type = cur.getString("type");
+                            String type = cur.getString(json_type);
                             String description = "";
-                            if (cur.has("description")) {
-                                description = cur.get("description") + "";
+                            if (cur.has(json_description)) {
+                                description = cur.get(json_description) + "";
                             }
                             cur = cur.getJSONObject(type);
-                            if (type.equals("group")) {
-                                id = -cur.getInt("id");
-                                name = cur.getString("name");
+                            if (type.equals(group_item_type)) {
+                                id = -cur.getInt(json_id);
+                                name = cur.getString(json_name);
                             } else {
-                                id = cur.getInt("id");
-                                String firstName = cur.getString("first_name");
-                                String lastName = cur.getString("last_name");
+                                id = cur.getInt(json_id);
+                                String firstName = cur.getString(json_first_name);
+                                String lastName = cur.getString(json_last_name);
                                 name = firstName + " " + lastName;
                             }
                             res.add(new SearchItem(name, id, description));
