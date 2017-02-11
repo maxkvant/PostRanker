@@ -23,6 +23,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.maxim.shortstories2.walls.SearchItem;
 import com.example.maxim.shortstories2.walls.Wall;
 import com.example.maxim.shortstories2.walls.WallVk;
 
@@ -195,82 +196,14 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
 
             @Override
             protected List<SearchItem> doInBackground(Void... params) {
-                String url = HttpUrl.parse(URL_SEARCH)
-                        .newBuilder()
-                        .addQueryParameter(PARAM_NAME_VERSION, VERSION_API)
-                        .addQueryParameter(PARAM_NAME_QUERY, query)
-                        .addQueryParameter(PARAM_NAME_LIMIT, 20 + "")
-                        .addQueryParameter(PARAM_NAME_SEARCH_TYPE, "1")
-                        .addQueryParameter(PARAM_NAME_ACCESS_TOKEN, MyApplication.getAccessToken())
-                        .toString();
-
-                Request request = new Request.Builder().url(url).build();
-                try {
-                    String responseStr = okHttpClient.newCall(request).execute().body().string();
-                    Log.d("SearchTask response", responseStr);
-
-                    return parseSearch(responseStr);
-                } catch (IOException e) {
-                    return null;
-                }
+                return WallVk.search(query);
             }
 
             @Override
             protected void onPostExecute(List<SearchItem> result) {
                 afterSearch.accept(result);
             }
-
-            private List<SearchItem> parseSearch(String responseStr) {
-                List<SearchItem> res = new ArrayList<>();
-                try {
-                    JSONArray jsonArray = new JSONObject(responseStr).getJSONArray(JSON_RESPONSE);
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        try {
-                            JSONObject cur = jsonArray.getJSONObject(i);
-                            long id;
-                            String name;
-                            String type = cur.getString(JSON_TYPE);
-                            String description = "";
-                            if (cur.has(JSON_DESCRIPTION)) {
-                                description = cur.get(JSON_DESCRIPTION) + "";
-                            }
-                            cur = cur.getJSONObject(type);
-                            if (type.equals(GROUP_ITEM_TYPE)) {
-                                id = -cur.getInt(JSON_ID);
-                                name = cur.getString(JSON_NAME);
-                            } else {
-                                id = cur.getInt(JSON_ID);
-                                String firstName = cur.getString(JSON_FIRST_NAME);
-                                String lastName = cur.getString(JSON_LAST_NAME);
-                                name = firstName + " " + lastName;
-                            }
-                            res.add(new SearchItem(name, id, description));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-                return res;
-            }
         }
-    }
-}
-
-class SearchItem {
-    public final String name;
-    public final long id;
-    public final String description;
-    SearchItem(String name, long id, String description) {
-        this.name = name;
-        this.id = id;
-        this.description = description;
-    }
-    @Override
-    public String toString() {
-        return name;
     }
 }
 
