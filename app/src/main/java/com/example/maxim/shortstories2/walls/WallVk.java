@@ -38,7 +38,7 @@ public class WallVk extends AbstractWall {
     public boolean update() {
         String responseStr;
 
-        long beforeGet = new Date().getTime();
+        long beforeGet = new Date().getTime() / 1000;
 
         try {
             String url = HttpUrl.parse(URL_GET)
@@ -61,28 +61,11 @@ public class WallVk extends AbstractWall {
             return false;
         }
 
-        if (ratio == 0) {
-            double ratingSum = 0;
-            for (Post post : posts) {
-                ratingSum += post.rating + 1.0;
-            }
-            ratio = posts.size() / max(ratingSum, 1.0);
-        }
-        Log.d("update", "ratio = " + String.valueOf(ratio));
-        List<Post> posts2 = new ArrayList<>();
-        for (Post post : posts) {
-            posts2.add(new Post(
-                    post.text,
-                    id,
-                    name,
-                    post.date,
-                    post.rating * ratio
-            ));
-        }
+        posts = withRatio(posts);
 
         updated = beforeGet;
         new DBHelper().insertWall(this);
-        (new DBHelper()).insertPosts(posts2);
+        (new DBHelper()).insertPosts(posts);
         return true;
     }
 

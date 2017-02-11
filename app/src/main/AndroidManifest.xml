@@ -33,6 +33,9 @@
             android:name=".PostActivity"
             android:label="@string/title_activity_post"
             android:theme="@style/AppTheme.NoActionBar" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="166cc53aba685575ece0649470eae9088f0d735b" />
     </application>
 
 </manifest>

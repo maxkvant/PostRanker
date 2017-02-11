@@ -20,6 +20,7 @@
         <item>(-34215577, \"Подслушано\", \"WallVk\", 2, 0, 0)</item>
         <item>(-106084026,  \"Just Story\", \"WallVk\", 2, 0, 0)</item>
         <item>(-78330447, \"Истории класс\", \"WallVk\", 2, 0, 0)</item>
+        <item>(10364952, \"Kirill Elagin\", \"WallTwitter\", 2, 0, 0)</item>
     </string-array>
 
     <integer name="com_vk_sdk_AppId">5772831</integer>
