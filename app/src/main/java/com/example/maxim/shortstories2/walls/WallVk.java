@@ -5,6 +5,8 @@ import android.util.Log;
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.MyApplication;
 import com.example.maxim.shortstories2.post.Post;
+import com.example.maxim.shortstories2.post.PostVK;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,6 +14,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +23,7 @@ import okhttp3.Request;
 
 import static com.example.maxim.shortstories2.MyApplication.okHttpClient;
 import static com.example.maxim.shortstories2.walls.VkStrings.*;
+import static java.lang.StrictMath.log;
 import static java.lang.StrictMath.max;
 
 public class WallVk extends AbstractWall {
@@ -70,31 +74,31 @@ public class WallVk extends AbstractWall {
     }
 
     private List<Post> parsePosts(String responseStr) {
+        long startParsing = new Date().getTime();
+        Gson gson = new Gson();
         List<Post> posts = new ArrayList<>();
         try {
             JSONObject responseJsonObject = new JSONObject(responseStr);
             JSONArray jsonArray = responseJsonObject.getJSONArray(JSON_RESPONSE);
-            for (int i = 1; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                if (jsonObject.has(JSON_TEXT)) {
-                    String likes = jsonObject.getJSONObject(JSON_LIKES).get(JSON_COUNT).toString();
-                    String text = jsonObject.get(JSON_TEXT).toString().replace("\\\n", System.getProperty("line.separator"));
-                    int date = Integer.parseInt(jsonObject.get(JSON_DATE).toString());
-                    double rating = Integer.parseInt(likes);
-                    rating = rating * rating;
-                    posts.add(new Post(
-                            text,
-                            id,
-                            name,
-                            date,
-                            rating
-                    ));
-                }
+
+            PostVK[] postsVK = gson.fromJson(jsonArray.toString(), PostVK[].class);
+            for (PostVK aPostsVK : postsVK) {
+                String text = aPostsVK.text.replace("\\\n", System.getProperty("line.separator"));
+                double rating = aPostsVK.likes.count;
+                rating = rating * rating;
+                posts.add(new Post(
+                        text,
+                        id,
+                        name,
+                        aPostsVK.date,
+                        rating
+                ));
             }
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
         }
+        Log.d("parsing:", (new Date().getTime() - startParsing) + "");
         return posts;
     }
 
