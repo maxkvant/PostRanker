@@ -1,9 +1,5 @@
-package com.example.maxim.shortstories2.walls;
+package com.example.maxim.shortstories2.APIs;
 
-import com.google.gson.JsonElement;
-import com.google.gson.annotations.SerializedName;
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.Session;
 import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.models.User;
 

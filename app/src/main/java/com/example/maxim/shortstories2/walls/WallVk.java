@@ -3,10 +3,9 @@ package com.example.maxim.shortstories2.walls;
 import android.util.Log;
 
 import com.example.maxim.shortstories2.DBHelper;
-import com.example.maxim.shortstories2.MyApplication;
 import com.example.maxim.shortstories2.post.Post;
-import com.example.maxim.shortstories2.post.PostVk;
-import com.google.gson.Gson;
+import com.example.maxim.shortstories2.APIs.PostVk;
+import com.example.maxim.shortstories2.APIs.SearchItemVk;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ import java.util.List;
 
 import static com.example.maxim.shortstories2.MyApplication.getAccessToken;
 import static com.example.maxim.shortstories2.MyApplication.vkClient;
-import static com.example.maxim.shortstories2.walls.VkStrings.*;
+import static com.example.maxim.shortstories2.APIs.VkStrings.*;
 
 public class WallVk extends AbstractWall {
     public WallVk(String name, long id, double ratio, long updated) {
@@ -94,16 +93,7 @@ public class WallVk extends AbstractWall {
         }
         List<SearchItem> res = new ArrayList<>();
         for (SearchItemVk searchItemVk : searchItemsVk) {
-            String name;
-            long id;
-            if (searchItemVk.profile != null) {
-                id = searchItemVk.profile.id;
-                name = searchItemVk.profile.last_name + " " + searchItemVk.profile.first_name;
-            } else {
-                id = -searchItemVk.group.id;
-                name = searchItemVk.group.name;
-            }
-            res.add(new SearchItem(name, id, searchItemVk.description));
+            res.add(searchItemVk.toSearchItem());
         }
         return res;
     }

@@ -1,4 +1,4 @@
-package com.example.maxim.shortstories2.walls;
+package com.example.maxim.shortstories2.APIs;
 
 import com.google.gson.annotations.SerializedName;
 

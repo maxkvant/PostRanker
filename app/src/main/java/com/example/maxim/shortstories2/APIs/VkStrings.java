@@ -1,4 +1,4 @@
-package com.example.maxim.shortstories2.walls;
+package com.example.maxim.shortstories2.APIs;
 
 public abstract class VkStrings {
     public final static String PARAM_NAME_VERSION = "v";

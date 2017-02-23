@@ -1,12 +1,8 @@
-package com.example.maxim.shortstories2.post;
+package com.example.maxim.shortstories2.APIs;
 
-import com.example.maxim.shortstories2.walls.VkStrings;
 import com.google.gson.annotations.SerializedName;
-import com.squareup.picasso.Downloader;
-import com.twitter.sdk.android.core.models.BindingValues;
 
-public class PostVK {
-
+public class PostVk {
         @SerializedName(VkStrings.JSON_TEXT)
         public final String text;
 
@@ -16,7 +12,7 @@ public class PostVK {
         @SerializedName(VkStrings.JSON_LIKES)
         public final Likes likes;
 
-        private PostVK(String text, Integer date, Likes likes) {
+        private PostVk(String text, Integer date, Likes likes) {
             this.text = text;
             this.date = date;
             this.likes = likes;

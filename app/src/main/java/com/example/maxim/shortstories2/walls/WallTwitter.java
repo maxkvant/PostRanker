@@ -1,21 +1,12 @@
 package com.example.maxim.shortstories2.walls;
 
-import android.util.Log;
-import android.util.LongSparseArray;
-
+import com.example.maxim.shortstories2.APIs.MyTwitterApiClient;
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.post.Post;
-import com.google.gson.JsonElement;
-import com.twitter.sdk.android.Twitter;
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterCore;
-import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.models.User;
-import com.twitter.sdk.android.tweetui.internal.SwipeToDismissTouchListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,6 +16,8 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Response;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 import static com.example.maxim.shortstories2.MyApplication.twitterApiClient;
 
@@ -108,8 +101,7 @@ public class WallTwitter extends AbstractWall {
 
     public static List<SearchItem> searchWalls(String query) {
         MyTwitterApiClient client = new MyTwitterApiClient();
-        MyTwitterApiClient.SearchUsersService searchUsersService = client.getSearchUsersService();
-        Call<List<User>> usersCall = twitterApiClient.getSearchUsersService().users(query);
+        Call<List<User>> usersCall = client.getSearchUsersService().users(query);
 
         List<SearchItem> res = new ArrayList<>();
         List<User> users = null;
@@ -126,4 +118,5 @@ public class WallTwitter extends AbstractWall {
         }
         return res;
     }
+
 }
