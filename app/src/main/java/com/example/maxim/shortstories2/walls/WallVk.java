@@ -4,8 +4,8 @@ import android.util.Log;
 
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.post.Post;
-import com.example.maxim.shortstories2.APIs.PostVk;
-import com.example.maxim.shortstories2.APIs.SearchItemVk;
+import com.example.maxim.shortstories2.APIs.VkPost;
+import com.example.maxim.shortstories2.APIs.VkSearchItem;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class WallVk extends AbstractWall {
 
         List<Post> posts;
         try {
-            List<PostVk> postsVK = vkClient
+            List<VkPost> postsVK = vkClient
                     .getPosts(VERSION_API, getAccessToken(), id, updated)
                     .execute()
                     .body()
@@ -55,9 +55,9 @@ public class WallVk extends AbstractWall {
         return true;
     }
 
-    private List<Post> toPosts(List<PostVk> postsVK) {
+    private List<Post> toPosts(List<VkPost> postsVK) {
         List<Post> posts = new ArrayList<>();
-        for (PostVk aPostsVK : postsVK) {
+        for (VkPost aPostsVK : postsVK) {
             String text = aPostsVK.text.replace("\\\n", System.getProperty("line.separator"));
             double rating = aPostsVK.likes.count;
             rating = rating * rating;
@@ -75,7 +75,7 @@ public class WallVk extends AbstractWall {
     public static List<SearchItem> searchWalls(String query) {
         Log.d("searchWalls", query);
         try {
-            List<SearchItemVk> searchItemsVk = vkClient
+            List<VkSearchItem> searchItemsVk = vkClient
                     .searchWalls(VERSION_API, getAccessToken(), query, 20, 1)
                     .execute()
                     .body()
@@ -87,13 +87,13 @@ public class WallVk extends AbstractWall {
         }
     }
 
-    private static List<SearchItem> toSearchItems(List<SearchItemVk> searchItemsVk) {
+    private static List<SearchItem> toSearchItems(List<VkSearchItem> searchItemsVk) {
         if (searchItemsVk == null) {
             return new ArrayList<>();
         }
         List<SearchItem> res = new ArrayList<>();
-        for (SearchItemVk searchItemVk : searchItemsVk) {
-            res.add(searchItemVk.toSearchItem());
+        for (VkSearchItem vkSearchItem : searchItemsVk) {
+            res.add(vkSearchItem.toSearchItem());
         }
         return res;
     }

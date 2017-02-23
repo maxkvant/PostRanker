@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class SearchItemVk implements Serializable {
+public class VkSearchItem implements Serializable {
     @SerializedName(VkStrings.JSON_DESCRIPTION)
     public final String description;
 
@@ -15,7 +15,7 @@ public class SearchItemVk implements Serializable {
     @SerializedName(VkStrings.PROFILE_iTEM_TYPE)
     public final Profile profile;
 
-    private SearchItemVk(String description, Group group, Profile profile) {
+    private VkSearchItem(String description, Group group, Profile profile) {
         this.description = description;
         this.group = group;
         this.profile = profile;

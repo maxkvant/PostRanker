@@ -8,14 +8,14 @@ import retrofit2.http.Query;
 
 public interface VkClient {
     @GET("/method/execute.getPostsMonthlySince")
-    Call<VkResponse<List<PostVk>>> getPosts(
+    Call<VkResponse<List<VkPost>>> getPosts(
             @Query(VkStrings.PARAM_NAME_VERSION) String version,
             @Query(VkStrings.PARAM_NAME_ACCESS_TOKEN) String accessToken,
             @Query(VkStrings.PARAM_NAME_ID) long id,
             @Query(VkStrings.PARAM_NAME_DATE) Long date);
 
     @GET("/method/search.getHints")
-    Call<VkResponse<List<SearchItemVk>>> searchWalls(
+    Call<VkResponse<List<VkSearchItem>>> searchWalls(
             @Query(VkStrings.PARAM_NAME_VERSION) String version,
             @Query(VkStrings.PARAM_NAME_ACCESS_TOKEN) String accessToken,
             @Query(VkStrings.PARAM_NAME_QUERY) String query,
