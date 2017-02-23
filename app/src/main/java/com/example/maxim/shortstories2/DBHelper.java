@@ -122,14 +122,15 @@ public class DBHelper extends SQLiteOpenHelper {
                     + " = " + Comment.CommentsEntry.TABLE_NAME + "." + Comment.CommentsEntry.COLUMN_NAME_POST_ID;
         }
 
-        Cursor cursor = db.query(table
-                , projection
-                , "1" + filter + getModeFilter(mode)
-                , null
-                , null
-                , null
-                , getModeOrdering(mode)
-                , getModeLimit(offset, mode));
+        Cursor cursor = db.query(table,
+                projection,
+                "1" + filter + getModeFilter(mode),
+                null,
+                null,
+                null,
+                getModeOrdering(mode),
+                getModeLimit(offset, mode));
+        
         if (cursor.moveToFirst()) {
             do {
                 Post post = new Post(
