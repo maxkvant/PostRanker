@@ -19,7 +19,7 @@ public class MyTwitterApiClient extends TwitterApiClient {
     }
 
     public interface SearchUsersService {
-        @GET("/1.1/users/search.json")
+        @GET("/1.1/users/searchWalls.json")
         Call<List<User>> users(@Query("q") String query);
     }
 }

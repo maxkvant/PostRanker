@@ -1,9 +1,6 @@
 package com.example.maxim.shortstories2.walls;
 
 public abstract class VkStrings {
-    public final static String URL_SEARCH = "https://api.vk.com/method/search.getHints";
-    public final static String URL_GET = "https://api.vk.com/method/execute.getPostsMonthlySince";
-
     public final static String PARAM_NAME_VERSION = "v";
     public final static String PARAM_NAME_QUERY = "q";
     public final static String PARAM_NAME_LIMIT = "limit";
@@ -14,13 +11,13 @@ public abstract class VkStrings {
 
     public final static String VERSION_API = "5.60";
     public final static String GROUP_ITEM_TYPE = "group";
+    public final static String PROFILE_iTEM_TYPE = "profile";
 
     public final static String JSON_RESPONSE = "response";
     public final static String JSON_TEXT = "text";
     public final static String JSON_DATE = "date";
     public final static String JSON_LIKES = "likes";
     public final static String JSON_COUNT = "count";
-    public final static String JSON_TYPE = "type";
     public final static String JSON_DESCRIPTION = "description";
     public final static String JSON_ID = "id";
     public final static String JSON_NAME = "name";

@@ -106,7 +106,7 @@ public class WallTwitter extends AbstractWall {
         return true;
     }
 
-    public static List<SearchItem> search(String query) {
+    public static List<SearchItem> searchWalls(String query) {
         MyTwitterApiClient client = new MyTwitterApiClient();
         MyTwitterApiClient.SearchUsersService searchUsersService = client.getSearchUsersService();
         Call<List<User>> usersCall = twitterApiClient.getSearchUsersService().users(query);

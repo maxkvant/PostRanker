@@ -5,26 +5,17 @@ import android.util.Log;
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.MyApplication;
 import com.example.maxim.shortstories2.post.Post;
-import com.example.maxim.shortstories2.post.PostVK;
+import com.example.maxim.shortstories2.post.PostVk;
 import com.google.gson.Gson;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import okhttp3.HttpUrl;
-import okhttp3.Request;
-
-import static com.example.maxim.shortstories2.MyApplication.okHttpClient;
+import static com.example.maxim.shortstories2.MyApplication.getAccessToken;
+import static com.example.maxim.shortstories2.MyApplication.vkClient;
 import static com.example.maxim.shortstories2.walls.VkStrings.*;
-import static java.lang.StrictMath.log;
-import static java.lang.StrictMath.max;
 
 public class WallVk extends AbstractWall {
     public WallVk(String name, long id, double ratio, long updated) {
@@ -40,121 +31,79 @@ public class WallVk extends AbstractWall {
 
     @Override
     public boolean update() {
-        String responseStr;
-
         long beforeGet = new Date().getTime();
 
+        List<Post> posts;
         try {
-            String url = HttpUrl.parse(URL_GET)
-                    .newBuilder()
-                    .addQueryParameter(PARAM_NAME_VERSION, VERSION_API)
-                    .addQueryParameter(PARAM_NAME_ID, id + "")
-                    .addQueryParameter(PARAM_NAME_DATE, updated + "")
-                    .addQueryParameter(PARAM_NAME_ACCESS_TOKEN, MyApplication.getAccessToken())
-                    .toString();
-            Request request = new Request.Builder().url(url).build();
-            responseStr = okHttpClient.newCall(request).execute().body().string();
-            Thread.sleep(1000 / 3);
-        } catch (IOException | InterruptedException e) {
+            List<PostVk> postsVK = vkClient
+                    .getPosts(VERSION_API, getAccessToken(), id, updated)
+                    .execute()
+                    .body()
+                    .response;
+            posts = toPosts(postsVK);
+        } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
 
-        List<Post> posts = parsePosts(responseStr);
-        if (posts == null) {
-            return false;
-        }
-
+        Log.d("WallVk::update time", (new Date().getTime() - beforeGet) + "");
         posts = withRatio(posts);
 
         updated = beforeGet;
         new DBHelper().insertWall(this);
         (new DBHelper()).insertPosts(posts);
+        Log.d("WallVk::update time", (new Date().getTime() - beforeGet) + "");
         return true;
     }
 
-    private List<Post> parsePosts(String responseStr) {
-        long startParsing = new Date().getTime();
-        Gson gson = new Gson();
+    private List<Post> toPosts(List<PostVk> postsVK) {
         List<Post> posts = new ArrayList<>();
-        try {
-            JSONObject responseJsonObject = new JSONObject(responseStr);
-            JSONArray jsonArray = responseJsonObject.getJSONArray(JSON_RESPONSE);
-
-            PostVK[] postsVK = gson.fromJson(jsonArray.toString(), PostVK[].class);
-            for (PostVK aPostsVK : postsVK) {
-                String text = aPostsVK.text.replace("\\\n", System.getProperty("line.separator"));
-                double rating = aPostsVK.likes.count;
-                rating = rating * rating;
-                posts.add(new Post(
-                        text,
-                        id,
-                        name,
-                        aPostsVK.date,
-                        rating
-                ));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
+        for (PostVk aPostsVK : postsVK) {
+            String text = aPostsVK.text.replace("\\\n", System.getProperty("line.separator"));
+            double rating = aPostsVK.likes.count;
+            rating = rating * rating;
+            posts.add(new Post(
+                    text,
+                    id,
+                    name,
+                    aPostsVK.date,
+                    rating
+            ));
         }
-        Log.d("parsing:", (new Date().getTime() - startParsing) + "");
         return posts;
     }
 
-    public static List<SearchItem> search(String query) {
-        String url = HttpUrl.parse(URL_SEARCH)
-                .newBuilder()
-                .addQueryParameter(PARAM_NAME_VERSION, VERSION_API)
-                .addQueryParameter(PARAM_NAME_QUERY, query)
-                .addQueryParameter(PARAM_NAME_LIMIT, 20 + "")
-                .addQueryParameter(PARAM_NAME_SEARCH_TYPE, "1")
-                .addQueryParameter(PARAM_NAME_ACCESS_TOKEN, MyApplication.getAccessToken())
-                .toString();
-
-        Request request = new Request.Builder().url(url).build();
+    public static List<SearchItem> searchWalls(String query) {
+        Log.d("searchWalls", query);
         try {
-            String responseStr = okHttpClient.newCall(request).execute().body().string();
-            Log.d("SearchTask response", responseStr);
-
-            return parseSearch(responseStr);
+            List<SearchItemVk> searchItemsVk = vkClient
+                    .searchWalls(VERSION_API, getAccessToken(), query, 20, 1)
+                    .execute()
+                    .body()
+                    .response;
+            return toSearchItems(searchItemsVk);
         } catch (IOException e) {
+            e.printStackTrace();
             return null;
         }
     }
 
-    private static List<SearchItem> parseSearch(String responseStr) {
+    private static List<SearchItem> toSearchItems(List<SearchItemVk> searchItemsVk) {
+        if (searchItemsVk == null) {
+            return new ArrayList<>();
+        }
         List<SearchItem> res = new ArrayList<>();
-        try {
-            JSONArray jsonArray = new JSONObject(responseStr).getJSONArray(JSON_RESPONSE);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                try {
-                    JSONObject cur = jsonArray.getJSONObject(i);
-                    long id;
-                    String name;
-                    String type = cur.getString(JSON_TYPE);
-                    String description = "";
-                    if (cur.has(JSON_DESCRIPTION)) {
-                        description = cur.get(JSON_DESCRIPTION) + "";
-                    }
-                    cur = cur.getJSONObject(type);
-                    if (type.equals(GROUP_ITEM_TYPE)) {
-                        id = -cur.getInt(JSON_ID);
-                        name = cur.getString(JSON_NAME);
-                    } else {
-                        id = cur.getInt(JSON_ID);
-                        String firstName = cur.getString(JSON_FIRST_NAME);
-                        String lastName = cur.getString(JSON_LAST_NAME);
-                        name = firstName + " " + lastName;
-                    }
-                    res.add(new SearchItem(name, id, description));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+        for (SearchItemVk searchItemVk : searchItemsVk) {
+            String name;
+            long id;
+            if (searchItemVk.profile != null) {
+                id = searchItemVk.profile.id;
+                name = searchItemVk.profile.last_name + " " + searchItemVk.profile.first_name;
+            } else {
+                id = -searchItemVk.group.id;
+                name = searchItemVk.group.name;
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
+            res.add(new SearchItem(name, id, searchItemVk.description));
         }
         return res;
     }

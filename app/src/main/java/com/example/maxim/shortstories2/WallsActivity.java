@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,21 +26,10 @@ import com.example.maxim.shortstories2.walls.SearchItem;
 import com.example.maxim.shortstories2.walls.Wall;
 import com.example.maxim.shortstories2.walls.WallVk;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import okhttp3.HttpUrl;
-import okhttp3.Request;
-
-import static com.example.maxim.shortstories2.MyApplication.okHttpClient;
 import static com.example.maxim.shortstories2.MyApplication.walls;
-import static com.example.maxim.shortstories2.walls.VkStrings.*;
 
 
 public class WallsActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
@@ -196,7 +184,7 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
 
             @Override
             protected List<SearchItem> doInBackground(Void... params) {
-                return WallVk.search(query);
+                return WallVk.searchWalls(query);
             }
 
             @Override
