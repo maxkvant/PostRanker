@@ -237,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void refresh(final Runnable onRefresh) {
+            count = 0;
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {
@@ -248,7 +249,6 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 protected void onPostExecute(Void result) {
                     onRefresh.run();
-                    count = 0;
                 }
             }.execute();
         }
@@ -259,7 +259,6 @@ public class MainActivity extends AppCompatActivity {
 
                 new AsyncTask<Void, Void, List<Post>>() {
                     private final int count = Helper.this.count;
-
                     @Override
                     protected List<Post> doInBackground(Void... walls) {
                         try {
@@ -267,6 +266,7 @@ public class MainActivity extends AppCompatActivity {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+                        Log.d("Helper::getPosts", count + "");
                         return wall.getPosts(count, mode);
                     }
 
