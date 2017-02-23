@@ -15,7 +15,7 @@ public class WallAll extends AbstractWall {
     @Override
     public List<Post> getPosts(int offset, WallMode mode) {
         DBHelper dbHelper = new DBHelper();
-        return dbHelper.getPosts(offset, mode, "");
+        return dbHelper.getPosts(offset, mode);
     }
 
     @Override

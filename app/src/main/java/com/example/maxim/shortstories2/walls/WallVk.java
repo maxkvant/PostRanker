@@ -24,8 +24,7 @@ public class WallVk extends AbstractWall {
     @Override
     public List<Post> getPosts(int offset, WallMode mode) {
         DBHelper dbHelper = new DBHelper();
-        return dbHelper.getPosts(offset, mode,
-                " and " + Post.PostsEntry.COLUMN_NAME_WALL_ID + " = " + id + " ");
+        return dbHelper.getPosts(offset, mode, id);
     }
 
     @Override

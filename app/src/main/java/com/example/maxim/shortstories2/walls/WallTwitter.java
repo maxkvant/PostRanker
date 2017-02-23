@@ -22,6 +22,9 @@ import retrofit2.http.Query;
 import static com.example.maxim.shortstories2.MyApplication.twitterApiClient;
 
 public class WallTwitter extends AbstractWall {
+    private final int maxTweetsPerGet = 200;
+    private final int iterations = 8;
+
     public WallTwitter(String name, long id, double ratio, long updated) {
         super(name, id, ratio, updated);
     }
@@ -29,61 +32,51 @@ public class WallTwitter extends AbstractWall {
     @Override
     public List<Post> getPosts(int offset, WallMode mode) {
         DBHelper dbHelper = new DBHelper();
-        return dbHelper.getPosts(offset, mode,
-                " and " + Post.PostsEntry.COLUMN_NAME_WALL_ID + " = " + id + " ");
+        return dbHelper.getPosts(offset, mode, id);
     }
 
     @Override
     public boolean update() {
         Long maxId = null;
-        int maxTweets = 200;
-        int lastDate = 0;
-        int iterations = 8;
-
         List<Post> posts = new ArrayList<>();
-
         Calendar cal = Calendar.getInstance();
         long curDate = cal.getTimeInMillis() / 1000;
         cal.add(Calendar.MONTH, -1);
         int minDate = (int) (cal.getTimeInMillis() / 1000);
 
         for (int i = 0; i < iterations; i++) {
-            Call<List<Tweet>> listCall = TwitterCore.getInstance().getGuestApiClient().getStatusesService()
-                    .userTimeline(id
-                            , null
-                            , maxTweets
-                            , null
-                            , maxId
-                            , null
-                            , null
-                            , null
-                            , null);
+            Call<List<Tweet>> listCall = TwitterCore
+                    .getInstance()
+                    .getGuestApiClient()
+                    .getStatusesService()
+                    .userTimeline(id,
+                            null,
+                            maxTweetsPerGet,
+                            null,
+                            maxId,
+                            null,
+                            null,
+                            null,
+                            null);
 
-            List<Tweet> curTweets = new ArrayList<>();
+            List<Tweet> tweets = new ArrayList<>();
+
             try {
                 Response<List<Tweet>> listResponse = listCall.execute();
-                curTweets.addAll(listResponse.body());
+                tweets.addAll(listResponse.body());
+                posts.addAll(tweetsToPosts(tweets));
             } catch (Exception e) {
                 e.printStackTrace();
-            }
-
-            for (Tweet tweet : curTweets) {
-                int date = (int) (Date.parse(tweet.createdAt) / 1000);
-                lastDate = date;
-                maxId = tweet.id - 1;
-                posts.add(new Post(
-                        tweet.text
-                        , id
-                        , name
-                        , date
-                        , tweet.favoriteCount
-                ));
             }
 
             if (posts.size() == 0) {
                 return false;
             }
+            if (tweets.size() != 0) {
+                maxId = tweets.get(tweets.size() - 1).id - 1;
+            }
 
+            int lastDate = posts.get(posts.size() - 1).date;
             int seconds_in_day = 60 * 60 * 24;
             if (lastDate < updated - seconds_in_day || lastDate < minDate) {
                 break;
@@ -117,6 +110,21 @@ public class WallTwitter extends AbstractWall {
             }
         }
         return res;
+    }
+
+    private List<Post> tweetsToPosts(List<Tweet> tweets) {
+        List<Post> posts = new ArrayList<>();
+        for (Tweet tweet : tweets) {
+            int date = (int) (Date.parse(tweet.createdAt) / 1000);
+            posts.add(new Post(
+                    tweet.text,
+                    id,
+                    name,
+                    date,
+                    tweet.favoriteCount
+            ));
+        }
+        return posts;
     }
 
 }

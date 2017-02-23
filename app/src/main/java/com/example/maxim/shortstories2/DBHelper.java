@@ -98,7 +98,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public List<Post> getPosts(int offset, WallMode mode, String filter) {
+    private List<Post> getPosts(int offset, WallMode mode, String filter) {
         List<Post> res = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -147,6 +147,14 @@ public class DBHelper extends SQLiteOpenHelper {
         return res;
     }
 
+    public List<Post> getPosts(int offset, WallMode mode) {
+        return getPosts(offset, mode, "");
+    }
+
+    public List<Post> getPosts(int offset, WallMode mode, long id) {
+        return getPosts(offset, mode, " and " + Post.PostsEntry.COLUMN_NAME_WALL_ID + " = " + id + " ");
+    }
+
     public void insertComment(Comment comment) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -160,13 +168,13 @@ public class DBHelper extends SQLiteOpenHelper {
     public List<Wall> getAllWalls() {
         List<Wall> res = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(Wall.WallsEntry.TABLE_NAME
-                , null
-                , null
-                , null
-                , null
-                , null
-                , Wall.WallsEntry.COLUMN_NAME_PRIORITY);
+        Cursor cursor = db.query(Wall.WallsEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                Wall.WallsEntry.COLUMN_NAME_PRIORITY);
 
 
         if (cursor.moveToFirst()) {
@@ -214,24 +222,20 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public List<Comment> getComments(long post_id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.query(Comment.CommentsEntry.TABLE_NAME
-                , null
-                , Comment.CommentsEntry.COLUMN_NAME_POST_ID + " = " + post_id
-                , null
-                , null
-                , null
-                , null);
+        Cursor cursor = db.query(Comment.CommentsEntry.TABLE_NAME,
+                null,
+                Comment.CommentsEntry.COLUMN_NAME_POST_ID + " = " + post_id,
+                null,
+                null,
+                null,
+                null);
         List<Comment> res = new ArrayList<>();
 
         if (cursor.moveToFirst()) {
             do {
                 long id = cursor.getLong(cursor.getColumnIndex(Comment.CommentsEntry.COLUMN_NAME_TEXT));
                 String text = cursor.getString(cursor.getColumnIndex(Comment.CommentsEntry.COLUMN_NAME_TEXT));
-                try {
-                    res.add(new Comment(id, text, post_id));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                res.add(new Comment(id, text, post_id));
             } while (cursor.moveToNext());
         }
         cursor.close();
