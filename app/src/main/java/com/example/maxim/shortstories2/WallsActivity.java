@@ -14,7 +14,6 @@ import android.widget.ListView;
 import com.example.maxim.shortstories2.APIs.MyTwitterApiClient;
 import com.example.maxim.shortstories2.walls.FactoryWallTwitter;
 import com.example.maxim.shortstories2.walls.FactoryWallVk;
-import com.example.maxim.shortstories2.walls.SearchItem;
 import com.example.maxim.shortstories2.walls.Wall;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -26,12 +25,12 @@ import com.vk.sdk.VKCallback;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
 
-import static com.example.maxim.shortstories2.AccountsActivity.ButtonAction.NULL;
+import static com.example.maxim.shortstories2.WallsActivity.ButtonAction.NULL;
 import static com.example.maxim.shortstories2.MyApplication.twitterApiClient;
 import static com.example.maxim.shortstories2.MyApplication.walls;
 import static com.example.maxim.shortstories2.util.Strings.FACTORY_WALL_INTENT;
 
-public class AccountsActivity extends AppCompatActivity {
+public class WallsActivity extends AppCompatActivity {
     private TwitterLoginButton twitterLoginButton;
     private ListView wallsList;
     private ArrayAdapter<Wall> adapterWallsList;
@@ -41,7 +40,7 @@ public class AccountsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_accounts);
+        setContentView(R.layout.activity_walls);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -101,7 +100,7 @@ public class AccountsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 curButton = ButtonAction.VK_LOGIN;
-                VKSdk.login(AccountsActivity.this, "friends", "groups");
+                VKSdk.login(WallsActivity.this, "friends", "groups");
             }
         });
 
@@ -109,7 +108,7 @@ public class AccountsActivity extends AppCompatActivity {
         buttonWallsVk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(AccountsActivity.this, SearchActivity.class);
+                Intent intent = new Intent(WallsActivity.this, SearchActivity.class);
                 intent.putExtra(FACTORY_WALL_INTENT, new FactoryWallVk());
                 curButton = ButtonAction.ADD_WALL;
                 startActivityForResult(intent, 0);
@@ -134,7 +133,7 @@ public class AccountsActivity extends AppCompatActivity {
         buttonWallsTwitter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(AccountsActivity.this, SearchActivity.class);
+                Intent intent = new Intent(WallsActivity.this, SearchActivity.class);
                 intent.putExtra(FACTORY_WALL_INTENT, new FactoryWallTwitter());
                 curButton = ButtonAction.ADD_WALL;
                 startActivityForResult(intent, 1);

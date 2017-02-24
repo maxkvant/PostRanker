@@ -39,7 +39,7 @@
             android:value="166cc53aba685575ece0649470eae9088f0d735b" />
 
         <activity
-            android:name=".AccountsActivity"
+            android:name=".WallsActivity"
             android:label="@string/title_activity_walls"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
