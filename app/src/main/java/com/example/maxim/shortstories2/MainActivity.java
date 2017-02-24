@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        walls = new DBHelper().getAllWalls();
+        walls.addAll(new DBHelper().getAllWalls());
         helper = new Helper(walls.get(0), BY_DATE);
 
         initToolbar();
@@ -71,7 +71,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        walls = new DBHelper().getAllWalls();
+        walls.clear();
+        walls.addAll(new DBHelper().getAllWalls());
         adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, walls);
         ListView leftDrawer = (ListView) findViewById(R.id.left_drawer);
         leftDrawer.setAdapter(adapterDrawer);

@@ -34,11 +34,10 @@ import static com.example.maxim.shortstories2.MyApplication.walls;
 import static com.example.maxim.shortstories2.util.Strings.FACTORY_WALL_INTENT;
 
 
-public class WallsActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     private String lastText = "";
     private LinearLayout progressBarFill;
     ListView wallsList;
-    ArrayAdapter adapterWallsList;
     boolean wasSearch = false;
     private Helper helper = new Helper();
     private FactoryWall factoryWall;
@@ -46,14 +45,14 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_walls);
+        setContentView(R.layout.activity_search);
 
         progressBarFill = (LinearLayout) findViewById(R.id.progress_bar_fill);
         ((TextView) findViewById(R.id.progress_bar_fill_text)).setText(R.string.adding);
 
         factoryWall = (FactoryWall) getIntent().getSerializableExtra(FACTORY_WALL_INTENT);
 
-        setTitle("Walls");
+        setTitle("Search");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -63,8 +62,7 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
         wallsList = (ListView) findViewById(R.id.walls_list);
         wallsList.setOnItemClickListener(new ItemClickListener());
 
-        adapterWallsList = new ArrayAdapter<>(this, R.layout.wall_list_item, walls);
-        wallsList.setAdapter(adapterWallsList);
+        onQueryTextChange("");
     }
 
     @Override
@@ -101,7 +99,7 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
                 if (searchItems == null) {
                     searchItems = Collections.singletonList(new SearchItem("Ничего не найдено", 0, ""));
                 }
-                ListAdapter adapterSearchList = new SearchItemAdapter(WallsActivity.this, searchItems);
+                ListAdapter adapterSearchList = new SearchItemAdapter(SearchActivity.this, searchItems);
                 wallsList.setAdapter(adapterSearchList);
                 wasSearch = true;
             }
@@ -112,44 +110,27 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
     private class ItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if (wasSearch) {
-                SearchItem searchItem = (SearchItem) parent.getItemAtPosition(position);
-                    helper.addWall(
-                            searchItem
-                            , new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        progressBarFill.setVisibility(View.VISIBLE);
-                                        wallsList.setVisibility(View.GONE);
-                                    }
-                                }
-                            , new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        wallsList.setVisibility(View.VISIBLE);
-                                        progressBarFill.setVisibility(View.GONE);
-                                    }
-                                });
-
-                helper.deleteWall(walls.get(position), new Runnable() {
-                    @Override
-                    public void run() {
-                        ((Vibrator) WallsActivity.this.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(100);
-                        adapterWallsList.notifyDataSetChanged();
+            SearchItem searchItem = (SearchItem) parent.getItemAtPosition(position);
+            helper.addWall(
+                searchItem
+                , new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBarFill.setVisibility(View.VISIBLE);
+                            wallsList.setVisibility(View.GONE);
+                        }
                     }
-                });
-            }
+                , new Runnable() {
+                        @Override
+                        public void run() {
+                            wallsList.setVisibility(View.VISIBLE);
+                            progressBarFill.setVisibility(View.GONE);
+                        }
+                    });
         }
     }
 
     public class Helper {
-        public void deleteWall(Wall wall, Runnable afterWallsDeleted) {
-            DBHelper dbHelper = new DBHelper();
-            dbHelper.deleteWall(wall.getId());
-            walls.clear();
-            walls.addAll(dbHelper.getAllWalls());
-            afterWallsDeleted.run();
-        }
 
         public void addWall(SearchItem searchItem, final Runnable beforeAdd, final Runnable afterAdd) {
             final Wall wall = factoryWall.toWall(searchItem);
@@ -165,7 +146,8 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
                     if (wall.update()) {
                         dbHelper.insertWall(wall);
                     }
-                    walls = dbHelper.getAllWalls();
+                    walls.clear();
+                    walls.addAll(dbHelper.getAllWalls());
                     return null;
                 }
                 @Override

@@ -20,7 +20,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".WallsActivity">
+        <activity android:name=".SearchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -40,7 +40,7 @@
 
         <activity
             android:name=".AccountsActivity"
-            android:label="@string/title_activity_accounts"
+            android:label="@string/title_activity_walls"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

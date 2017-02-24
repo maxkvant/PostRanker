@@ -17,6 +17,7 @@ import com.vk.sdk.VKSdk;
 
 import io.fabric.sdk.android.Fabric;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -39,7 +40,7 @@ public class MyApplication extends Application {
     private static MyApplication instance;
     private static String accessToken;
     private static Context context;
-    public static List<Wall> walls;
+    public static final List<Wall> walls = new ArrayList<>();
 
     public static final Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(BASE_URL)
