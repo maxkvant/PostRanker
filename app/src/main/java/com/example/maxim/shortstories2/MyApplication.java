@@ -23,6 +23,8 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.example.maxim.shortstories2.APIs.VkStrings.BASE_URL;
+
 public class MyApplication extends Application {
     // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
     private static final String TWITTER_KEY = "Ullo2GMzTDF8bWnl2o0ocgXEE";
@@ -37,7 +39,7 @@ public class MyApplication extends Application {
     public static List<Wall> walls;
 
     public static final Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("https://api.vk.com/")
+            .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build();

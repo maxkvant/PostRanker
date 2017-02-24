@@ -1,6 +1,10 @@
 package com.example.maxim.shortstories2.APIs;
 
 public abstract class VkStrings {
+    public final static String BASE_URL = "https://api.vk.com/";
+    public final static String METHOD_GET_POSTS = "/method/execute.getPostsMonthlySince";
+    public final static String METHOD_SEARCH_WALLS = "/method/search.getHints";
+
     public final static String PARAM_NAME_VERSION = "v";
     public final static String PARAM_NAME_QUERY = "q";
     public final static String PARAM_NAME_LIMIT = "limit";
