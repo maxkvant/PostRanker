@@ -20,7 +20,7 @@ import static com.example.maxim.shortstories2.MyApplication.twitterApiClient;
 import static com.example.maxim.shortstories2.Strings.FACTORY_WALL_INTENT;
 
 public class AccountsActivity extends AppCompatActivity {
-    private TwitterLoginButton loginButton;
+    private TwitterLoginButton twitterLoginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +50,11 @@ public class AccountsActivity extends AppCompatActivity {
         });
 
 
-        loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
-        loginButton.setCallback(new Callback<TwitterSession>() {
+        twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+        twitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
                 twitterApiClient = new MyTwitterApiClient(result.data);
-                //TODO add sync
             }
 
             @Override
@@ -70,6 +69,6 @@ public class AccountsActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Pass the activity result to the login button.
-        loginButton.onActivityResult(requestCode, resultCode, data);
+        twitterLoginButton.onActivityResult(requestCode, resultCode, data);
     }
 }

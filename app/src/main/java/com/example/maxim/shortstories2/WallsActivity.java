@@ -113,7 +113,6 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (wasSearch) {
                 SearchItem searchItem = (SearchItem) parent.getItemAtPosition(position);
-                try {
                     helper.addWall(
                             searchItem
                             , new Runnable() {
@@ -130,10 +129,7 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
                                         progressBarFill.setVisibility(View.GONE);
                                     }
                                 });
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                }
-            } else {
+
                 helper.deleteWall(walls.get(position), new Runnable() {
                     @Override
                     public void run() {
@@ -154,7 +150,7 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
             afterWallsDeleted.run();
         }
 
-        public void addWall(SearchItem searchItem, final Runnable beforeAdd, final Runnable afterAdd) throws NoSuchMethodException {
+        public void addWall(SearchItem searchItem, final Runnable beforeAdd, final Runnable afterAdd) {
             final Wall wall = factoryWall.toWall(searchItem);
 
             new AsyncTask<Void,Void,Void>() {

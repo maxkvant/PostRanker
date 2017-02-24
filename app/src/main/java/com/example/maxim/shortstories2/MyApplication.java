@@ -46,7 +46,7 @@ public class MyApplication extends Application {
 
     public static final VkClient vkClient = retrofit.create(VkClient.class);
 
-    public static MyTwitterApiClient twitterApiClient;
+    public static volatile MyTwitterApiClient twitterApiClient;
 
     VKAccessTokenTracker vkAccessTokenTracker = new VKAccessTokenTracker() {
         @Override

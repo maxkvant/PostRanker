@@ -1,5 +1,6 @@
 package com.example.maxim.shortstories2.walls;
 
+import com.example.maxim.shortstories2.APIs.MyTwitterApiClient;
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.post.Post;
 import com.twitter.sdk.android.core.models.Tweet;
@@ -25,7 +26,8 @@ public class FactoryWallTwitter extends AbstractFactoryWall {
 
     @Override
     public  List<SearchItem> searchWalls(String query) {
-        Call<List<User>> usersCall = twitterApiClient.getSearchUsersService().users(query);
+        final MyTwitterApiClient client = twitterApiClient;
+        Call<List<User>> usersCall = client.getSearchUsersService().users(query);
 
         List<SearchItem> res = null;
         List<User> users = null;
@@ -61,6 +63,7 @@ class WallTwitter extends AbstractWall {
 
     @Override
     public boolean update() {
+        final MyTwitterApiClient client = twitterApiClient;
         Long maxId = null;
         List<Post> posts = new ArrayList<>();
         Calendar cal = Calendar.getInstance();
@@ -69,7 +72,7 @@ class WallTwitter extends AbstractWall {
         int minDate = (int) (cal.getTimeInMillis() / 1000);
 
         for (int i = 0; i < iterations; i++) {
-            Call<List<Tweet>> listCall = twitterApiClient
+            Call<List<Tweet>> listCall = client
                     .getStatusesService()
                     .userTimeline(id,
                             null,
