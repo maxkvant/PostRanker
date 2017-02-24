@@ -3,7 +3,10 @@ package com.example.maxim.shortstories2.APIs;
 import com.google.gson.annotations.SerializedName;
 
 public class VkPost {
-        @SerializedName(VkStrings.JSON_TEXT)
+    @SerializedName(VkStrings.JSON_ID)
+    public final String id;
+
+    @SerializedName(VkStrings.JSON_TEXT)
         public final String text;
 
         @SerializedName(VkStrings.JSON_DATE)
@@ -12,7 +15,8 @@ public class VkPost {
         @SerializedName(VkStrings.JSON_LIKES)
         public final Likes likes;
 
-        private VkPost(String text, Integer date, Likes likes) {
+        private VkPost(String id, String text, Integer date, Likes likes) {
+            this.id = id;
             this.text = text;
             this.date = date;
             this.likes = likes;

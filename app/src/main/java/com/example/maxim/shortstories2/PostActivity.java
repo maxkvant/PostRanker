@@ -15,7 +15,7 @@ import com.example.maxim.shortstories2.post.PostsAdapter;
 
 import java.util.List;
 
-import static com.example.maxim.shortstories2.Strings.POST_INTENT;
+import static com.example.maxim.shortstories2.util.Strings.POST_INTENT;
 
 public class PostActivity extends AppCompatActivity {
     private Post post;

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.example.maxim.shortstories2.Strings.POST_INTENT;
+import static com.example.maxim.shortstories2.util.Strings.POST_INTENT;
 
 public class PostsAdapter extends BaseAdapter {
     private Context ctx;

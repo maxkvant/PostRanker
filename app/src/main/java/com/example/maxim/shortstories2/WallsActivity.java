@@ -22,6 +22,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.maxim.shortstories2.util.Consumer;
 import com.example.maxim.shortstories2.walls.FactoryWall;
 import com.example.maxim.shortstories2.walls.SearchItem;
 import com.example.maxim.shortstories2.walls.Wall;
@@ -30,7 +31,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.example.maxim.shortstories2.MyApplication.walls;
-import static com.example.maxim.shortstories2.Strings.FACTORY_WALL_INTENT;
+import static com.example.maxim.shortstories2.util.Strings.FACTORY_WALL_INTENT;
 
 
 public class WallsActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {

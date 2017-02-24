@@ -32,4 +32,8 @@
     <string name="default_comment">* комментарий *</string>
     <string name="offline_mode">оффлайн режим</string>
     <string name="title_activity_accounts">Accounts</string>
+    <string name="login_vk">Login VK</string>
+    <string name="walls_vk">Walls VK</string>
+    <string name="walls_twitter">Walls Twitter</string>
+    <string name="sourses">accounts</string>
 </resources>

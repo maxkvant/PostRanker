@@ -92,15 +92,21 @@ class WallVk extends AbstractWall {
 
     private List<Post> toPosts(List<VkPost> postsVK) {
         List<Post> posts = new ArrayList<>();
-        for (VkPost aPostsVK : postsVK) {
-            String text = aPostsVK.text.replace("\\\n", System.getProperty("line.separator"));
-            double rating = aPostsVK.likes.count;
+        if (postsVK == null) {
+            return posts;
+        }
+        for (VkPost vkPost : postsVK) {
+            String text = "";
+            if (vkPost.text != null) {
+                text = vkPost.text.replace("\\\n", System.getProperty("line.separator"));
+            }
+            double rating = vkPost.likes.count;
             rating = rating * rating;
             posts.add(new Post(
                     text,
                     id,
                     name,
-                    aPostsVK.date,
+                    vkPost.date,
                     rating
             ));
         }

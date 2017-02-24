@@ -9,7 +9,7 @@ import java.util.List;
 
 import static java.lang.StrictMath.max;
 
-abstract class AbstractWall implements Wall {
+public abstract class AbstractWall implements Wall {
     protected final String name;
     protected final long id;
     protected double ratio;

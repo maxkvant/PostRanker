@@ -2,9 +2,7 @@ package com.example.maxim.shortstories2;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.os.AsyncTask;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,23 +19,18 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.example.maxim.shortstories2.post.Post;
 import com.example.maxim.shortstories2.post.PostsAdapter;
+import com.example.maxim.shortstories2.util.Consumer;
 import com.example.maxim.shortstories2.walls.WallMode;
 import com.example.maxim.shortstories2.walls.Wall;
-import com.vk.sdk.VKAccessToken;
-import com.vk.sdk.VKCallback;
-import com.vk.sdk.VKSdk;
-import com.vk.sdk.api.VKError;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 
-import static com.example.maxim.shortstories2.MyApplication.getAccessToken;
 import static com.example.maxim.shortstories2.MyApplication.walls;
 import static com.example.maxim.shortstories2.walls.WallMode.BY_DATE;
 import static com.example.maxim.shortstories2.walls.WallMode.COMMENTED;
@@ -67,14 +60,6 @@ public class MainActivity extends AppCompatActivity {
         initDrawer();
         initSwipeRefresh();
 
-        if (checkInternetConnection()) {
-            if (getAccessToken() == null) {
-                VKSdk.login(MainActivity.this, "friends", "groups");
-            }
-        } else {
-            Toast.makeText(MainActivity.this, getResources().getString(R.string.offline_mode), Toast.LENGTH_SHORT).show();
-        }
-
         Log.d("onCreate, walls-size", walls.size() + "");
     }
 
@@ -86,20 +71,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
-            @Override
-            public void onResult(VKAccessToken res) {
-                MyApplication.setAccessToken(res.accessToken);
-            }
-            @Override
-            public void onError(VKError error) {}
-        })) {
-            walls = new DBHelper().getAllWalls();
-            adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, walls);
-            ListView leftDrawer = (ListView) findViewById(R.id.left_drawer);
-            leftDrawer.setAdapter(adapterDrawer);
-            super.onActivityResult(requestCode, resultCode, data);
-        }
+        walls = new DBHelper().getAllWalls();
+        adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, walls);
+        ListView leftDrawer = (ListView) findViewById(R.id.left_drawer);
+        leftDrawer.setAdapter(adapterDrawer);
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void initToolbar() {
@@ -215,13 +191,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    private boolean checkInternetConnection() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm.getActiveNetworkInfo() != null
-                && cm.getActiveNetworkInfo().isAvailable()
-                && cm.getActiveNetworkInfo().isConnected();
     }
 
     public static class Helper {

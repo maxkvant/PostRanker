@@ -34,7 +34,7 @@
         android:background="@color/colorPrimaryDark">
 
         <Button
-            android:text="accounts"
+            android:text="@string/sourses"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/button_goto_walls"
