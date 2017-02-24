@@ -7,7 +7,6 @@ import android.content.Context;
 import com.example.maxim.shortstories2.APIs.MyTwitterApiClient;
 import com.example.maxim.shortstories2.APIs.VkClient;
 import com.example.maxim.shortstories2.walls.Wall;
-import com.example.maxim.shortstories2.walls.WallTwitter;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterSession;

@@ -7,7 +7,20 @@ import java.util.List;
 
 import static com.example.maxim.shortstories2.MyApplication.walls;
 
-public class WallAll extends AbstractWall {
+public class FactoryWallAll extends AbstractFactoryWall {
+
+    @Override
+    public Wall create(String name, long id, double ratio, long updated) {
+        return new WallAll(name, id, ratio, updated);
+   }
+
+    @Override
+    public List<SearchItem> searchWalls(String query) {
+        return null;
+    }
+}
+
+class WallAll extends AbstractWall {
     public WallAll(String name, long id, double ratio, long updated) {
         super(name, id, ratio, updated);
     }
@@ -28,5 +41,10 @@ public class WallAll extends AbstractWall {
             }
         }
         return true;
+    }
+
+    @Override
+    public String getFactoryClassName() {
+        return FactoryWallAll.class.getSimpleName();
     }
 }

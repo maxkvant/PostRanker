@@ -11,6 +11,7 @@ public interface Wall {
     long getUpdated();
     List<Post> getPosts(int offset, WallMode mode);
     boolean update();
+    String getFactoryClassName();
 
     final class WallsEntry implements BaseColumns {
         final public static String TABLE_NAME = "Walls";

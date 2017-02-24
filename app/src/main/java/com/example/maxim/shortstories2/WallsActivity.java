@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,19 +22,15 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.maxim.shortstories2.post.Post;
+import com.example.maxim.shortstories2.walls.FactoryWall;
 import com.example.maxim.shortstories2.walls.SearchItem;
 import com.example.maxim.shortstories2.walls.Wall;
-import com.example.maxim.shortstories2.walls.WallVk;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
 import static com.example.maxim.shortstories2.MyApplication.walls;
-import static com.example.maxim.shortstories2.Strings.CLASS_INTENT;
+import static com.example.maxim.shortstories2.Strings.FACTORY_WALL_INTENT;
 
 
 public class WallsActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
@@ -45,7 +40,7 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
     ArrayAdapter adapterWallsList;
     boolean wasSearch = false;
     private Helper helper = new Helper();
-    private Class clazz;
+    private FactoryWall factoryWall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +50,7 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
         progressBarFill = (LinearLayout) findViewById(R.id.progress_bar_fill);
         ((TextView) findViewById(R.id.progress_bar_fill_text)).setText(R.string.adding);
 
-        clazz = (Class) getIntent().getSerializableExtra(CLASS_INTENT);
+        factoryWall = (FactoryWall) getIntent().getSerializableExtra(FACTORY_WALL_INTENT);
 
         setTitle("Walls");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
@@ -160,18 +155,8 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
         }
 
         public void addWall(SearchItem searchItem, final Runnable beforeAdd, final Runnable afterAdd) throws NoSuchMethodException {
-            Constructor constructorWall = clazz.getConstructor(String.class, long.class, double.class, long.class);
-            Wall wall1 = null;
-            try {
-                wall1 = (Wall) constructorWall.newInstance(searchItem.name, searchItem.id, 0, 0);
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-            final Wall wall = wall1;
+            final Wall wall = factoryWall.toWall(searchItem);
+
             new AsyncTask<Void,Void,Void>() {
                 @Override
                 protected void onPreExecute() {
@@ -208,18 +193,7 @@ public class WallsActivity extends AppCompatActivity implements SearchView.OnQue
 
             @Override
             protected List<SearchItem> doInBackground(Void... params) {
-                try {
-                    Method method = clazz.getMethod("searchWalls", String.class);
-                    Log.d("tag", method.toString());
-                    return (List<SearchItem>) method.invoke(null, query);
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-                return null;
+                return factoryWall.searchWalls(query);
             }
 
             @Override

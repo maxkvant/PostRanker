@@ -1,16 +1,7 @@
 package com.example.maxim.shortstories2.walls;
 
-import android.util.Log;
-
-import com.example.maxim.shortstories2.APIs.MyTwitterApiClient;
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.post.Post;
-import com.google.gson.JsonElement;
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.TwitterApiClient;
-import com.twitter.sdk.android.core.TwitterCore;
-import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.models.User;
 
@@ -22,12 +13,39 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Response;
-import retrofit2.http.GET;
-import retrofit2.http.Query;
 
 import static com.example.maxim.shortstories2.MyApplication.twitterApiClient;
 
-public class WallTwitter extends AbstractWall {
+public class FactoryWallTwitter extends AbstractFactoryWall {
+
+    @Override
+    public Wall create(String name, long id, double ratio, long updated) {
+        return new WallTwitter(name, id, ratio, updated);
+    }
+
+    @Override
+    public  List<SearchItem> searchWalls(String query) {
+        Call<List<User>> usersCall = twitterApiClient.getSearchUsersService().users(query);
+
+        List<SearchItem> res = null;
+        List<User> users = null;
+        try {
+            users = usersCall.execute().body();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (users != null) {
+            res = new ArrayList<>();
+            for (User user : users) {
+                res.add(new SearchItem(user.name, user.getId(), user.screenName));
+            }
+        }
+        return res;
+    }
+}
+
+class WallTwitter extends AbstractWall {
     private final int maxTweetsPerGet = 200;
     private final int iterations = 8;
 
@@ -96,24 +114,9 @@ public class WallTwitter extends AbstractWall {
         return true;
     }
 
-    public static List<SearchItem> searchWalls(String query) {
-        Call<List<User>> usersCall = twitterApiClient.getSearchUsersService().users(query);
-
-        List<SearchItem> res = null;
-        List<User> users = null;
-        try {
-            users = usersCall.execute().body();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (users != null) {
-            res = new ArrayList<>();
-            for (User user : users) {
-                res.add(new SearchItem(user.name, user.getId(), user.screenName));
-            }
-        }
-        return res;
+    @Override
+    public String getFactoryClassName() {
+        return FactoryWallTwitter.class.getSimpleName();
     }
 
     private List<Post> tweetsToPosts(List<Tweet> tweets) {

@@ -2,21 +2,57 @@ package com.example.maxim.shortstories2.walls;
 
 import android.util.Log;
 
-import com.example.maxim.shortstories2.DBHelper;
-import com.example.maxim.shortstories2.post.Post;
 import com.example.maxim.shortstories2.APIs.VkPost;
 import com.example.maxim.shortstories2.APIs.VkSearchItem;
+import com.example.maxim.shortstories2.DBHelper;
+import com.example.maxim.shortstories2.post.Post;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.example.maxim.shortstories2.APIs.VkStrings.VERSION_API;
 import static com.example.maxim.shortstories2.MyApplication.getAccessToken;
 import static com.example.maxim.shortstories2.MyApplication.vkClient;
-import static com.example.maxim.shortstories2.APIs.VkStrings.*;
 
-public class WallVk extends AbstractWall {
+public class FactoryWallVk extends AbstractFactoryWall {
+
+    @Override
+    public Wall create(String name, long id, double ratio, long updated) {
+        return new WallVk(name, id, ratio, updated);
+    }
+
+    @Override
+    public List<SearchItem> searchWalls(String query) {
+        Log.d("searchWalls", query);
+        try {
+            List<VkSearchItem> searchItemsVk = vkClient
+                    .searchWalls(VERSION_API, getAccessToken(), query, 20, 1)
+                    .execute()
+                    .body()
+                    .response;
+            return toSearchItems(searchItemsVk);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    private static List<SearchItem> toSearchItems(List<VkSearchItem> searchItemsVk) {
+        if (searchItemsVk == null) {
+            return new ArrayList<>();
+        }
+        List<SearchItem> res = new ArrayList<>();
+        for (VkSearchItem vkSearchItem : searchItemsVk) {
+            res.add(vkSearchItem.toSearchItem());
+        }
+        return res;
+    }
+}
+
+class WallVk extends AbstractWall {
     public WallVk(String name, long id, double ratio, long updated) {
         super(name, id, ratio, updated);
     }
@@ -71,29 +107,8 @@ public class WallVk extends AbstractWall {
         return posts;
     }
 
-    public static List<SearchItem> searchWalls(String query) {
-        Log.d("searchWalls", query);
-        try {
-            List<VkSearchItem> searchItemsVk = vkClient
-                    .searchWalls(VERSION_API, getAccessToken(), query, 20, 1)
-                    .execute()
-                    .body()
-                    .response;
-            return toSearchItems(searchItemsVk);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private static List<SearchItem> toSearchItems(List<VkSearchItem> searchItemsVk) {
-        if (searchItemsVk == null) {
-            return new ArrayList<>();
-        }
-        List<SearchItem> res = new ArrayList<>();
-        for (VkSearchItem vkSearchItem : searchItemsVk) {
-            res.add(vkSearchItem.toSearchItem());
-        }
-        return res;
+    @Override
+    public String getFactoryClassName() {
+        return FactoryWallVk.class.getSimpleName();
     }
 }

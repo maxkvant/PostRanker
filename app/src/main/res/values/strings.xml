@@ -16,11 +16,11 @@
     <string name="adding">Добавляем</string>
 
     <string-array name="table_walls_default_items">
-        <item>(0, \"Новости\", \"WallAll\", 0, 0, 0)</item>
-        <item>(-34215577, \"Подслушано\", \"WallVk\", 2, 0, 0)</item>
-        <item>(-106084026,  \"Just Story\", \"WallVk\", 2, 0, 0)</item>
-        <item>(-78330447, \"Истории класс\", \"WallVk\", 2, 0, 0)</item>
-        <item>(10364952, \"Kirill Elagin\", \"WallTwitter\", 2, 0, 0)</item>
+        <item>(0, \"Новости\", \"FactoryWallAll\", 0, 0, 0)</item>
+        <item>(-34215577, \"Подслушано\", \"FactoryWallVk\", 2, 0, 0)</item>
+        <item>(-106084026,  \"Just Story\", \"FactoryWallVk\", 2, 0, 0)</item>
+        <item>(-78330447, \"Истории класс\", \"FactoryWallVk\", 2, 0, 0)</item>
+        <item>(10364952, \"Kirill Elagin\", \"FactoryWallTwitter\", 2, 0, 0)</item>
     </string-array>
 
     <integer name="com_vk_sdk_AppId">5772831</integer>

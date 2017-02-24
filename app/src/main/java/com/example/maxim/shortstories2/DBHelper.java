@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.example.maxim.shortstories2.post.Comment;
 import com.example.maxim.shortstories2.post.Post;
+import com.example.maxim.shortstories2.walls.FactoryWall;
 import com.example.maxim.shortstories2.walls.WallMode;
 import com.example.maxim.shortstories2.walls.Wall;
 
@@ -130,7 +131,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 null,
                 getModeOrdering(mode),
                 getModeLimit(offset, mode));
-        
+
         if (cursor.moveToFirst()) {
             do {
                 Post post = new Post(
@@ -186,10 +187,11 @@ public class DBHelper extends SQLiteOpenHelper {
                 long id = cursor.getLong(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_ID));
                 long updated = cursor.getLong(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_PRIORITY));
                 try {
-                    res.add((Wall)Class.forName(wallPath + className)
-                            .getConstructor(String.class, long.class, double.class, long.class)
-                            .newInstance(name, id, ratio, updated)
-                    );
+                    String classLongName = wallPath + className;
+                    FactoryWall factoryWall = (FactoryWall) Class.forName(classLongName)
+                            .getConstructor()
+                            .newInstance();
+                    res.add(factoryWall.create(name, id, ratio, updated));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -205,7 +207,7 @@ public class DBHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(Wall.WallsEntry.COLUMN_NAME_ID, wall.getId());
         values.put(Wall.WallsEntry.COLUMN_NAME_NAME, wall.toString());
-        values.put(Wall.WallsEntry.COLUMN_NAME_CLASS, wall.getClass().getSimpleName());
+        values.put(Wall.WallsEntry.COLUMN_NAME_CLASS, wall.getFactoryClassName());
         values.put(Wall.WallsEntry.COLUMN_NAME_PRIORITY, 3);
         values.put(Wall.WallsEntry.COLUMN_NAME_RATIO, wall.getRatio());
         values.put(Wall.WallsEntry.COLUMN_NAME_UPDATED, wall.getUpdated());
