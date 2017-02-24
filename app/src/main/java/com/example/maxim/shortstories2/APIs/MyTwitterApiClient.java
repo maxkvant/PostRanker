@@ -1,5 +1,6 @@
 package com.example.maxim.shortstories2.APIs;
 
+import com.google.gson.JsonElement;
 import com.twitter.sdk.android.core.Session;
 import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterSession;
@@ -23,7 +24,7 @@ public class MyTwitterApiClient extends TwitterApiClient {
     }
 
     public interface SearchUsersService {
-        @GET("/1.1/users/searchWalls.json")
+        @GET("/1.1/users/search.json")
         Call<List<User>> users(@Query("q") String query);
     }
 }

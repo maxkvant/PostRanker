@@ -31,4 +31,5 @@
     <string name="commented">с комментарием</string>
     <string name="default_comment">* комментарий *</string>
     <string name="offline_mode">оффлайн режим</string>
+    <string name="title_activity_accounts">Accounts</string>
 </resources>

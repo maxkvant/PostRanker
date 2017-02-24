@@ -1,10 +1,16 @@
 package com.example.maxim.shortstories2.walls;
 
+import android.util.Log;
+
 import com.example.maxim.shortstories2.APIs.MyTwitterApiClient;
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.post.Post;
+import com.google.gson.JsonElement;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.models.User;
 
@@ -45,9 +51,7 @@ public class WallTwitter extends AbstractWall {
         int minDate = (int) (cal.getTimeInMillis() / 1000);
 
         for (int i = 0; i < iterations; i++) {
-            Call<List<Tweet>> listCall = TwitterCore
-                    .getInstance()
-                    .getGuestApiClient()
+            Call<List<Tweet>> listCall = twitterApiClient
                     .getStatusesService()
                     .userTimeline(id,
                             null,
@@ -93,10 +97,9 @@ public class WallTwitter extends AbstractWall {
     }
 
     public static List<SearchItem> searchWalls(String query) {
-        MyTwitterApiClient client = new MyTwitterApiClient();
-        Call<List<User>> usersCall = client.getSearchUsersService().users(query);
+        Call<List<User>> usersCall = twitterApiClient.getSearchUsersService().users(query);
 
-        List<SearchItem> res = new ArrayList<>();
+        List<SearchItem> res = null;
         List<User> users = null;
         try {
             users = usersCall.execute().body();
@@ -105,6 +108,7 @@ public class WallTwitter extends AbstractWall {
         }
 
         if (users != null) {
+            res = new ArrayList<>();
             for (User user : users) {
                 res.add(new SearchItem(user.name, user.getId(), user.screenName));
             }

@@ -10,6 +10,7 @@ import com.example.maxim.shortstories2.walls.Wall;
 import com.example.maxim.shortstories2.walls.WallTwitter;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterSession;
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKAccessTokenTracker;
 import com.vk.sdk.VKSdk;
@@ -68,7 +69,13 @@ public class MyApplication extends Application {
         super.onCreate();
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
-        twitterApiClient = new MyTwitterApiClient();
+        TwitterSession twitterSession =
+                Twitter.getInstance().core.getSessionManager().getActiveSession();
+        if (twitterSession == null) {
+            twitterApiClient = new MyTwitterApiClient();
+        } else {
+            twitterApiClient = new MyTwitterApiClient(twitterSession);
+        }
 
         vkAccessTokenTracker.startTracking();
         VKSdk.initialize(this);

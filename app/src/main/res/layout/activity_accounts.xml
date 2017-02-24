@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="com.example.maxim.shortstories2.AccountsActivity">
+
+
+    <LinearLayout
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_width="match_parent">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.NoActionBar.AppBarOverlay">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/AppTheme.NoActionBar.PopupOverlay" />
+        </android.support.design.widget.AppBarLayout>
+
+        <Button
+            android:text="Walls VK"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_walls_vk"
+            android:textSize="5pt"/>
+
+        <com.twitter.sdk.android.core.identity.TwitterLoginButton
+            android:id="@+id/twitter_login_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:text="Walls Twitter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_walls_twitter"
+            android:textSize="5pt"/>
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

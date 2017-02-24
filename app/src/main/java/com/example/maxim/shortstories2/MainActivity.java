@@ -125,8 +125,7 @@ public class MainActivity extends AppCompatActivity {
         buttonWalls.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, WallsActivity.class);
-                drawer.closeDrawer(GravityCompat.START);
+                Intent intent = new Intent(MainActivity.this, AccountsActivity.class);
                 startActivityForResult(intent, 1);
             }
         });
