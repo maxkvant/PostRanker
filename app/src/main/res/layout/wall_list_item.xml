@@ -4,5 +4,8 @@
     android:layout_height="wrap_content"
     android:id="@+id/walls_list_item"
     android:padding="5dp"
+    android:layout_margin="5dp"
+    android:textStyle="bold"
+    android:textColor="@color/vk_white"
     android:background="#e00022">
 </TextView>

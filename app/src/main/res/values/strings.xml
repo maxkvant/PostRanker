@@ -31,10 +31,11 @@
     <string name="commented">с комментарием</string>
     <string name="default_comment">* комментарий *</string>
     <string name="offline_mode">оффлайн режим</string>
-    <string name="title_activity_walls">Accounts</string>
+    <string name="title_activity_walls">Источники</string>
     <string name="login_vk">войти в VK</string>
     <string name="walls_vk">добавить источник из VK</string>
     <string name="walls_twitter">добавить источкник из Twitter</string>
-    <string name="sourses">accounts</string>
+    <string name="sources">accounts</string>
     <string name="delete_wall">Удалить источник</string>
+    <string name="title_activity_feed">FeedActivity</string>
 </resources>

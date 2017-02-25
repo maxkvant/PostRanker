@@ -17,6 +17,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 
@@ -98,7 +99,13 @@ public class MainActivity extends AppCompatActivity {
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        Button buttonWalls = (Button) findViewById(R.id.button_goto_walls);
+
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LinearLayout headerView = (LinearLayout) inflater
+                .inflate(R.layout.drawer_header, null);
+        leftDrawer.addHeaderView(headerView);
+
+        Button buttonWalls = (Button) headerView.findViewById(R.id.button_goto_walls);
         buttonWalls.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,8 +118,10 @@ public class MainActivity extends AppCompatActivity {
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            helper = new Helper(walls.get(position), BY_DATE);
-            setPostsAdapter();
+            if (0 < position && position <= walls.size()) {
+                helper = new Helper(walls.get(position - 1), BY_DATE);
+                setPostsAdapter();
+            }
         }
     }
 
@@ -165,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        footerView = ((LayoutInflater )getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+        footerView = ((LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                 .inflate(R.layout.progress_bar, null);
     }
 

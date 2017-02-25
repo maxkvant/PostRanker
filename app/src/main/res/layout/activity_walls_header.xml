@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:text="@string/login_vk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/vk_share_blue_color"
+        android:textColor="@color/vk_white"
+        android:id="@+id/button_login_vk"
+        android:textSize="5pt"/>
+
+    <Button
+        android:text="@string/walls_vk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_walls_vk"
+        android:textSize="5pt"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_margin="@dimen/activity_vertical_margin"
+        android:background="@android:color/darker_gray"/>
+
+    <com.twitter.sdk.android.core.identity.TwitterLoginButton
+        android:id="@+id/button_login_twitter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:text="@string/walls_twitter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_walls_twitter"
+        android:textSize="5pt"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/darker_gray"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="@string/delete_wall"
+        android:textSize="10pt"
+        android:padding="10dp"/>
+</LinearLayout>

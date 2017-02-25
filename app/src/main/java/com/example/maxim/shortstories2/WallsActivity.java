@@ -1,14 +1,17 @@
 package com.example.maxim.shortstories2;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.example.maxim.shortstories2.APIs.MyTwitterApiClient;
@@ -36,6 +39,7 @@ public class WallsActivity extends AppCompatActivity {
     private ArrayAdapter<Wall> adapterWallsList;
     enum ButtonAction {ADD_WALL, VK_LOGIN, NULL}
     private ButtonAction curButton = NULL;
+    LinearLayout headerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +57,11 @@ public class WallsActivity extends AppCompatActivity {
         wallsList.setOnItemClickListener(new ItemClickListener());
         adapterWallsList = new ArrayAdapter<>(this, R.layout.wall_list_item, walls);
         wallsList.setAdapter(adapterWallsList);
+
+        headerView = (LinearLayout) ((LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                .inflate(R.layout.activity_walls_header, null);
+
+        wallsList.addHeaderView(headerView);
 
         initVkButtons();
         initTwitterButtons();
@@ -95,7 +104,7 @@ public class WallsActivity extends AppCompatActivity {
 
 
     private void initVkButtons() {
-        Button buttonLoginVk = (Button) findViewById(R.id.button_login_vk);
+        Button buttonLoginVk = (Button) headerView.findViewById(R.id.button_login_vk);
         buttonLoginVk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,7 +113,7 @@ public class WallsActivity extends AppCompatActivity {
             }
         });
 
-        Button buttonWallsVk = (Button) findViewById(R.id.button_walls_vk);
+        Button buttonWallsVk = (Button) headerView.findViewById(R.id.button_walls_vk);
         buttonWallsVk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,7 +126,7 @@ public class WallsActivity extends AppCompatActivity {
     }
 
     private void initTwitterButtons() {
-        twitterLoginButton = (TwitterLoginButton) findViewById(R.id.button_login_twitter);
+        twitterLoginButton = (TwitterLoginButton) headerView.findViewById(R.id.button_login_twitter);
         twitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
@@ -128,7 +137,7 @@ public class WallsActivity extends AppCompatActivity {
             public void failure(TwitterException exception) {}
         });
 
-        Button buttonWallsTwitter = (Button) findViewById(R.id.button_walls_twitter);
+        Button buttonWallsTwitter = (Button) headerView.findViewById(R.id.button_walls_twitter);
 
         buttonWallsTwitter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -151,7 +160,11 @@ public class WallsActivity extends AppCompatActivity {
     private class ItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            deleteWall(walls.get(position));
+            synchronized (walls) {
+                if (0 < position && position <= walls.size()) {
+                    deleteWall(walls.get(position - 1));
+                }
+            }
             adapterWallsList.notifyDataSetChanged();
         }
     }
