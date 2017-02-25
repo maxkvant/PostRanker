@@ -1,10 +1,6 @@
 language: android
 jdk:
   - oraclejdk8
-licenses:
-      - 'android-sdk-preview-license-.+'
-      - 'android-sdk-license-.+'
-      - 'google-gdk-license-.+'
 android:
   components:
     - tools
@@ -12,6 +8,10 @@ android:
     - android-23
     - extra-android-m2repository
     - extra-google-m2repository
+  licenses:
+    - 'android-sdk-preview-license-.+'
+    - 'android-sdk-license-.+'
+    - 'intel-android-extra-license.+'
 env:
  - JAVA7_HOME=/usr/lib/jvm/java-7-oracle/jre
 before_script:
