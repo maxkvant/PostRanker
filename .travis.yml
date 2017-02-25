@@ -8,6 +8,7 @@ android:
     - build-tools-23.0.1
     - android-23
     - android-24
+    - android-22
     - extra-android-m2repository
     - extra-google-m2repository
     - sys-img-armeabi-v7a-android-22
@@ -17,8 +18,10 @@ android:
     - 'intel-android-extra-license.+'
 env:
  - JAVA7_HOME=/usr/lib/jvm/java-7-oracle/jre
-before_script:
+before_install:
   - tar -xvf vksdk_library.tar.gz
+before_script:
+  - android list targets
   - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
   - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
