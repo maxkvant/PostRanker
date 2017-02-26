@@ -24,6 +24,7 @@ import android.widget.Spinner;
 import com.example.maxim.shortstories2.post.Post;
 import com.example.maxim.shortstories2.post.PostsAdapter;
 import com.example.maxim.shortstories2.util.Consumer;
+import com.example.maxim.shortstories2.util.SharedPrefs;
 import com.example.maxim.shortstories2.walls.WallMode;
 import com.example.maxim.shortstories2.walls.Wall;
 
@@ -33,6 +34,8 @@ import java.util.EnumMap;
 import java.util.List;
 
 import static com.example.maxim.shortstories2.MyApplication.walls;
+import static com.example.maxim.shortstories2.util.Strings.FIRST_RUN;
+import static com.example.maxim.shortstories2.util.Strings.TRUE;
 import static com.example.maxim.shortstories2.walls.WallMode.BY_DATE;
 import static com.example.maxim.shortstories2.walls.WallMode.COMMENTED;
 import static com.example.maxim.shortstories2.walls.WallMode.TOP_DAILY;
@@ -62,6 +65,15 @@ public class MainActivity extends AppCompatActivity {
         initDrawer();
         initSwipeRefresh();
 
+        if (SharedPrefs.getString(this, FIRST_RUN) == null) {
+            SharedPrefs.storeString(this, FIRST_RUN, TRUE);
+            helper.refresh(new Runnable() {
+                @Override
+                public void run() {
+
+                }
+            });
+        };
         Log.d("onCreate, walls-size", walls.size() + "");
     }
 

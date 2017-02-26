@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.example.maxim.shortstories2.post.Comment;
@@ -19,24 +18,44 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import retrofit2.http.DELETE;
+
 import static com.example.maxim.shortstories2.walls.WallMode.BY_DATE;
 import static com.example.maxim.shortstories2.walls.WallMode.COMMENTED;
 import static java.lang.StrictMath.max;
 import static java.lang.StrictMath.nextAfter;
 
 public class DBHelper extends SQLiteOpenHelper {
+    private final static String COMA_STEP = ",";
+
+    public final static int DATABASE_VERSION = 1;
+    public final static String DATABASE_NAME = "ShortStoriesDB";
+
+    private static final String DELETE_TABLE =
+            "drop table if exists ";
     private final static int POSTS_PER_GET = 20;
     private final static int POSTS_PER_GET_TOP = 200;
-    private final static String DB_NAME = "ShortStoriesDB";
     private final static String wallPath = "com.example.maxim.shortstories2.walls.";
     private final static String INT_TYPE = " integer";
     private final static String TEXT_TYPE = " text";
     private final static String PRIMARY_KEY = " primary key";
     private final static String REAL_TYPE = " real";
-    private final static String COMA_STEP = ",";
 
     public DBHelper() {
-        super(MyApplication.getInstance(), DB_NAME, null, 1);
+        super(MyApplication.getInstance(), DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL(DELETE_TABLE + Post.PostsEntry.TABLE_NAME);
+        db.execSQL(DELETE_TABLE + Comment.CommentsEntry.TABLE_NAME);
+        db.execSQL(DELETE_TABLE + Wall.WallsEntry.TABLE_NAME);
+        onCreate(db);
+    }
+
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        onUpgrade(db, oldVersion, newVersion);
     }
 
     @Override
@@ -76,9 +95,6 @@ public class DBHelper extends SQLiteOpenHelper {
             db.execSQL(sql);
         }
     }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {}
 
     public void insertPosts(List<Post> posts) {
         Log.d("insertPosts", "" + posts.size());
@@ -176,7 +192,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 null,
                 null,
                 null,
-                Wall.WallsEntry.COLUMN_NAME_PRIORITY);
+                Wall.WallsEntry.COLUMN_NAME_PRIORITY + COMA_STEP + Wall.WallsEntry.COLUMN_NAME_NAME
+        );
 
 
         if (cursor.moveToFirst()) {
