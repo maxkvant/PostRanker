@@ -35,7 +35,7 @@
             android:theme="@style/VK.Transparent" />
         <activity
             android:name=".TweetActivity"
-            android:label="@string/title_activity_post"
+            android:label="@string/title_activity_tweet"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <meta-data
@@ -45,6 +45,11 @@
         <activity
             android:name=".WallsActivity"
             android:label="@string/title_activity_walls"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".VkPostActivity"
+            android:label="@string/title_activity_vk_post"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 

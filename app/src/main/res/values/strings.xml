@@ -37,5 +37,6 @@
     <string name="delete_wall">Удалить источник</string>
     <string name="title_activity_feed">FeedActivity</string>
     <string name="title_activity_tweet">TweetActivity</string>
-    <string name="show">посмотреть</string>
+    <string name="show">на сайте</string>
+    <string name="title_activity_vk_post">VK</string>
 </resources>

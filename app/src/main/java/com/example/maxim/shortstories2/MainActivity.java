@@ -69,12 +69,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main_activity, menu);
-        return true;
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         walls = dbHelper.getAllWalls();
         adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, walls);
