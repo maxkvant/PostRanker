@@ -13,7 +13,7 @@
         <TextView
             android:textAlignment="center"
             android:textStyle="bold"
-            android:textSize="7pt"
+            android:textSize="8pt"
             android:id="@+id/feed_item_wall"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,7 +21,7 @@
         <TextView
             android:textAlignment="center"
             android:id="@+id/feed_item_date"
-            android:textSize="5pt"
+            android:textSize="6pt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/tw__composer_black"/>
@@ -29,13 +29,13 @@
             android:id="@+id/feed_item_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="7pt"
+            android:textSize="8pt"
 
             android:textColor="@color/tw__composer_black"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="5pt"
+            android:textSize="6pt"
             android:background="@color/tw__light_gray"
             android:padding="7dp"
             android:minHeight="0dp"

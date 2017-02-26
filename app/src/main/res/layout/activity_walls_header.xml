@@ -11,14 +11,14 @@
         android:background="@color/vk_share_blue_color"
         android:textColor="@color/vk_white"
         android:id="@+id/button_login_vk"
-        android:textSize="5pt"/>
+        android:textSize="6pt"/>
 
     <Button
         android:text="@string/walls_vk"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button_walls_vk"
-        android:textSize="5pt"/>
+        android:textSize="6pt"/>
 
     <View
         android:layout_width="match_parent"
@@ -36,7 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button_walls_twitter"
-        android:textSize="5pt"/>
+        android:textSize="6pt"/>
 
     <View
         android:layout_width="match_parent"
@@ -47,6 +47,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textStyle="bold"
+        android:textColor="@color/vk_black"
         android:text="@string/delete_wall"
         android:textSize="10pt"
         android:padding="10dp"/>

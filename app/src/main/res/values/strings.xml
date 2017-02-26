@@ -32,10 +32,9 @@
     <string name="title_activity_walls">Источники</string>
     <string name="login_vk">войти в VK</string>
     <string name="walls_vk">добавить источник из VK</string>
-    <string name="walls_twitter">добавить источкник из Twitter</string>
+    <string name="walls_twitter">добавить источник из Twitter</string>
     <string name="sources">accounts</string>
     <string name="delete_wall">Удалить источник</string>
-    <string name="title_activity_feed">FeedActivity</string>
     <string name="title_activity_tweet">TweetActivity</string>
     <string name="show">на сайте</string>
     <string name="title_activity_vk_post">VK</string>

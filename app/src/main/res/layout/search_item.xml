@@ -6,10 +6,12 @@
     android:padding="5dp">
     <TextView android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:textSize="8pt"
         android:id="@+id/search_item_name">
     </TextView>
     <TextView android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:textSize="7pt"
         android:id="@+id/search_item_description">
     </TextView>
 </LinearLayout>

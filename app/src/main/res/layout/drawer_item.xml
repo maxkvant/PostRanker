@@ -3,6 +3,6 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:textColor="@color/tw__composer_black"
     android:textStyle="bold"
-    android:textSize="7pt"
+    android:textSize="8pt"
     android:padding="@dimen/activity_horizontal_margin">
 </TextView>
