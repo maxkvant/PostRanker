@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     List<WallMode> modes = Arrays.asList(WallMode.values());
     private Helper helper;
     private Toolbar toolbar;
+    private DrawerLayout drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,10 +92,10 @@ public class MainActivity extends AppCompatActivity {
         adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, walls);
         ListView leftDrawer = (ListView) findViewById(R.id.left_drawer);
         leftDrawer.setAdapter(adapterDrawer);
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_main);
+        drawer = (DrawerLayout) findViewById(R.id.activity_main);
         leftDrawer.setOnItemClickListener(new DrawerItemClickListener());
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
@@ -109,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         buttonWalls.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                drawer.closeDrawers();
                 Intent intent = new Intent(MainActivity.this, WallsActivity.class);
                 startActivityForResult(intent, 1);
             }
@@ -179,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setPostsAdapter() {
+        drawer.closeDrawers();
         spinner.setSelection(modes.indexOf(helper.mode));
         final ListView feed = (ListView) findViewById(R.id.feed_list);
         final PostsAdapter adapter = new PostsAdapter(this);
