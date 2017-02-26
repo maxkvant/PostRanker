@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.example.maxim.shortstories2.post.Comment;
 import com.example.maxim.shortstories2.post.Post;
+import com.example.maxim.shortstories2.util.SharedPrefs;
 import com.example.maxim.shortstories2.walls.FactoryWall;
 import com.example.maxim.shortstories2.walls.WallMode;
 import com.example.maxim.shortstories2.walls.Wall;
@@ -20,6 +21,7 @@ import java.util.List;
 
 import retrofit2.http.DELETE;
 
+import static com.example.maxim.shortstories2.util.Strings.FIRST_RUN;
 import static com.example.maxim.shortstories2.walls.WallMode.BY_DATE;
 import static com.example.maxim.shortstories2.walls.WallMode.COMMENTED;
 import static java.lang.StrictMath.max;
@@ -28,8 +30,8 @@ import static java.lang.StrictMath.nextAfter;
 public class DBHelper extends SQLiteOpenHelper {
     private final static String COMA_STEP = ",";
 
-    public final static int DATABASE_VERSION = 1;
-    public final static String DATABASE_NAME = "ShortStoriesDB";
+    private final static int DATABASE_VERSION = 1;
+    private final static String DATABASE_NAME = "ShortStoriesDB";
 
     private static final String DELETE_TABLE =
             "drop table if exists ";
@@ -47,6 +49,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        SharedPrefs.removeKey(MyApplication.getInstance(), FIRST_RUN);
         db.execSQL(DELETE_TABLE + Post.PostsEntry.TABLE_NAME);
         db.execSQL(DELETE_TABLE + Comment.CommentsEntry.TABLE_NAME);
         db.execSQL(DELETE_TABLE + Wall.WallsEntry.TABLE_NAME);

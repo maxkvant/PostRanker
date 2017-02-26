@@ -28,9 +28,10 @@ import com.vk.sdk.VKCallback;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
 
+import java.util.List;
+
 import static com.example.maxim.shortstories2.WallsActivity.ButtonAction.NULL;
 import static com.example.maxim.shortstories2.MyApplication.twitterApiClient;
-import static com.example.maxim.shortstories2.MyApplication.walls;
 import static com.example.maxim.shortstories2.util.Strings.FACTORY_WALL_INTENT;
 
 public class WallsActivity extends AppCompatActivity {
@@ -39,7 +40,9 @@ public class WallsActivity extends AppCompatActivity {
     private ArrayAdapter<Wall> adapterWallsList;
     enum ButtonAction {ADD_WALL, VK_LOGIN, NULL}
     private ButtonAction curButton = NULL;
-    LinearLayout headerView;
+    private LinearLayout headerView;
+    private DBHelper dbHelper = new DBHelper();
+    private List<Wall> walls;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +58,7 @@ public class WallsActivity extends AppCompatActivity {
 
         wallsList = (ListView) findViewById(R.id.walls_list);
         wallsList.setOnItemClickListener(new ItemClickListener());
-        adapterWallsList = new ArrayAdapter<>(this, R.layout.wall_list_item, walls);
-        wallsList.setAdapter(adapterWallsList);
-
+        setAdapterWalls();
         headerView = (LinearLayout) ((LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                 .inflate(R.layout.activity_walls_header, null);
 
@@ -83,12 +84,11 @@ public class WallsActivity extends AppCompatActivity {
                     }
                 });
             case ADD_WALL:
-                adapterWallsList.notifyDataSetChanged();
+                setAdapterWalls();
             case NULL:
                 twitterLoginButton.onActivityResult(requestCode, resultCode, data);
         }
         curButton = NULL;
-
     }
 
     @Override
@@ -150,6 +150,12 @@ public class WallsActivity extends AppCompatActivity {
         });
     }
 
+    private void setAdapterWalls() {
+        walls = dbHelper.getAllWalls();
+        adapterWallsList = new ArrayAdapter<>(this, R.layout.wall_list_item, walls);
+        wallsList.setAdapter(adapterWallsList);
+    }
+
     private void deleteWall(Wall wall) {
         DBHelper dbHelper = new DBHelper();
         dbHelper.deleteWall(wall.getId());
@@ -160,10 +166,8 @@ public class WallsActivity extends AppCompatActivity {
     private class ItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            synchronized (walls) {
-                if (0 < position && position <= walls.size()) {
-                    deleteWall(walls.get(position - 1));
-                }
+            if (0 < position && position <= walls.size()) {
+                deleteWall(walls.get(position - 1));
             }
             adapterWallsList.notifyDataSetChanged();
         }

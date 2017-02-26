@@ -30,7 +30,6 @@ import com.example.maxim.shortstories2.walls.Wall;
 import java.util.Collections;
 import java.util.List;
 
-import static com.example.maxim.shortstories2.MyApplication.walls;
 import static com.example.maxim.shortstories2.util.Strings.FACTORY_WALL_INTENT;
 
 
@@ -87,13 +86,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        lastText = newText;
-        helper.searchWalls(newText, new Consumer<List<SearchItem>>() {
+        helper.searchWalls(query, new Consumer<List<SearchItem>>() {
             @Override
             public void accept(List<SearchItem> searchItems) {
                 if (searchItems == null) {
@@ -104,6 +97,12 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                 wasSearch = true;
             }
         });
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        lastText = newText;
         return false;
     }
 
@@ -146,8 +145,6 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                     if (wall.update()) {
                         dbHelper.insertWall(wall);
                     }
-                    walls.clear();
-                    walls.addAll(dbHelper.getAllWalls());
                     return null;
                 }
                 @Override

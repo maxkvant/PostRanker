@@ -33,9 +33,6 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 
-import static com.example.maxim.shortstories2.MyApplication.walls;
-import static com.example.maxim.shortstories2.util.Strings.FIRST_RUN;
-import static com.example.maxim.shortstories2.util.Strings.TRUE;
 import static com.example.maxim.shortstories2.walls.WallMode.BY_DATE;
 import static com.example.maxim.shortstories2.walls.WallMode.COMMENTED;
 import static com.example.maxim.shortstories2.walls.WallMode.TOP_DAILY;
@@ -52,12 +49,15 @@ public class MainActivity extends AppCompatActivity {
     private Helper helper;
     private Toolbar toolbar;
     private DrawerLayout drawer;
+    private final DBHelper dbHelper = new DBHelper();
+    private List<Wall> walls;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        walls.addAll(new DBHelper().getAllWalls());
+        walls = dbHelper.getAllWalls();
         helper = new Helper(walls.get(0), BY_DATE);
 
         initToolbar();
@@ -65,15 +65,6 @@ public class MainActivity extends AppCompatActivity {
         initDrawer();
         initSwipeRefresh();
 
-        if (SharedPrefs.getString(this, FIRST_RUN) == null) {
-            SharedPrefs.storeString(this, FIRST_RUN, TRUE);
-            helper.refresh(new Runnable() {
-                @Override
-                public void run() {
-
-                }
-            });
-        };
         Log.d("onCreate, walls-size", walls.size() + "");
     }
 
@@ -85,8 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        walls.clear();
-        walls.addAll(new DBHelper().getAllWalls());
+        walls = dbHelper.getAllWalls();
         adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, walls);
         ListView leftDrawer = (ListView) findViewById(R.id.left_drawer);
         leftDrawer.setAdapter(adapterDrawer);
@@ -132,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if (0 < position && position <= walls.size()) {
+            if (0 < position && position < walls.size()) {
                 helper = new Helper(walls.get(position - 1), BY_DATE);
                 setPostsAdapter();
             }
@@ -205,11 +195,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 if (view.getLastVisiblePosition() == feed.getCount() - 1) {
-                    feed.addFooterView(footerView);
                     helper.getPosts(new Consumer<List<Post>>() {
                         @Override
                         public void accept(List<Post> posts) {
-                            feed.removeFooterView(footerView);
                             adapter.addPosts(posts);
                         }
                     });

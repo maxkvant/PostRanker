@@ -114,6 +114,11 @@ class WallVk extends AbstractWall {
     }
 
     @Override
+    public boolean isSource() {
+        return true;
+    }
+
+    @Override
     public String getFactoryClassName() {
         return FactoryWallVk.class.getSimpleName();
     }

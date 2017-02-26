@@ -12,6 +12,7 @@ public interface Wall {
     List<Post> getPosts(int offset, WallMode mode);
     boolean update();
     String getFactoryClassName();
+    boolean isSource();
 
     final class WallsEntry implements BaseColumns {
         final public static String TABLE_NAME = "Walls";

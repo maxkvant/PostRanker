@@ -1,18 +1,22 @@
 package com.example.maxim.shortstories2.walls;
 
+import android.util.Log;
+
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.post.Post;
 
 import java.util.List;
-
-import static com.example.maxim.shortstories2.MyApplication.walls;
 
 public class FactoryWallAll extends AbstractFactoryWall {
 
     @Override
     public Wall create(String name, long id, double ratio, long updated) {
         return new WallAll(name, id, ratio, updated);
-   }
+    }
+
+    public Wall create() {
+        return create("", 0, 0, 0);
+    }
 
     @Override
     public List<SearchItem> searchWalls(String query) {
@@ -33,14 +37,20 @@ class WallAll extends AbstractWall {
 
     @Override
     public boolean update() {
+        List<Wall> walls = new DBHelper().getAllWalls();
         for (Wall wall : walls) {
-            if (wall != this) {
+            if (wall.isSource()) {
                 if (!wall.update()) {
                     return false;
                 }
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean isSource() {
+        return false;
     }
 
     @Override

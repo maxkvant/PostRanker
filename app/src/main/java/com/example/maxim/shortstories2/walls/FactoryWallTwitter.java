@@ -118,6 +118,11 @@ class WallTwitter extends AbstractWall {
     }
 
     @Override
+    public boolean isSource() {
+        return true;
+    }
+
+    @Override
     public String getFactoryClassName() {
         return FactoryWallTwitter.class.getSimpleName();
     }

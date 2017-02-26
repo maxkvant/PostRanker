@@ -5,5 +5,5 @@ public abstract class Strings {
     public final static String FACTORY_WALL_INTENT = "FactoryWall";
     public final static String VK_ACCESS_TOKEN = "vk_access_token";
     public final static String FIRST_RUN = "first_run";
-    public final static String TRUE = "TRUE";
+    public final static String FALSE = "false";
 }
