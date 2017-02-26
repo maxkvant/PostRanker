@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.example.maxim.shortstories2.TweetActivity;
 import com.example.maxim.shortstories2.R;
+import com.example.maxim.shortstories2.VkPostActivity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,6 +64,9 @@ public class PostsAdapter extends BaseAdapter {
                     case "FactoryWallTwitter":
                         newActivity = TweetActivity.class;
                         break;
+                    case "FactoryWallVk":
+                        newActivity = VkPostActivity.class;
+                        break;
                     default:
                         newActivity = null;
                 }
@@ -76,7 +80,7 @@ public class PostsAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public static void initView(View convertView, Post item) {
+    private static void initView(View convertView, Post item) {
         ((TextView) convertView.findViewById(R.id.feed_item_wall)).setText(item.wall_name);
         ((TextView) convertView.findViewById(R.id.feed_item_text)).setText(item.text);
         ((TextView) convertView.findViewById(R.id.feed_item_date))
