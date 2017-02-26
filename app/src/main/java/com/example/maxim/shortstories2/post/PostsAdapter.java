@@ -1,6 +1,7 @@
 package com.example.maxim.shortstories2.post;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -10,7 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.maxim.shortstories2.PostActivity;
+import com.example.maxim.shortstories2.TweetActivity;
 import com.example.maxim.shortstories2.R;
 
 import java.util.ArrayList;
@@ -20,14 +21,14 @@ import java.util.List;
 import static com.example.maxim.shortstories2.util.Strings.POST_INTENT;
 
 public class PostsAdapter extends BaseAdapter {
-    private Context ctx;
+    private Activity activity;
     private LayoutInflater inflater;
     private List<Post> items;
 
-    public PostsAdapter(Context context) {
-        this.ctx = context;
+    public PostsAdapter(Activity activity) {
+        this.activity = activity;
         this.items = new ArrayList<>();
-        inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater = (LayoutInflater) this.activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
@@ -52,13 +53,24 @@ public class PostsAdapter extends BaseAdapter {
         }
         final Post item = items.get(position);
         initView(convertView, item);
-        Button buttonComment = (Button) convertView.findViewById(R.id.feed_item_comment);
-        buttonComment.setOnClickListener(new View.OnClickListener() {
+        Button button = (Button) convertView.findViewById(R.id.feed_item_show);
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ctx, PostActivity.class);
-                intent.putExtra(POST_INTENT, item);
-                ctx.startActivity(intent);
+                Class newActivity;
+                Intent intent;
+                switch (item.factoryWall) {
+                    case "FactoryWallTwitter":
+                        newActivity = TweetActivity.class;
+                        break;
+                    default:
+                        newActivity = null;
+                }
+                if (newActivity != null) {
+                    intent = new Intent(PostsAdapter.this.activity, newActivity);
+                    intent.putExtra(POST_INTENT, item);
+                    activity.startActivity(intent);
+                }
             }
         });
         return convertView;

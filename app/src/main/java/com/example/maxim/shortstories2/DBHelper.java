@@ -19,8 +19,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import retrofit2.http.DELETE;
-
 import static com.example.maxim.shortstories2.util.Strings.FIRST_RUN;
 import static com.example.maxim.shortstories2.walls.WallMode.BY_DATE;
 import static com.example.maxim.shortstories2.walls.WallMode.COMMENTED;
@@ -30,7 +28,7 @@ import static java.lang.StrictMath.nextAfter;
 public class DBHelper extends SQLiteOpenHelper {
     private final static String COMA_STEP = ",";
 
-    private final static int DATABASE_VERSION = 1;
+    private final static int DATABASE_VERSION = 2;
     private final static String DATABASE_NAME = "ShortStoriesDB";
 
     private static final String DELETE_TABLE =
@@ -64,12 +62,15 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String tablePosts = "create table " + Post.PostsEntry.TABLE_NAME + "(" +
-                Post.PostsEntry.COLUMN_NAME_ID + INT_TYPE + PRIMARY_KEY + COMA_STEP +
+                Post.PostsEntry.COLUMN_NAME_ID + INT_TYPE + COMA_STEP +
                 Post.PostsEntry.COLUMN_NAME_TEXT + TEXT_TYPE + COMA_STEP +
                 Post.PostsEntry.COLUMN_NAME_WALL_ID + INT_TYPE + COMA_STEP +
                 Post.PostsEntry.COLUMN_NAME_DATE + INT_TYPE + COMA_STEP +
-                Post.PostsEntry.COLUMN_NAME_LOAD_DATE + INT_TYPE + COMA_STEP +
-                Post.PostsEntry.COLUMN_NAME_RATING + REAL_TYPE + ")";
+                Post.PostsEntry.COLUMN_NAME_RATING + REAL_TYPE + COMA_STEP +
+                PRIMARY_KEY + "(" +
+                    Post.PostsEntry.COLUMN_NAME_ID + COMA_STEP +
+                    Post.PostsEntry.COLUMN_NAME_WALL_ID + ")" +
+                ")";
         db.execSQL(tablePosts);
 
         String tableComments = "create table " + Comment.CommentsEntry.TABLE_NAME + "(" +
@@ -110,7 +111,6 @@ public class DBHelper extends SQLiteOpenHelper {
             values.put(Post.PostsEntry.COLUMN_NAME_WALL_ID, post.wall_id);
             values.put(Post.PostsEntry.COLUMN_NAME_DATE, post.date);
             values.put(Post.PostsEntry.COLUMN_NAME_RATING, post.rating);
-            values.put(Post.PostsEntry.COLUMN_NAME_LOAD_DATE, post.load_date);
             db.insertWithOnConflict(Post.PostsEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         }
         db.setTransactionSuccessful();
@@ -123,11 +123,13 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String [] projection = {
+            Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_ID,
             Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_TEXT,
             Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_WALL_ID,
             Wall.WallsEntry.TABLE_NAME + "." + Wall.WallsEntry.COLUMN_NAME_NAME,
             Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_DATE,
-            Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_RATING
+            Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_RATING,
+            Wall.WallsEntry.TABLE_NAME + "." + Wall.WallsEntry.COLUMN_NAME_CLASS
         };
 
         String table = Post.PostsEntry.TABLE_NAME + " inner join " + Wall.WallsEntry.TABLE_NAME +
@@ -154,12 +156,13 @@ public class DBHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Post post = new Post(
+                        cursor.getLong(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_ID)),
                         cursor.getString(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_TEXT)),
                         cursor.getLong(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_WALL_ID)),
                         cursor.getString(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_NAME)),
                         cursor.getInt(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_DATE)),
-                        cursor.getDouble(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_RATING))
-                );
+                        cursor.getDouble(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_RATING)),
+                        cursor.getString(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_CLASS)));
                 res.add(post);
             } while (cursor.moveToNext());
         }

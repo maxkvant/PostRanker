@@ -18,6 +18,7 @@ import retrofit2.Response;
 import static com.example.maxim.shortstories2.MyApplication.twitterApiClient;
 
 public class FactoryWallTwitter extends AbstractFactoryWall {
+    static final String className = FactoryWallTwitter.class.getSimpleName();
 
     @Override
     public Wall create(String name, long id, double ratio, long updated) {
@@ -124,7 +125,7 @@ class WallTwitter extends AbstractWall {
 
     @Override
     public String getFactoryClassName() {
-        return FactoryWallTwitter.class.getSimpleName();
+        return FactoryWallTwitter.className;
     }
 
     private List<Post> tweetsToPosts(List<Tweet> tweets) {
@@ -132,12 +133,13 @@ class WallTwitter extends AbstractWall {
         for (Tweet tweet : tweets) {
             int date = (int) (Date.parse(tweet.createdAt) / 1000);
             posts.add(new Post(
+                    tweet.id,
                     tweet.text,
                     id,
                     name,
                     date,
-                    tweet.favoriteCount
-            ));
+                    tweet.favoriteCount,
+                    FactoryWallTwitter.className));
         }
         return posts;
     }

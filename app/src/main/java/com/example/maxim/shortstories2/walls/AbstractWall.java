@@ -55,12 +55,13 @@ public abstract class AbstractWall implements Wall {
         List<Post> posts2 = new ArrayList<>();
         for (Post post : posts) {
             posts2.add(new Post(
+                    post.id,
                     post.text,
                     id,
                     name,
                     post.date,
-                    post.rating * ratio
-            ));
+                    post.rating * ratio,
+                    post.factoryWall));
         }
         return posts2;
     }

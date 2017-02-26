@@ -37,8 +37,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="5pt"
-                android:text="@string/comment"
-                android:id="@+id/feed_item_comment"
+                android:text="@string/show"
+                android:id="@+id/feed_item_show"
                 style="@style/Widget.AppCompat.Button" />
         </LinearLayout>
     </LinearLayout>

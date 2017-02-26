@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if (0 < position && position < walls.size()) {
+            if (0 < position && position <= walls.size()) {
                 helper = new Helper(walls.get(position - 1), BY_DATE);
                 setPostsAdapter();
             }

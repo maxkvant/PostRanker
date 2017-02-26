@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class VkPost {
     @SerializedName(VkStrings.JSON_ID)
-    public final String id;
+    public final long id;
 
     @SerializedName(VkStrings.JSON_TEXT)
         public final String text;
@@ -15,7 +15,7 @@ public class VkPost {
         @SerializedName(VkStrings.JSON_LIKES)
         public final Likes likes;
 
-        private VkPost(String id, String text, Integer date, Likes likes) {
+        private VkPost(long id, String text, Integer date, Likes likes) {
             this.id = id;
             this.text = text;
             this.date = date;

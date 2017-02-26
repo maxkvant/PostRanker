@@ -36,4 +36,6 @@
     <string name="sources">accounts</string>
     <string name="delete_wall">Удалить источник</string>
     <string name="title_activity_feed">FeedActivity</string>
+    <string name="title_activity_tweet">TweetActivity</string>
+    <string name="show">посмотреть</string>
 </resources>

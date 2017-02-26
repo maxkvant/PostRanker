@@ -17,6 +17,7 @@ import static com.example.maxim.shortstories2.MyApplication.getAccessToken;
 import static com.example.maxim.shortstories2.MyApplication.vkClient;
 
 public class FactoryWallVk extends AbstractFactoryWall {
+    static final String className = FactoryWallTwitter.class.getSimpleName();
 
     @Override
     public Wall create(String name, long id, double ratio, long updated) {
@@ -103,12 +104,13 @@ class WallVk extends AbstractWall {
             double rating = vkPost.likes.count;
             rating = rating * rating;
             posts.add(new Post(
+                    vkPost.id,
                     text,
                     id,
                     name,
                     vkPost.date,
-                    rating
-            ));
+                    rating,
+                    FactoryWallVk.className));
         }
         return posts;
     }
