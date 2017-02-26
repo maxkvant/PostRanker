@@ -135,7 +135,9 @@ public class MainActivity extends AppCompatActivity {
 
         List<String> spinnerItems = new ArrayList<>();
         for (WallMode mode : modes) {
-            spinnerItems.add(mapModes.get(mode));
+            if (mode != COMMENTED) {
+                spinnerItems.add(mapModes.get(mode));
+            }
         }
 
         ArrayAdapter adapterSpinner = new ArrayAdapter<>(this, R.layout.spinner_item, spinnerItems);
