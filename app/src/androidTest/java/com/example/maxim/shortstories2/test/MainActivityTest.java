@@ -39,10 +39,7 @@ public class MainActivityTest {
 
     @Test
     public void test() throws InterruptedException {
-        Thread.currentThread().sleep(7000);
-
-        onView(withId(R.id.refresh))
-                .perform(swipeDown());
+        Thread.currentThread().sleep(10000);
 
         final ViewInteraction onDrawer = onView(withId(R.id.activity_main));
 
