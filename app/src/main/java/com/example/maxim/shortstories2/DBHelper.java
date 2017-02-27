@@ -208,7 +208,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 String name = cursor.getString(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_NAME));
                 double ratio = cursor.getDouble(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_RATIO));
                 long id = cursor.getLong(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_ID));
-                long updated = cursor.getLong(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_PRIORITY));
+                long updated = cursor.getLong(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_UPDATED));
                 try {
                     String classLongName = wallPath + className;
                     FactoryWall factoryWall = (FactoryWall) Class.forName(classLongName)
@@ -234,6 +234,7 @@ public class DBHelper extends SQLiteOpenHelper {
         values.put(Wall.WallsEntry.COLUMN_NAME_PRIORITY, 3);
         values.put(Wall.WallsEntry.COLUMN_NAME_RATIO, wall.getRatio());
         values.put(Wall.WallsEntry.COLUMN_NAME_UPDATED, wall.getUpdated());
+        Log.d("updated", String.valueOf(new Date(wall.getUpdated() * 1000L)));
         db.insertWithOnConflict(Wall.WallsEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
