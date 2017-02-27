@@ -25,6 +25,7 @@ import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.R;
 import com.example.maxim.shortstories2.post.Post;
 import com.example.maxim.shortstories2.post.PostsAdapter;
+import com.example.maxim.shortstories2.util.AsyncCall;
 import com.example.maxim.shortstories2.util.Callback;
 import com.example.maxim.shortstories2.util.Consumer;
 import com.example.maxim.shortstories2.walls.WallMode;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawer;
     private final DBHelper dbHelper = new DBHelper();
     private List<Wall> walls;
-
+    private AsyncCall<Void> updateCall = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
             public void onRefresh() {
                 Log.d("MainActivity", "onRefresh");
                 refreshLayout.setRefreshing(true);
-                helper.wall.update(new Callback<Void>() {
+                updateCall = helper.wall.update(new Callback<Void>() {
                     @Override
                     public void onSuccess(Void result) {
                         refreshLayout.setRefreshing(false);
@@ -208,6 +209,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        if (updateCall != null) {
+            updateCall.cancel(true);
+            updateCall = null;
+            Toast.makeText(MainActivity.this, R.string.update_cancel, Toast.LENGTH_LONG).show();
+            refreshLayout.setRefreshing(false);
+        }
     }
 
     public static class Helper {

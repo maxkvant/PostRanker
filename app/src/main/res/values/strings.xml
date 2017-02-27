@@ -43,4 +43,5 @@
     <string name="add_wall_falied">не удалось добавить</string>
     <string name="nothing_found">Ничего не найдено</string>
     <string name="search">Search</string>
+    <string name="update_cancel">загрузка отменена</string>
 </resources>
