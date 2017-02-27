@@ -44,13 +44,13 @@ import static com.example.maxim.shortstories2.walls.WallMode.TOP_WEEKLY;
 import static com.example.maxim.shortstories2.walls.WallMode.TOP_ALL;
 
 public class MainActivity extends AppCompatActivity {
-    final int requestCodeAcitvityWalls = 63997;
+    private final int requestCodeActivityWalls = 63997;
 
     private SwipeRefreshLayout refreshLayout;
     private ArrayAdapter adapterDrawer;
     private View footerView;
     private Spinner spinner;
-    List<WallMode> modes = Arrays.asList(WallMode.values());
+    private List<WallMode> modes = Arrays.asList(WallMode.values());
     private Helper helper;
     private Toolbar toolbar;
     private DrawerLayout drawer;
@@ -75,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == requestCodeAcitvityWalls) {
+        if (requestCode == requestCodeActivityWalls) {
+            helper = new Helper(walls.get(0), BY_DATE);
             setPostsAdapter();
         }
         walls = dbHelper.getAllWalls();
@@ -116,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 drawer.closeDrawers();
                 Intent intent = new Intent(MainActivity.this, WallsActivity.class);
-                startActivityForResult(intent, requestCodeAcitvityWalls);
+                startActivityForResult(intent, requestCodeActivityWalls);
             }
         });
     }

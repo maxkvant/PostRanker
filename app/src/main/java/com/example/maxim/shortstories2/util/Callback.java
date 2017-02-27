@@ -4,7 +4,7 @@ public interface Callback<T> {
     void onSuccess(T result);
     void onFailure(Exception e);
 
-    public static class Result<T> {
+    class Result<T> {
         public final T result;
         public final Exception exception;
 
