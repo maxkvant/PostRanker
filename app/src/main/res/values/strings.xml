@@ -41,4 +41,6 @@
     <string name="update_failed">не удалось обновить</string>
     <string name="search_failed">не удалось выполнить поиск</string>
     <string name="add_wall_falied">не удалось добавить</string>
+    <string name="nothing_found">Ничего не найдено</string>
+    <string name="search">Search</string>
 </resources>

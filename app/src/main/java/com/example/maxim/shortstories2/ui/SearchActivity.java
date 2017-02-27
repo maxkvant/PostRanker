@@ -51,7 +51,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
         factoryWall = (FactoryWall) getIntent().getSerializableExtra(FACTORY_WALL_INTENT);
 
-        setTitle("Search");
+        setTitle(getString(R.string.search));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -90,7 +90,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             @Override
             public void accept(List<SearchItem> searchItems) {
                 if (searchItems == null) {
-                    searchItems = Collections.singletonList(new SearchItem("Ничего не найдено", 0, ""));
+                    searchItems = Collections.singletonList(new SearchItem(getString(R.string.nothing_found), 0, ""));
                 }
                 ListAdapter adapterSearchList = new SearchItemAdapter(SearchActivity.this, searchItems);
                 wallsList.setAdapter(adapterSearchList);
