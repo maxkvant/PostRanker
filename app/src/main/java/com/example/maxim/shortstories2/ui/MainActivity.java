@@ -171,12 +171,14 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void result) {
                         refreshLayout.setRefreshing(false);
+                        updateCall = null;
                         setPostsAdapter();
                     }
 
                     @Override
                     public void onFailure(Exception e) {
                         refreshLayout.setRefreshing(false);
+                        updateCall = null;
                         Toast.makeText(MainActivity.this, R.string.update_failed, Toast.LENGTH_LONG).show();
                     }
                 });
@@ -189,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setPostsAdapter() {
         drawer.closeDrawers();
+        helper.count = 0;
         spinner.setSelection(modes.indexOf(helper.mode));
         final ListView feed = (ListView) findViewById(R.id.feed_list);
         final PostsAdapter adapter = new PostsAdapter(this);
