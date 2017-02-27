@@ -1,7 +1,10 @@
 package com.example.maxim.shortstories2.walls;
+import android.os.AsyncTask;
 import android.provider.BaseColumns;
 
 import com.example.maxim.shortstories2.post.Post;
+import com.example.maxim.shortstories2.util.AsyncCall;
+import com.example.maxim.shortstories2.util.Callback;
 
 import java.util.List;
 
@@ -10,7 +13,8 @@ public interface Wall {
     double getRatio();
     long getUpdated();
     List<Post> getPosts(int offset, WallMode mode);
-    boolean update();
+    void update() throws Exception;
+    AsyncCall<Void> update(Callback<Void> callback);
     String getFactoryClassName();
     boolean isSource();
 

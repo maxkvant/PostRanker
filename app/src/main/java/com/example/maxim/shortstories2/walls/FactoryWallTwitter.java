@@ -26,17 +26,12 @@ public class FactoryWallTwitter extends AbstractFactoryWall {
     }
 
     @Override
-    public  List<SearchItem> searchWalls(String query) {
+    public List<SearchItem> searchWalls(String query) throws Exception {
         final MyTwitterApiClient client = twitterApiClient;
         Call<List<User>> usersCall = client.getSearchUsersService().users(query);
 
         List<SearchItem> res = null;
-        List<User> users = null;
-        try {
-            users = usersCall.execute().body();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        List<User> users = usersCall.execute().body();
 
         if (users != null) {
             res = new ArrayList<>();
@@ -63,7 +58,7 @@ class WallTwitter extends AbstractWall {
     }
 
     @Override
-    public boolean update() {
+    public void update() throws Exception {
         final MyTwitterApiClient client = twitterApiClient;
         Long maxId = null;
         List<Post> posts = new ArrayList<>();
@@ -87,17 +82,10 @@ class WallTwitter extends AbstractWall {
 
             List<Tweet> tweets = new ArrayList<>();
 
-            try {
-                Response<List<Tweet>> listResponse = listCall.execute();
-                tweets.addAll(listResponse.body());
-                posts.addAll(tweetsToPosts(tweets));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            Response<List<Tweet>> listResponse = listCall.execute();
+            tweets.addAll(listResponse.body());
+            posts.addAll(tweetsToPosts(tweets));
 
-            if (posts.size() == 0) {
-                return false;
-            }
             if (tweets.size() != 0) {
                 maxId = tweets.get(tweets.size() - 1).id - 1;
             }
@@ -115,7 +103,6 @@ class WallTwitter extends AbstractWall {
         DBHelper dbHelper = new DBHelper();
         dbHelper.insertWall(this);
         dbHelper.insertPosts(posts);
-        return true;
     }
 
     @Override

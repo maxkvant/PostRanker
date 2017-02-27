@@ -3,6 +3,8 @@ package com.example.maxim.shortstories2.walls;
 import android.util.Log;
 
 import com.example.maxim.shortstories2.post.Post;
+import com.example.maxim.shortstories2.util.AsyncCall;
+import com.example.maxim.shortstories2.util.Callback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,32 @@ public abstract class AbstractWall implements Wall {
     @Override
     public long getId() {
         return id;
+    }
+
+    @Override
+    public AsyncCall<Void> update(final Callback<Void> callback) {
+        AsyncCall<Void> call = new AsyncCall<Void>() {
+            @Override
+            protected Callback.Result<Void> doInBackground(Void... voids) {
+                try {
+                    update();
+                    return Callback.Result.onSuccess(null);
+                } catch (Exception e) {
+                    return Callback.Result.onFailure(e);
+                }
+
+            }
+            @Override
+            protected void onPostExecute(Callback.Result<Void> result) {
+                if (result.exception != null) {
+                    callback.onFailure(result.exception);
+                } else {
+                    callback.onSuccess(result.result);
+                }
+            }
+        };
+        call.execute();
+        return call;
     }
 
     @Override

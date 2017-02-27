@@ -2,7 +2,6 @@ package com.example.maxim.shortstories2.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,9 +18,11 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.R;
+import com.example.maxim.shortstories2.util.Callback;
 import com.example.maxim.shortstories2.util.Consumer;
 import com.example.maxim.shortstories2.walls.FactoryWall;
 import com.example.maxim.shortstories2.walls.SearchItem;
@@ -131,49 +132,34 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
         public void addWall(SearchItem searchItem, final Runnable beforeAdd, final Runnable afterAdd) {
             final Wall wall = factoryWall.toWall(searchItem);
-
-            new AsyncTask<Void,Void,Void>() {
+            beforeAdd.run();
+            wall.update(new Callback<Void>() {
                 @Override
-                protected void onPreExecute() {
-                    beforeAdd.run();
-                }
-                @Override
-                protected Void doInBackground(Void... params) {
-                    DBHelper dbHelper = new DBHelper();
-                    if (wall.update()) {
-                        dbHelper.insertWall(wall);
-                    }
-                    return null;
-                }
-                @Override
-                protected void onPostExecute(Void result) {
+                public void onSuccess(Void result) {
+                    new DBHelper().insertWall(wall);
                     afterAdd.run();
                 }
-            }.execute();
+
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(SearchActivity.this, R.string.add_wall_falied, Toast.LENGTH_LONG).show();
+                    afterAdd.run();
+                }
+            });
         }
 
-        public void searchWalls(String query, Consumer<List<SearchItem>> afterSearch) {
-            new SearchTask(query, afterSearch).execute();
-        }
+        public void searchWalls(String query, final Consumer<List<SearchItem>> afterSearch) {
+            factoryWall.searchWalls(query, new Callback<List<SearchItem>>() {
+                @Override
+                public void onSuccess(List<SearchItem> result) {
+                    afterSearch.accept(result);
+                }
 
-        private class SearchTask extends AsyncTask<Void, Void, List<SearchItem> > {
-            final String query;
-            final Consumer<List<SearchItem>> afterSearch;
-
-            SearchTask(String query, Consumer<List<SearchItem>> afterSearch) {
-                this.query = query;
-                this.afterSearch = afterSearch;
-            }
-
-            @Override
-            protected List<SearchItem> doInBackground(Void... params) {
-                return factoryWall.searchWalls(query);
-            }
-
-            @Override
-            protected void onPostExecute(List<SearchItem> result) {
-                afterSearch.accept(result);
-            }
+                @Override
+                public void onFailure(Exception e) {
+                    Toast.makeText(SearchActivity.this, R.string.search_failed, Toast.LENGTH_LONG).show();
+                }
+            });
         }
     }
 }

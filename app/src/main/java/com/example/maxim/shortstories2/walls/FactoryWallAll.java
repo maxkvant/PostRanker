@@ -1,7 +1,5 @@
 package com.example.maxim.shortstories2.walls;
 
-import android.util.Log;
-
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.post.Post;
 
@@ -19,8 +17,8 @@ public class FactoryWallAll extends AbstractFactoryWall {
     }
 
     @Override
-    public List<SearchItem> searchWalls(String query) {
-        return null;
+    public List<SearchItem> searchWalls(String query) throws Exception {
+        throw new UnsupportedOperationException();
     }
 }
 
@@ -36,16 +34,13 @@ class WallAll extends AbstractWall {
     }
 
     @Override
-    public boolean update() {
+    public void update() throws Exception {
         List<Wall> walls = new DBHelper().getAllWalls();
         for (Wall wall : walls) {
             if (wall.isSource()) {
-                if (!wall.update()) {
-                    return false;
-                }
+                wall.update();
             }
         }
-        return true;
     }
 
     @Override

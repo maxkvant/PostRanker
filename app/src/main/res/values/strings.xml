@@ -38,4 +38,7 @@
     <string name="title_activity_tweet">TweetActivity</string>
     <string name="show">на сайте</string>
     <string name="title_activity_vk_post">VK</string>
+    <string name="update_failed">не удалось обновить</string>
+    <string name="search_failed">не удалось выполнить поиск</string>
+    <string name="add_wall_falied">не удалось добавить</string>
 </resources>

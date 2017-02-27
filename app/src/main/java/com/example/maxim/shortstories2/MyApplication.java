@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.example.maxim.shortstories2.APIs.MyTwitterApiClient;
 import com.example.maxim.shortstories2.APIs.VkClient;
-import com.example.maxim.shortstories2.ui.MainActivity;
+import com.example.maxim.shortstories2.util.Callback;
 import com.example.maxim.shortstories2.util.SharedPrefs;
 import com.example.maxim.shortstories2.walls.FactoryWallAll;
 import com.example.maxim.shortstories2.walls.Wall;
@@ -30,7 +30,6 @@ import static com.example.maxim.shortstories2.APIs.VkStrings.BASE_URL;
 import static com.example.maxim.shortstories2.util.Strings.FALSE;
 import static com.example.maxim.shortstories2.util.Strings.FIRST_RUN;
 import static com.example.maxim.shortstories2.util.Strings.VK_ACCESS_TOKEN;
-import static com.example.maxim.shortstories2.walls.WallMode.TOP_ALL;
 
 public class MyApplication extends Application {
     // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
@@ -92,15 +91,17 @@ public class MyApplication extends Application {
         Log.d("MyApplication", "onCreate first_run:");
         if (SharedPrefs.getString(this, FIRST_RUN) == null) {
             Wall wallAll = new FactoryWallAll().create();
-            Log.d("MyApplication", "onCreate FirstRun");
-            new MainActivity.Helper(wallAll, TOP_ALL)
-                    .refresh(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.d("MyApplication", "onCreate Refreshed");
-                            SharedPrefs.storeString(MyApplication.this, FIRST_RUN, FALSE);
-                        }
-                    });
+            wallAll.update(new Callback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+
+                }
+                @Override
+                public void onFailure(Exception e) {
+
+                    SharedPrefs.storeString(MyApplication.this, FIRST_RUN, FALSE);
+                }
+            });
             try {
                 Thread.currentThread().sleep(2000);
             } catch (InterruptedException e) {

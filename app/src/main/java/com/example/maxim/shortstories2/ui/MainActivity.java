@@ -19,11 +19,13 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.R;
 import com.example.maxim.shortstories2.post.Post;
 import com.example.maxim.shortstories2.post.PostsAdapter;
+import com.example.maxim.shortstories2.util.Callback;
 import com.example.maxim.shortstories2.util.Consumer;
 import com.example.maxim.shortstories2.walls.WallMode;
 import com.example.maxim.shortstories2.walls.Wall;
@@ -164,11 +166,17 @@ public class MainActivity extends AppCompatActivity {
             public void onRefresh() {
                 Log.d("MainActivity", "onRefresh");
                 refreshLayout.setRefreshing(true);
-                helper.refresh(new Runnable() {
+                helper.wall.update(new Callback<Void>() {
                     @Override
-                    public void run() {
+                    public void onSuccess(Void result) {
                         refreshLayout.setRefreshing(false);
                         setPostsAdapter();
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        refreshLayout.setRefreshing(false);
+                        Toast.makeText(MainActivity.this, R.string.update_failed, Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -211,23 +219,6 @@ public class MainActivity extends AppCompatActivity {
         public Helper(Wall wall, WallMode mode) {
             this.wall = wall;
             this.mode = mode;
-        }
-
-        public void refresh(final Runnable onRefresh) {
-            count = 0;
-            new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... params) {
-                    Log.d("MainActivity", "before update");
-                    wall.update();
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Void result) {
-                    onRefresh.run();
-                }
-            }.execute();
         }
 
         public void getPosts(final Consumer<List<Post> > onGetPosts) {

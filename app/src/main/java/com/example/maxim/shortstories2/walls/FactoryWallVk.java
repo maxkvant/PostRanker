@@ -25,19 +25,14 @@ public class FactoryWallVk extends AbstractFactoryWall {
     }
 
     @Override
-    public List<SearchItem> searchWalls(String query) {
+    public List<SearchItem> searchWalls(String query) throws Exception {
         Log.d("searchWalls", query);
-        try {
-            List<VkSearchItem> searchItemsVk = vkClient
-                    .searchWalls(VERSION_API, getAccessToken(), query, 20, 1)
-                    .execute()
-                    .body()
-                    .response;
-            return toSearchItems(searchItemsVk);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        List<VkSearchItem> searchItemsVk = vkClient
+                .searchWalls(VERSION_API, getAccessToken(), query, 20, 1)
+                .execute()
+                .body()
+                .response;
+        return toSearchItems(searchItemsVk);
     }
 
 
@@ -65,21 +60,16 @@ class WallVk extends AbstractWall {
     }
 
     @Override
-    public boolean update() {
+    public void update() throws Exception {
         long beforeGet = new Date().getTime();
 
         List<Post> posts;
-        try {
-            List<VkPost> postsVK = vkClient
-                    .getPosts(VERSION_API, getAccessToken(), id, updated)
-                    .execute()
-                    .body()
-                    .response;
-            posts = toPosts(postsVK);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+        List<VkPost> postsVK = vkClient
+                .getPosts(VERSION_API, getAccessToken(), id, updated)
+                .execute()
+                .body()
+                .response;
+        posts = toPosts(postsVK);
 
         Log.d("WallVk::update time", (new Date().getTime() - beforeGet) + "");
         posts = withRatio(posts);
@@ -88,7 +78,6 @@ class WallVk extends AbstractWall {
         new DBHelper().insertWall(this);
         (new DBHelper()).insertPosts(posts);
         Log.d("WallVk::update time", (new Date().getTime() - beforeGet) + "");
-        return true;
     }
 
     private List<Post> toPosts(List<VkPost> postsVK) {
