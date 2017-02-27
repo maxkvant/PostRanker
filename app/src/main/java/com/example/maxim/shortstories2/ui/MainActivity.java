@@ -44,6 +44,8 @@ import static com.example.maxim.shortstories2.walls.WallMode.TOP_WEEKLY;
 import static com.example.maxim.shortstories2.walls.WallMode.TOP_ALL;
 
 public class MainActivity extends AppCompatActivity {
+    final int requestCodeAcitvityWalls = 63997;
+
     private SwipeRefreshLayout refreshLayout;
     private ArrayAdapter adapterDrawer;
     private View footerView;
@@ -73,6 +75,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == requestCodeAcitvityWalls) {
+            setPostsAdapter();
+        }
         walls = dbHelper.getAllWalls();
         adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, walls);
         ListView leftDrawer = (ListView) findViewById(R.id.left_drawer);
@@ -111,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 drawer.closeDrawers();
                 Intent intent = new Intent(MainActivity.this, WallsActivity.class);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, requestCodeAcitvityWalls);
             }
         });
     }
