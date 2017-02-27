@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SearchActivity"
+            android:name=".ui.SearchActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -34,7 +34,7 @@
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />
         <activity
-            android:name=".TweetActivity"
+            android:name=".ui.TweetActivity"
             android:label="@string/title_activity_tweet"
             android:theme="@style/AppTheme.NoActionBar" />
 
@@ -43,12 +43,12 @@
             android:value="166cc53aba685575ece0649470eae9088f0d735b" />
 
         <activity
-            android:name=".WallsActivity"
+            android:name=".ui.WallsActivity"
             android:label="@string/title_activity_walls"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name=".VkPostActivity"
+            android:name=".ui.VkPostActivity"
             android:label="@string/title_activity_vk_post"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>

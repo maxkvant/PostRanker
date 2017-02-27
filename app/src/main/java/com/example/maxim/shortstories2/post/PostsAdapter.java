@@ -11,9 +11,9 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.maxim.shortstories2.TweetActivity;
+import com.example.maxim.shortstories2.ui.TweetActivity;
 import com.example.maxim.shortstories2.R;
-import com.example.maxim.shortstories2.VkPostActivity;
+import com.example.maxim.shortstories2.ui.VkPostActivity;
 
 import java.util.ArrayList;
 import java.util.Date;

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
-    tools:context="com.example.maxim.shortstories2.SearchActivity">
+    tools:context="com.example.maxim.shortstories2.ui.SearchActivity">
 
     <include layout="@layout/toolbar"/>
 

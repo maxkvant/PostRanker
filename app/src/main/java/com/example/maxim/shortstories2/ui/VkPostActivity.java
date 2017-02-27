@@ -1,19 +1,15 @@
-package com.example.maxim.shortstories2;
+package com.example.maxim.shortstories2.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-import com.example.maxim.shortstories2.APIs.VkPost;
+import com.example.maxim.shortstories2.R;
 import com.example.maxim.shortstories2.post.Post;
 
 import static com.example.maxim.shortstories2.util.Strings.M_VK_BASE_URL;

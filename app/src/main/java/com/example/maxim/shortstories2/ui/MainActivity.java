@@ -1,4 +1,4 @@
-package com.example.maxim.shortstories2;
+package com.example.maxim.shortstories2.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -21,10 +20,11 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import com.example.maxim.shortstories2.DBHelper;
+import com.example.maxim.shortstories2.R;
 import com.example.maxim.shortstories2.post.Post;
 import com.example.maxim.shortstories2.post.PostsAdapter;
 import com.example.maxim.shortstories2.util.Consumer;
-import com.example.maxim.shortstories2.util.SharedPrefs;
 import com.example.maxim.shortstories2.walls.WallMode;
 import com.example.maxim.shortstories2.walls.Wall;
 
@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
         public final WallMode mode;
         private int count;
 
-        Helper(Wall wall, WallMode mode) {
+        public Helper(Wall wall, WallMode mode) {
             this.wall = wall;
             this.mode = mode;
         }

@@ -1,4 +1,4 @@
-package com.example.maxim.shortstories2;
+package com.example.maxim.shortstories2.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +15,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.example.maxim.shortstories2.APIs.MyTwitterApiClient;
+import com.example.maxim.shortstories2.DBHelper;
+import com.example.maxim.shortstories2.MyApplication;
+import com.example.maxim.shortstories2.R;
 import com.example.maxim.shortstories2.walls.FactoryWallTwitter;
 import com.example.maxim.shortstories2.walls.FactoryWallVk;
 import com.example.maxim.shortstories2.walls.Wall;
@@ -30,7 +33,7 @@ import com.vk.sdk.api.VKError;
 
 import java.util.List;
 
-import static com.example.maxim.shortstories2.WallsActivity.ButtonAction.NULL;
+import static com.example.maxim.shortstories2.ui.WallsActivity.ButtonAction.NULL;
 import static com.example.maxim.shortstories2.MyApplication.twitterApiClient;
 import static com.example.maxim.shortstories2.util.Strings.FACTORY_WALL_INTENT;
 

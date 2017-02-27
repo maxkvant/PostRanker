@@ -1,12 +1,15 @@
-package com.example.maxim.shortstories2;
+package com.example.maxim.shortstories2.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.maxim.shortstories2.R;
 import com.example.maxim.shortstories2.post.Post;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -15,8 +18,6 @@ import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.tweetui.TweetUtils;
 import com.twitter.sdk.android.tweetui.TweetView;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,8 +54,13 @@ public class TweetActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        finish();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            Intent intent = new Intent();
+            setResult(RESULT_OK, intent);
+            super.onResume();
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
-
 }

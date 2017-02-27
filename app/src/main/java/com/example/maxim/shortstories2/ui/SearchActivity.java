@@ -1,9 +1,8 @@
-package com.example.maxim.shortstories2;
+package com.example.maxim.shortstories2.ui;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Vibrator;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,13 +14,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.maxim.shortstories2.DBHelper;
+import com.example.maxim.shortstories2.R;
 import com.example.maxim.shortstories2.util.Consumer;
 import com.example.maxim.shortstories2.walls.FactoryWall;
 import com.example.maxim.shortstories2.walls.SearchItem;
@@ -37,7 +37,6 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     private String lastText = "";
     private LinearLayout progressBarFill;
     ListView wallsList;
-    boolean wasSearch = false;
     private Helper helper = new Helper();
     private FactoryWall factoryWall;
 
@@ -94,7 +93,6 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                 }
                 ListAdapter adapterSearchList = new SearchItemAdapter(SearchActivity.this, searchItems);
                 wallsList.setAdapter(adapterSearchList);
-                wasSearch = true;
             }
         });
         return true;

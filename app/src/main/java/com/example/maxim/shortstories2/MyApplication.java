@@ -7,8 +7,8 @@ import android.util.Log;
 
 import com.example.maxim.shortstories2.APIs.MyTwitterApiClient;
 import com.example.maxim.shortstories2.APIs.VkClient;
+import com.example.maxim.shortstories2.ui.MainActivity;
 import com.example.maxim.shortstories2.util.SharedPrefs;
-import com.example.maxim.shortstories2.walls.FactoryWall;
 import com.example.maxim.shortstories2.walls.FactoryWallAll;
 import com.example.maxim.shortstories2.walls.Wall;
 import com.twitter.sdk.android.Twitter;
@@ -20,8 +20,6 @@ import com.vk.sdk.VKSdk;
 
 import io.fabric.sdk.android.Fabric;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;

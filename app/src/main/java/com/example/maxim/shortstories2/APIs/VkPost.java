@@ -7,13 +7,13 @@ public class VkPost {
     public final long id;
 
     @SerializedName(VkStrings.JSON_TEXT)
-        public final String text;
+    public final String text;
 
-        @SerializedName(VkStrings.JSON_DATE)
-        public final Integer date;
+    @SerializedName(VkStrings.JSON_DATE)
+    public final Integer date;
 
-        @SerializedName(VkStrings.JSON_LIKES)
-        public final Likes likes;
+    @SerializedName(VkStrings.JSON_LIKES)
+    public final Likes likes;
 
         private VkPost(long id, String text, Integer date, Likes likes) {
             this.id = id;
@@ -21,7 +21,6 @@ public class VkPost {
             this.date = date;
             this.likes = likes;
         }
-
 
         public static class Likes {
             @SerializedName(VkStrings.JSON_COUNT)
