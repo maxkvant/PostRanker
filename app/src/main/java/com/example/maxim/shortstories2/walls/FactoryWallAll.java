@@ -1,5 +1,7 @@
 package com.example.maxim.shortstories2.walls;
 
+import android.database.Cursor;
+
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.post.Post;
 
@@ -28,9 +30,9 @@ class WallAll extends AbstractWall {
     }
 
     @Override
-    public List<Post> getPosts(int offset, WallMode mode) {
+    public Cursor getPosts(WallMode mode) {
         DBHelper dbHelper = new DBHelper();
-        return dbHelper.getPosts(offset, mode);
+        return dbHelper.getPosts(mode);
     }
 
     @Override

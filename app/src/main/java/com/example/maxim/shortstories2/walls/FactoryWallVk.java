@@ -1,5 +1,6 @@
 package com.example.maxim.shortstories2.walls;
 
+import android.database.Cursor;
 import android.util.Log;
 
 import com.example.maxim.shortstories2.APIs.VkPost;
@@ -54,9 +55,9 @@ class WallVk extends AbstractWall {
     }
 
     @Override
-    public List<Post> getPosts(int offset, WallMode mode) {
+    public Cursor getPosts(WallMode mode) {
         DBHelper dbHelper = new DBHelper();
-        return dbHelper.getPosts(offset, mode, id);
+        return dbHelper.getPosts(mode, id);
     }
 
     @Override

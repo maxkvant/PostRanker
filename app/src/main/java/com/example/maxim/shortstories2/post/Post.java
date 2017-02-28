@@ -29,7 +29,6 @@ public class Post implements Serializable {
 
     public final static class PostsEntry implements BaseColumns {
         final public static String TABLE_NAME = "Posts";
-        final public static String COLUMN_NAME_ID = "id";
         final public static String COLUMN_NAME_TEXT = "text";
         final public static String COLUMN_NAME_WALL_ID = "wall_id";
         final public static String COLUMN_NAME_DATE = "date";

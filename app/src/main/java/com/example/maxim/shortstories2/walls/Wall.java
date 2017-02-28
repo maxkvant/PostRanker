@@ -1,4 +1,5 @@
 package com.example.maxim.shortstories2.walls;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.provider.BaseColumns;
 
@@ -12,7 +13,7 @@ public interface Wall {
     long getId();
     double getRatio();
     long getUpdated();
-    List<Post> getPosts(int offset, WallMode mode);
+    Cursor getPosts(WallMode mode);
     void update() throws Exception;
     AsyncCall<Void> update(Callback<Void> callback);
     String getFactoryClassName();

@@ -28,7 +28,7 @@ import static java.lang.StrictMath.nextAfter;
 public class DBHelper extends SQLiteOpenHelper {
     private final static String COMA_STEP = ",";
 
-    private final static int DATABASE_VERSION = 2;
+    private final static int DATABASE_VERSION = 5;
     private final static String DATABASE_NAME = "ShortStoriesDB";
 
     private static final String DELETE_TABLE =
@@ -62,13 +62,13 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String tablePosts = "create table " + Post.PostsEntry.TABLE_NAME + "(" +
-                Post.PostsEntry.COLUMN_NAME_ID + INT_TYPE + COMA_STEP +
+                Post.PostsEntry._ID + INT_TYPE + COMA_STEP +
                 Post.PostsEntry.COLUMN_NAME_TEXT + TEXT_TYPE + COMA_STEP +
                 Post.PostsEntry.COLUMN_NAME_WALL_ID + INT_TYPE + COMA_STEP +
                 Post.PostsEntry.COLUMN_NAME_DATE + INT_TYPE + COMA_STEP +
                 Post.PostsEntry.COLUMN_NAME_RATING + REAL_TYPE + COMA_STEP +
                 PRIMARY_KEY + "(" +
-                    Post.PostsEntry.COLUMN_NAME_ID + COMA_STEP +
+                    Post.PostsEntry._ID + COMA_STEP +
                     Post.PostsEntry.COLUMN_NAME_WALL_ID + ")" +
                 ")";
         db.execSQL(tablePosts);
@@ -106,7 +106,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.beginTransaction();
         for (Post post : posts) {
             ContentValues values = new ContentValues();
-            values.put(Post.PostsEntry.COLUMN_NAME_ID, post.id);
+            values.put(Post.PostsEntry._ID, post.id);
             values.put(Post.PostsEntry.COLUMN_NAME_TEXT, post.text);
             values.put(Post.PostsEntry.COLUMN_NAME_WALL_ID, post.wall_id);
             values.put(Post.PostsEntry.COLUMN_NAME_DATE, post.date);
@@ -118,18 +118,17 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    private List<Post> getPosts(int offset, WallMode mode, String filter) {
-        List<Post> res = new ArrayList<>();
+    private Cursor getPosts(WallMode mode, String filter) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String [] projection = {
-            Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_ID,
+            Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry._ID,
             Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_TEXT,
             Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_WALL_ID,
             Wall.WallsEntry.TABLE_NAME + "." + Wall.WallsEntry.COLUMN_NAME_NAME,
             Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_DATE,
             Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_RATING,
-            Wall.WallsEntry.TABLE_NAME + "." + Wall.WallsEntry.COLUMN_NAME_CLASS
+            Wall.WallsEntry.TABLE_NAME + "." + Wall.WallsEntry.COLUMN_NAME_CLASS,
         };
 
         String table = Post.PostsEntry.TABLE_NAME + " inner join " + Wall.WallsEntry.TABLE_NAME +
@@ -140,43 +139,36 @@ public class DBHelper extends SQLiteOpenHelper {
         if (mode == COMMENTED) {
             table += " inner join " + Comment.CommentsEntry.TABLE_NAME +
                     " on " +
-                    Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_ID
+                    Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry._ID
                     + " = " + Comment.CommentsEntry.TABLE_NAME + "." + Comment.CommentsEntry.COLUMN_NAME_POST_ID;
         }
 
-        Cursor cursor = db.query(table,
+        return db.query(table,
                 projection,
                 "1" + filter + getModeFilter(mode),
                 null,
                 null,
                 null,
-                getModeOrdering(mode),
-                getModeLimit(offset, mode));
-
-        if (cursor.moveToFirst()) {
-            do {
-                Post post = new Post(
-                        cursor.getLong(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_ID)),
-                        cursor.getString(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_TEXT)),
-                        cursor.getLong(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_WALL_ID)),
-                        cursor.getString(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_NAME)),
-                        cursor.getInt(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_DATE)),
-                        cursor.getDouble(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_RATING)),
-                        cursor.getString(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_CLASS)));
-                res.add(post);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        db.close();
-        return res;
+                getModeOrdering(mode));
     }
 
-    public List<Post> getPosts(int offset, WallMode mode) {
-        return getPosts(offset, mode, "");
+    public Post toPost(Cursor cursor) {
+        return new Post(
+                cursor.getLong(cursor.getColumnIndex(Post.PostsEntry._ID)),
+                cursor.getString(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_TEXT)),
+                cursor.getLong(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_WALL_ID)),
+                cursor.getString(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_NAME)),
+                cursor.getInt(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_DATE)),
+                cursor.getDouble(cursor.getColumnIndex(Post.PostsEntry.COLUMN_NAME_RATING)),
+                cursor.getString(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_CLASS)));
     }
 
-    public List<Post> getPosts(int offset, WallMode mode, long id) {
-        return getPosts(offset, mode, " and " + Post.PostsEntry.COLUMN_NAME_WALL_ID + " = " + id + " ");
+    public Cursor getPosts(WallMode mode) {
+        return getPosts(mode, "");
+    }
+
+    public Cursor getPosts(WallMode mode, long id) {
+        return getPosts(mode, " and " + Post.PostsEntry.COLUMN_NAME_WALL_ID + " = " + id + " ");
     }
 
     public void insertComment(Comment comment) {
@@ -220,8 +212,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 }
             } while (cursor.moveToNext());
         }
-        cursor.close();
         db.close();
+        cursor.close();
         return res;
     }
 
@@ -268,15 +260,6 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return res;
-    }
-
-    private String getModeLimit(int offset, WallMode mode) {
-        if (mode == COMMENTED || mode == BY_DATE) {
-            return offset + COMA_STEP + POSTS_PER_GET;
-        } else {
-            int offset_if_top = (offset == 0 ? POSTS_PER_GET_TOP : 0);
-            return offset + COMA_STEP + offset_if_top;
-        }
     }
 
     private String getModeFilter(WallMode mode) {

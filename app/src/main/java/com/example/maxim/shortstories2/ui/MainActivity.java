@@ -2,6 +2,8 @@ package com.example.maxim.shortstories2.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.os.AsyncTask;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -64,6 +66,12 @@ public class MainActivity extends AppCompatActivity {
 
         walls = dbHelper.getAllWalls();
         helper = new Helper(walls.get(0), BY_DATE);
+        helper.getPosts(new Consumer<Cursor>() {
+            @Override
+            public void accept(Cursor cursor) {
+                setPostsAdapter(cursor);
+            }
+        });
 
         initToolbar();
         initSpinner();
@@ -77,7 +85,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == requestCodeActivityWalls) {
             helper = new Helper(walls.get(0), BY_DATE);
-            setPostsAdapter();
+            helper.getPosts(new Consumer<Cursor>() {
+                @Override
+                public void accept(Cursor cursor) {
+                    setPostsAdapter(cursor);
+                }
+            });
         }
         walls = dbHelper.getAllWalls();
         adapterDrawer = new ArrayAdapter<>(this, R.layout.drawer_item, walls);
@@ -127,7 +140,12 @@ public class MainActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (0 < position && position <= walls.size()) {
                 helper = new Helper(walls.get(position - 1), BY_DATE);
-                setPostsAdapter();
+                helper.getPosts(new Consumer<Cursor>() {
+                    @Override
+                    public void accept(Cursor cursor) {
+                        setPostsAdapter(cursor);
+                    }
+                });
             }
         }
     }
@@ -158,7 +176,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             helper = new Helper(helper.wall, modes.get(position));
-            setPostsAdapter();
+            helper.getPosts(new Consumer<Cursor>() {
+                @Override
+                public void accept(Cursor cursor) {
+                    setPostsAdapter(cursor);
+                }
+            });
         }
 
         @Override
@@ -177,8 +200,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void result) {
                         refreshLayout.setRefreshing(false);
-                        updateCall = null;
-                        setPostsAdapter();
+                        helper.getPosts(new Consumer<Cursor>() {
+                            @Override
+                            public void accept(Cursor cursor) {
+                                setPostsAdapter(cursor);
+                            }
+                        });
                     }
 
                     @Override
@@ -195,29 +222,13 @@ public class MainActivity extends AppCompatActivity {
                 .inflate(R.layout.progress_bar, null);
     }
 
-    private void setPostsAdapter() {
+    private void setPostsAdapter(Cursor cursor) {
         drawer.closeDrawers();
-        helper.count = 0;
         spinner.setSelection(modes.indexOf(helper.mode));
         final ListView feed = (ListView) findViewById(R.id.feed_list);
-        final PostsAdapter adapter = new PostsAdapter(this);
+        final PostsAdapter adapter = new PostsAdapter(this, cursor);
         feed.setAdapter(adapter);
-        feed.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {}
 
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (view.getLastVisiblePosition() == feed.getCount() - 1) {
-                    helper.getPosts(new Consumer<List<Post>>() {
-                        @Override
-                        public void accept(List<Post> posts) {
-                            adapter.addPosts(posts);
-                        }
-                    });
-                }
-            }
-        });
         if (updateCall != null) {
             updateCall.cancel(true);
             updateCall = null;
@@ -230,33 +241,29 @@ public class MainActivity extends AppCompatActivity {
         private boolean hasAsyncTask;
         public final Wall wall;
         public final WallMode mode;
-        private int count;
 
         public Helper(Wall wall, WallMode mode) {
             this.wall = wall;
             this.mode = mode;
         }
 
-        public void getPosts(final Consumer<List<Post> > onGetPosts) {
+        public void getPosts(final Consumer<Cursor> onGetPosts) {
             if (!hasAsyncTask) {
                 hasAsyncTask = true;
 
-                new AsyncTask<Void, Void, List<Post>>() {
-                    private final int count = Helper.this.count;
+                new AsyncTask<Void, Void, Cursor>() {
                     @Override
-                    protected List<Post> doInBackground(Void... walls) {
+                    protected Cursor doInBackground(Void... walls) {
                         try {
                             Thread.sleep(300);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        Log.d("Helper::getPosts", count + "");
-                        return wall.getPosts(count, mode);
+                        return wall.getPosts(mode);
                     }
 
                     @Override
-                    protected void onPostExecute(List<Post> result) {
-                        Helper.this.count += result.size();
+                    protected void onPostExecute(Cursor result) {
                         onGetPosts.accept(result);
                         hasAsyncTask = false;
                     }

@@ -4,13 +4,16 @@ package com.example.maxim.shortstories2.post;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CursorAdapter;
 import android.widget.TextView;
 
+import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.ui.TweetActivity;
 import com.example.maxim.shortstories2.R;
 import com.example.maxim.shortstories2.ui.VkPostActivity;
@@ -21,46 +24,30 @@ import java.util.List;
 
 import static com.example.maxim.shortstories2.util.Strings.POST_INTENT;
 
-public class PostsAdapter extends BaseAdapter {
+public class PostsAdapter extends CursorAdapter {
     private Activity activity;
-    private LayoutInflater inflater;
-    private List<Post> items;
 
-    public PostsAdapter(Activity activity) {
+    public PostsAdapter(Activity activity, Cursor cursor) {
+        super(activity, cursor, false);
         this.activity = activity;
-        this.items = new ArrayList<>();
-        inflater = (LayoutInflater) this.activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
-    public int getCount() {
-        return items.size();
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        return LayoutInflater.from(context).inflate(R.layout.feed_item, parent, false);
     }
 
     @Override
-    public Object getItem(int position) {
-        return items.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.feed_item, null);
-        }
-        final Post item = items.get(position);
-        initView(convertView, item);
-        Button button = (Button) convertView.findViewById(R.id.feed_item_show);
+    public void bindView(View view, Context context, Cursor cursor) {
+        final Post post = new DBHelper().toPost(cursor);
+        initView(view, post);
+        Button button = (Button) view.findViewById(R.id.feed_item_show);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Class newActivity;
                 Intent intent;
-                switch (item.factoryWall) {
+                switch (post.factoryWall) {
                     case "FactoryWallTwitter":
                         newActivity = TweetActivity.class;
                         break;
@@ -72,12 +59,11 @@ public class PostsAdapter extends BaseAdapter {
                 }
                 if (newActivity != null) {
                     intent = new Intent(PostsAdapter.this.activity, newActivity);
-                    intent.putExtra(POST_INTENT, item);
+                    intent.putExtra(POST_INTENT, post);
                     activity.startActivity(intent);
                 }
             }
         });
-        return convertView;
     }
 
     private static void initView(View convertView, Post item) {
@@ -85,10 +71,5 @@ public class PostsAdapter extends BaseAdapter {
         ((TextView) convertView.findViewById(R.id.feed_item_text)).setText(item.text);
         ((TextView) convertView.findViewById(R.id.feed_item_date))
                 .setText(String.valueOf(new Date((long) item.date * 1000)));
-    }
-
-    public void addPosts(List<Post> list) {
-        items.addAll(list);
-        this.notifyDataSetChanged();
     }
 }
