@@ -10,13 +10,8 @@ import java.io.Serializable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class VkSearchItem implements Serializable {
-    @SerializedName(VkStrings.JSON_DESCRIPTION)
     public final String description;
-
-    @SerializedName(VkStrings.GROUP_ITEM_TYPE)
     public final Group group;
-
-    @SerializedName(VkStrings.PROFILE_iTEM_TYPE)
     public final Profile profile;
 
     @JsonCreator
@@ -30,12 +25,8 @@ public class VkSearchItem implements Serializable {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Group {
-        @SerializedName(VkStrings.JSON_ID)
         public final long id;
-
-        @SerializedName(VkStrings.JSON_NAME)
-        public final String
-                name;
+        public final String name;
 
         @JsonCreator
         private Group(@JsonProperty(VkStrings.JSON_ID) long id,
@@ -47,13 +38,8 @@ public class VkSearchItem implements Serializable {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Profile {
-        @SerializedName(VkStrings.JSON_ID)
         public final long id;
-
-        @SerializedName(VkStrings.JSON_FIRST_NAME)
         public final String first_name;
-
-        @SerializedName(VkStrings.JSON_LAST_NAME)
         public final String last_name;
 
         @JsonCreator

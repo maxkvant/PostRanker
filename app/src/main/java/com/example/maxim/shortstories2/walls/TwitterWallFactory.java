@@ -5,6 +5,7 @@ import android.database.Cursor;
 import com.example.maxim.shortstories2.APIs.MyTwitterApiClient;
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.post.Post;
+import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.models.User;
 
@@ -31,8 +32,15 @@ public class TwitterWallFactory extends AbstractWallFactory {
         final MyTwitterApiClient client = twitterApiClient;
         Call<List<User>> usersCall = client.getSearchUsersService().users(query);
 
+
         List<SearchItem> res = null;
-        List<User> users = usersCall.execute().body();
+        Response<List<User>> response = usersCall.execute();
+        List<User> users;
+        if (response.isSuccessful()) {
+            users = response.body();
+        } else {
+            throw new TwitterException("search failed");
+        }
 
         if (users != null) {
             res = new ArrayList<>();
