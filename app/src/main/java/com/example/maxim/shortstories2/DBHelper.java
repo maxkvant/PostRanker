@@ -28,7 +28,7 @@ import static java.lang.StrictMath.nextAfter;
 public class DBHelper extends SQLiteOpenHelper {
     private final static String COMA_STEP = ",";
 
-    private final static int DATABASE_VERSION = 5;
+    private final static int DATABASE_VERSION = 2;
     private final static String DATABASE_NAME = "ShortStoriesDB";
 
     private static final String DELETE_TABLE =

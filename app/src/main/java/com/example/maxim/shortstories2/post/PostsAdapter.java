@@ -48,10 +48,10 @@ public class PostsAdapter extends CursorAdapter {
                 Class newActivity;
                 Intent intent;
                 switch (post.factoryWall) {
-                    case "FactoryWallTwitter":
+                    case "TwitterWallFactory":
                         newActivity = TweetActivity.class;
                         break;
-                    case "FactoryWallVk":
+                    case "VkWallFactory":
                         newActivity = VkPostActivity.class;
                         break;
                     default:

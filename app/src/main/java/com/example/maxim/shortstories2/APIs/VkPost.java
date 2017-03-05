@@ -1,33 +1,38 @@
 package com.example.maxim.shortstories2.APIs;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class VkPost {
-    @SerializedName(VkStrings.JSON_ID)
     public final long id;
 
-    @SerializedName(VkStrings.JSON_TEXT)
     public final String text;
 
-    @SerializedName(VkStrings.JSON_DATE)
     public final Integer date;
 
-    @SerializedName(VkStrings.JSON_LIKES)
     public final Likes likes;
 
-        private VkPost(long id, String text, Integer date, Likes likes) {
-            this.id = id;
-            this.text = text;
-            this.date = date;
-            this.likes = likes;
-        }
+    @JsonCreator
+    private VkPost(@JsonProperty(VkStrings.JSON_ID) long id,
+                   @JsonProperty(VkStrings.JSON_TEXT) String text,
+                   @JsonProperty(VkStrings.JSON_DATE) Integer date,
+                   @JsonProperty(VkStrings.JSON_LIKES) Likes likes) {
+        this.id = id;
+        this.text = text;
+        this.date = date;
+        this.likes = likes;
+    }
 
-        public static class Likes {
-            @SerializedName(VkStrings.JSON_COUNT)
-            public final Integer count;
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Likes {
+        public final int count;
 
-            private Likes(Integer count) {
-                this.count = count;
-            }
+        @JsonCreator
+        private Likes(@JsonProperty(VkStrings.JSON_COUNT) int count) {
+            this.count = count;
         }
+    }
 }

@@ -37,9 +37,10 @@ import static com.example.maxim.shortstories2.util.Strings.FACTORY_WALL_INTENT;
 public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     private String lastText = "";
     private LinearLayout progressBarFill;
-    ListView wallsList;
+    private ListView wallsList;
     private Helper helper = new Helper();
     private WallFactory factoryWall;
+    private boolean canFinish = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +74,16 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void finish() {
+        if (canFinish) {
+            super.finish();
+        } else {
+            Toast.makeText(this, "дождитесь завершения добавления", Toast.LENGTH_LONG).show();
+        }
+
     }
 
     @Override
@@ -114,6 +125,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                 , new Runnable() {
                         @Override
                         public void run() {
+                            canFinish = false;
                             progressBarFill.setVisibility(View.VISIBLE);
                             wallsList.setVisibility(View.GONE);
                         }
@@ -123,13 +135,13 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
                         public void run() {
                             wallsList.setVisibility(View.VISIBLE);
                             progressBarFill.setVisibility(View.GONE);
+                            canFinish = true;
                         }
                     });
         }
     }
 
     public class Helper {
-
         public void addWall(SearchItem searchItem, final Runnable beforeAdd, final Runnable afterAdd) {
             final Wall wall = factoryWall.toWall(searchItem);
             beforeAdd.run();
@@ -142,7 +154,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
 
                 @Override
                 public void onFailure(Exception e) {
-                    Toast.makeText(SearchActivity.this, R.string.add_wall_falied, Toast.LENGTH_LONG).show();
+                    Toast.makeText(SearchActivity.this, R.string.add_wall_failed, Toast.LENGTH_LONG).show();
                     afterAdd.run();
                 }
             });

@@ -16,9 +16,9 @@
     <string name="adding">Добавляем</string>
 
     <string-array name="table_walls_default_items">
-        <item>(0, \"Новости\", \"FactoryWallAll\", 0, 0, 0)</item>
-        <item>(861090554, \"Podslyshano\", \"FactoryWallTwitter\", 1, 0, 0)</item>
-        <item>(10364952, \"Kirill Elagin\", \"FactoryWallTwitter\", 1, 0, 0)</item>
+        <item>(0, \"Новости\", \"AllWallFactory\", 0, 0, 0)</item>
+        <item>(861090554, \"Podslyshano\", \"TwitterWallFactory\", 1, 0, 0)</item>
+        <item>(10364952, \"Kirill Elagin\", \"TwitterWallFactory\", 1, 0, 0)</item>
     </string-array>
 
     <integer name="com_vk_sdk_AppId">5772831</integer>
@@ -39,8 +39,8 @@
     <string name="show">на сайте</string>
     <string name="title_activity_vk_post">VK</string>
     <string name="update_failed">не удалось обновить</string>
-    <string name="search_failed">не удалось выполнить поиск</string>
-    <string name="add_wall_falied">не удалось добавить</string>
+    <string name="search_failed">не удалось выполнить поиск, проверьте сооединение или войдите заново</string>
+    <string name="add_wall_failed">не удалось добавить</string>
     <string name="nothing_found">Ничего не найдено</string>
     <string name="search">Search</string>
     <string name="update_cancel">загрузка отменена</string>
