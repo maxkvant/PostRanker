@@ -28,7 +28,7 @@ public class PostsAdapter extends CursorAdapter {
     private Activity activity;
 
     public PostsAdapter(Activity activity, Cursor cursor) {
-        super(activity, cursor, false);
+        super(activity, cursor, true);
         this.activity = activity;
     }
 
