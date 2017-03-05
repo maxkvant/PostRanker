@@ -15,12 +15,6 @@
 
     <string name="adding">Добавляем</string>
 
-    <string-array name="table_walls_default_items">
-        <item>(0, \"Новости\", \"AllWallFactory\", 0, 0, 0)</item>
-        <item>(861090554, \"Podslyshano\", \"TwitterWallFactory\", 1, 0, 0)</item>
-        <item>(10364952, \"Kirill Elagin\", \"TwitterWallFactory\", 1, 0, 0)</item>
-    </string-array>
-
     <integer name="com_vk_sdk_AppId">5772831</integer>
 
     <string name="title_activity_post">Post</string>

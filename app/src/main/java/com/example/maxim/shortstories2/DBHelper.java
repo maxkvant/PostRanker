@@ -1,6 +1,8 @@
 package com.example.maxim.shortstories2;
 
 import android.content.ContentValues;
+import android.content.res.Resources;
+import android.content.res.XmlResourceParser;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -13,12 +15,17 @@ import com.example.maxim.shortstories2.walls.WallFactory;
 import com.example.maxim.shortstories2.walls.WallMode;
 import com.example.maxim.shortstories2.walls.Wall;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static android.content.ContentValues.TAG;
 import static com.example.maxim.shortstories2.util.Strings.FIRST_RUN;
 import static com.example.maxim.shortstories2.walls.WallMode.BY_DATE;
 import static com.example.maxim.shortstories2.walls.WallMode.COMMENTED;
@@ -70,8 +77,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 Post.PostsEntry.COLUMN_NAME_DATE + INT_TYPE + COMA_STEP +
                 Post.PostsEntry.COLUMN_NAME_RATING + REAL_TYPE + COMA_STEP +
                 PRIMARY_KEY + "(" +
-                    Post.PostsEntry._ID + COMA_STEP +
-                    Post.PostsEntry.COLUMN_NAME_WALL_ID + ")" +
+                Post.PostsEntry._ID + COMA_STEP +
+                Post.PostsEntry.COLUMN_NAME_WALL_ID + ")" +
                 ")";
         db.execSQL(tablePosts);
 
@@ -90,16 +97,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 Wall.WallsEntry.COLUMN_NAME_RATIO + REAL_TYPE + ")";
         db.execSQL(tableWalls);
 
-        List<String> values = Arrays.asList(MyApplication.getInstance().getBaseContext()
-                .getResources().getStringArray(R.array.table_walls_default_items));
-
-
         Log.d("DBHelper onCreate", "d");
-        String insertInWallsPrefix = "insert into " + Wall.WallsEntry.TABLE_NAME + " values ";
-        for (String value : values) {
-            String sql = insertInWallsPrefix + value + ";";
-            db.execSQL(sql);
-        }
+        parseWalls(db);
     }
 
     public void insertPosts(List<Post> posts) {
@@ -123,14 +122,14 @@ public class DBHelper extends SQLiteOpenHelper {
     private Cursor getPosts(WallMode mode, String filter) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String [] projection = {
-            Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry._ID,
-            Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_TEXT,
-            Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_WALL_ID,
-            Wall.WallsEntry.TABLE_NAME + "." + Wall.WallsEntry.COLUMN_NAME_NAME,
-            Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_DATE,
-            Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_RATING,
-            Wall.WallsEntry.TABLE_NAME + "." + Wall.WallsEntry.COLUMN_NAME_CLASS,
+        String[] projection = {
+                Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry._ID,
+                Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_TEXT,
+                Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_WALL_ID,
+                Wall.WallsEntry.TABLE_NAME + "." + Wall.WallsEntry.COLUMN_NAME_NAME,
+                Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_DATE,
+                Post.PostsEntry.TABLE_NAME + "." + Post.PostsEntry.COLUMN_NAME_RATING,
+                Wall.WallsEntry.TABLE_NAME + "." + Wall.WallsEntry.COLUMN_NAME_CLASS,
         };
 
         String table = Post.PostsEntry.TABLE_NAME + " inner join " + Wall.WallsEntry.TABLE_NAME +
@@ -293,5 +292,38 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
+    private void parseWalls(SQLiteDatabase db) {
+        ContentValues values = new ContentValues();
+        Resources resources = MyApplication.getInstance().getResources();
+        XmlResourceParser xmlParser = resources.getXml(R.xml.walls);
+        try {
+            int eventType = xmlParser.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if ((eventType == XmlPullParser.START_TAG) && (xmlParser.getName().equals("record"))) {
+
+                    String name = xmlParser.getAttributeValue(null, Wall.WallsEntry.COLUMN_NAME_NAME);
+                    long id = Long.parseLong(xmlParser.getAttributeValue(null, Wall.WallsEntry.COLUMN_NAME_ID));
+                    String className = xmlParser.getAttributeValue(null, Wall.WallsEntry.COLUMN_NAME_CLASS);
+                    int priority = Integer.parseInt(xmlParser.getAttributeValue(null, Wall.WallsEntry.COLUMN_NAME_PRIORITY));
+
+                    values.put(Wall.WallsEntry.COLUMN_NAME_NAME, name);
+                    values.put(Wall.WallsEntry.COLUMN_NAME_ID, id + "");
+                    values.put(Wall.WallsEntry.COLUMN_NAME_CLASS, className);
+                    values.put(Wall.WallsEntry.COLUMN_NAME_PRIORITY, priority);
+                    values.put(Wall.WallsEntry.COLUMN_NAME_RATIO, 0);
+                    values.put(Wall.WallsEntry.COLUMN_NAME_UPDATED, 0);
+
+                    db.insert(Wall.WallsEntry.TABLE_NAME, null, values);
+                }
+                eventType = xmlParser.next();
+            }
+        } catch (XmlPullParserException | IOException e) {
+            e.printStackTrace();
+        } finally {
+            xmlParser.close();
+        }
+    }
 }
+
+
 

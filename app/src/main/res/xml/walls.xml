@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<walls>
+    <record id="0" name="Новости" class="AllWallFactory" priority="0" />
+    <record id="861090554" name="Podslyshano" class="TwitterWallFactory" priority="1" />
+    <record id="10364952" name="Kirill Elagin" class="TwitterWallFactory" priority="1" />
+</walls>
