@@ -88,18 +88,18 @@ public class MyApplication extends Application {
         context = getApplicationContext();
         accessToken = SharedPrefs.getString(context, VK_ACCESS_TOKEN);
 
-        Log.d("MyApplication", "onCreate first_run:");
         if (SharedPrefs.getString(this, FIRST_RUN) == null) {
+            Log.d("MyApplication", "onCreate first_run:");
+
             Wall wallAll = new AllWallFactory().create();
             wallAll.update(new Callback<Void>() {
                 @Override
                 public void onSuccess(Void result) {
-
+                    SharedPrefs.storeString(MyApplication.this, FIRST_RUN, FALSE);
                 }
                 @Override
                 public void onFailure(Exception e) {
 
-                    SharedPrefs.storeString(MyApplication.this, FIRST_RUN, FALSE);
                 }
             });
             try {

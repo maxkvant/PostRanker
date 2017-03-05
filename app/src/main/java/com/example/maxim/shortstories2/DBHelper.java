@@ -35,6 +35,8 @@ public class DBHelper extends SQLiteOpenHelper {
             "drop table if exists ";
     private final static int POSTS_PER_GET = 20;
     private final static int POSTS_PER_GET_TOP = 200;
+    private final static int POSTS_LIMIT = 4000;
+
     private final static String wallPath = "com.example.maxim.shortstories2.walls.";
     private final static String INT_TYPE = " integer";
     private final static String TEXT_TYPE = " text";
@@ -149,7 +151,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 null,
                 null,
                 null,
-                getModeOrdering(mode));
+                getModeOrdering(mode),
+                POSTS_LIMIT + "");
     }
 
     public Post toPost(Cursor cursor) {
@@ -244,6 +247,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(Comment.CommentsEntry.TABLE_NAME,
                 null,
                 Comment.CommentsEntry.COLUMN_NAME_POST_ID + " = " + post_id,
+                null,
                 null,
                 null,
                 null,

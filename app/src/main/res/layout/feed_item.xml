@@ -7,7 +7,6 @@
    <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:background="@color/tw__composer_white"
         android:padding="10dp"
         android:layout_height="wrap_content">
         <TextView

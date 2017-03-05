@@ -4,8 +4,7 @@
     android:layout_height="match_parent"
     android:id="@+id/loadingPanel"
     android:gravity="center"
-    android:orientation="vertical"
-    android:background="#DDDD00">
+    android:orientation="vertical">
 
     <ProgressBar
         android:layout_width="wrap_content"

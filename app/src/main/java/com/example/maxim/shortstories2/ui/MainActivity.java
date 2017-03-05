@@ -3,8 +3,6 @@ package com.example.maxim.shortstories2.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.CursorIndexOutOfBoundsException;
-import android.os.AsyncTask;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,7 +12,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -25,9 +22,9 @@ import android.widget.Toast;
 
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.R;
-import com.example.maxim.shortstories2.post.Post;
 import com.example.maxim.shortstories2.post.PostsAdapter;
 import com.example.maxim.shortstories2.util.AsyncCall;
+import com.example.maxim.shortstories2.util.CallableException;
 import com.example.maxim.shortstories2.util.Callback;
 import com.example.maxim.shortstories2.util.Consumer;
 import com.example.maxim.shortstories2.walls.WallMode;
@@ -57,24 +54,20 @@ public class MainActivity extends AppCompatActivity {
     private final DBHelper dbHelper = new DBHelper();
     private List<Wall> walls;
     private AsyncCall<Void> updateCall = null;
-    PostsAdapter adapter;
+    private PostsAdapter adapter;
+    private ListView feed;
 
-    final Consumer<Cursor> onGetPosts = new Consumer<Cursor>() {
-        @Override
-        public void accept(Cursor cursor) {
-            setPostsAdapter(cursor);
-        }
-    };
+    private Runnable beforeGetPosts;
+    
+    private Consumer<Cursor> afterGetPosts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        walls = dbHelper.getAllWalls();
-        helper = new Helper(walls.get(0), BY_DATE);
-        helper.getPosts(onGetPosts);
+        setContentView(R.layout.activity_main);
 
         initToolbar();
+        init();
         initSpinner();
         initDrawer();
         initSwipeRefresh();
@@ -91,8 +84,34 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    private void init() {
+        walls = dbHelper.getAllWalls();
+        feed = (ListView) findViewById(R.id.feed_list);
+        footerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                .inflate(R.layout.progress_bar, null);
+
+        beforeGetPosts = new Runnable() {
+            @Override
+            public void run() {
+                feed.addFooterView(footerView);
+            }
+        };
+
+        afterGetPosts = new Consumer<Cursor>() {
+            @Override
+            public void accept(Cursor cursor) {
+                if (cursor != null) {
+                    setPostsAdapter(cursor);
+                }
+                feed.removeFooterView(footerView);
+            }
+        };
+
+        helper = new Helper(walls.get(0), BY_DATE);
+        helper.getPosts(beforeGetPosts, afterGetPosts);
+    }
+
     private void initToolbar() {
-        setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -132,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (0 < position && position <= walls.size()) {
                 helper = new Helper(walls.get(position - 1), BY_DATE);
-                helper.getPosts(onGetPosts);
+                helper.getPosts(beforeGetPosts, afterGetPosts);
             }
         }
     }
@@ -163,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             helper = new Helper(helper.wall, modes.get(position));
-            helper.getPosts(onGetPosts);
+            helper.getPosts(beforeGetPosts, afterGetPosts);
         }
 
         @Override
@@ -183,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(Void result) {
                         refreshLayout.setRefreshing(false);
                         updateCall = null;
-                        helper.getPosts(onGetPosts);
+                        helper.getPosts(beforeGetPosts, afterGetPosts);
                     }
 
                     @Override
@@ -195,15 +214,11 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
-
-        footerView = ((LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-                .inflate(R.layout.progress_bar, null);
     }
 
     private void setPostsAdapter(Cursor cursor) {
         drawer.closeDrawers();
         spinner.setSelection(modes.indexOf(helper.mode));
-        final ListView feed = (ListView) findViewById(R.id.feed_list);
         if (adapter != null) {
             adapter.getCursor().close();
         }
@@ -229,19 +244,21 @@ public class MainActivity extends AppCompatActivity {
             this.mode = mode;
         }
 
-        public void getPosts(final Consumer<Cursor> onGetPosts) {
+        public void getPosts(final Runnable beforeGet, final Consumer<Cursor> afterGet) {
             if (!hasAsyncTask) {
                 hasAsyncTask = true;
+                beforeGet.run();
 
                 wall.getPosts(mode, new Callback<Cursor>() {
                     @Override
                     public void onSuccess(Cursor result) {
-                        onGetPosts.accept(result);
+                        afterGet.accept(result);
                         hasAsyncTask = false;
                     }
 
                     @Override
                     public void onFailure(Exception e) {
+                        afterGet.accept(null);
                         hasAsyncTask = false;
                     }
                 });
