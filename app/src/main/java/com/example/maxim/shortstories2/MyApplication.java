@@ -11,6 +11,7 @@ import com.example.maxim.shortstories2.util.Callback;
 import com.example.maxim.shortstories2.util.SharedPrefs;
 import com.example.maxim.shortstories2.walls.AllWallFactory;
 import com.example.maxim.shortstories2.walls.Wall;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterSession;
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import static com.example.maxim.shortstories2.APIs.VkStrings.BASE_URL;
 import static com.example.maxim.shortstories2.util.Strings.FALSE;
@@ -47,7 +49,7 @@ public class MyApplication extends Application {
     public static final Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(JacksonConverterFactory.create())
             .build();
 
     public static final VkClient vkClient = retrofit.create(VkClient.class);

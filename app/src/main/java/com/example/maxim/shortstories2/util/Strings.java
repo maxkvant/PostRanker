@@ -7,4 +7,7 @@ public abstract class Strings {
     public final static String FIRST_RUN = "first_run";
     public final static String FALSE = "false";
     public final static String M_VK_BASE_URL = "http://m.vk.com/wall";
+    public final static String REPOST = "Репост";
+    public final static String lineSeparator = System.getProperty("line.separator");
+
 }

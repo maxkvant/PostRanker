@@ -27,4 +27,5 @@ public abstract class VkStrings {
     public final static String JSON_NAME = "name";
     public final static String JSON_FIRST_NAME = "first_name";
     public final static String JSON_LAST_NAME = "last_name";
+    public static final String JSON_COPY_HISTORY = "copy_history";
 }

@@ -8,8 +8,10 @@ import com.example.maxim.shortstories2.APIs.VkResponse;
 import com.example.maxim.shortstories2.APIs.VkSearchItem;
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.post.Post;
+import com.example.maxim.shortstories2.util.Strings;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vk.sdk.VKServiceActivity;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -18,11 +20,13 @@ import java.util.Date;
 import java.util.List;
 
 import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.Response;
 
 import static com.example.maxim.shortstories2.APIs.VkStrings.VERSION_API;
 import static com.example.maxim.shortstories2.MyApplication.getAccessToken;
 import static com.example.maxim.shortstories2.MyApplication.vkClient;
+import static com.example.maxim.shortstories2.util.Strings.lineSeparator;
 
 public class VkWallFactory extends AbstractWallFactory {
     static final String className = TwitterWallFactory.class.getSimpleName();
@@ -35,16 +39,11 @@ public class VkWallFactory extends AbstractWallFactory {
     @Override
     public List<SearchItem> searchWalls(String query) throws Exception {
         Log.d("searchWalls", query);
-        InputStream searchItemsVkStream = vkClient
+        List<VkSearchItem> searchItemsVk = vkClient
                 .searchWalls(VERSION_API, getAccessToken(), query, 20, 1)
                 .execute()
                 .body()
-                .byteStream();
-
-        ObjectMapper mapper = new ObjectMapper();
-        VkResponse<List<VkSearchItem> > vkResponse = mapper.readValue(searchItemsVkStream,
-                new TypeReference<VkResponse<List<VkSearchItem>>>() {});
-        List<VkSearchItem> searchItemsVk = vkResponse.response;
+                .response;
 
         return toSearchItems(searchItemsVk);
     }
@@ -76,16 +75,11 @@ class VkWall extends AbstractWall {
     public void update() throws Exception {
         long beforeGet = new Date().getTime();
 
-        InputStream postsVkStream = vkClient
+        List<VkPost> postsVK = vkClient
                 .getPosts(VERSION_API, getAccessToken(), id, updated)
                 .execute()
                 .body()
-                .byteStream();
-
-        ObjectMapper mapper = new ObjectMapper();
-        VkResponse<VkPost []> vkResponse = mapper.readValue(postsVkStream,
-                new TypeReference<VkResponse<VkPost[]>>() {});
-        VkPost[] postsVK = vkResponse.response;
+                .response;
         List<Post> posts = toPosts(postsVK);
 
         Log.d("WallVk::update time", (new Date().getTime() - beforeGet) + "");
@@ -97,7 +91,11 @@ class VkWall extends AbstractWall {
         Log.d("WallVk::update time", (new Date().getTime() - beforeGet) + "");
     }
 
-    private List<Post> toPosts(VkPost[] postsVK) {
+    private List<Post> toPosts(List<VkPost> postsVK) {
+        final String for_repost = lineSeparator + lineSeparator +
+                "➡ ➡ " + Strings.REPOST + ":" +
+                lineSeparator;
+
         List<Post> posts = new ArrayList<>();
         if (postsVK == null) {
             return posts;
@@ -107,11 +105,24 @@ class VkWall extends AbstractWall {
             if (vkPost.text != null) {
                 text = vkPost.text.replace("\\\n", System.getProperty("line.separator"));
             }
+
+            StringBuilder resText = new StringBuilder(text);
+            if (vkPost.copy_history != null) {
+                for (VkPost vkRepost : vkPost.copy_history) {
+                    String curText = "";
+                    if (vkRepost.text != null) {
+                        curText = vkRepost.text.replace("\\\n", lineSeparator);
+                    }
+                    resText.append(for_repost)
+                            .append(curText);
+                }
+            }
+
             double rating = vkPost.likes.count;
             rating = rating * rating;
             posts.add(new Post(
                     vkPost.id,
-                    text,
+                    resText.toString(),
                     id,
                     name,
                     vkPost.date,
