@@ -8,7 +8,6 @@ import com.example.maxim.shortstories2.APIs.VkSearchItem;
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.post.Post;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,12 +16,12 @@ import static com.example.maxim.shortstories2.APIs.VkStrings.VERSION_API;
 import static com.example.maxim.shortstories2.MyApplication.getAccessToken;
 import static com.example.maxim.shortstories2.MyApplication.vkClient;
 
-public class FactoryWallVk extends AbstractFactoryWall {
-    static final String className = FactoryWallTwitter.class.getSimpleName();
+public class VkWallFactory extends AbstractWallFactory {
+    static final String className = TwitterWallFactory.class.getSimpleName();
 
     @Override
     public Wall create(String name, long id, double ratio, long updated) {
-        return new WallVk(name, id, ratio, updated);
+        return new VkWall(name, id, ratio, updated);
     }
 
     @Override
@@ -49,8 +48,8 @@ public class FactoryWallVk extends AbstractFactoryWall {
     }
 }
 
-class WallVk extends AbstractWall {
-    public WallVk(String name, long id, double ratio, long updated) {
+class VkWall extends AbstractWall {
+    public VkWall(String name, long id, double ratio, long updated) {
         super(name, id, ratio, updated);
     }
 
@@ -100,7 +99,7 @@ class WallVk extends AbstractWall {
                     name,
                     vkPost.date,
                     rating,
-                    FactoryWallVk.className));
+                    VkWallFactory.className));
         }
         return posts;
     }
@@ -112,6 +111,6 @@ class WallVk extends AbstractWall {
 
     @Override
     public String getFactoryClassName() {
-        return FactoryWallVk.class.getSimpleName();
+        return VkWallFactory.class.getSimpleName();
     }
 }

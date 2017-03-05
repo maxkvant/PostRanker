@@ -8,7 +8,7 @@ import com.example.maxim.shortstories2.util.Callback;
 import java.io.Serializable;
 import java.util.List;
 
-public interface FactoryWall extends Serializable {
+public interface WallFactory extends Serializable {
     Wall create(String name, long id, double ratio, long updated);
     List<SearchItem> searchWalls(String query) throws Exception;
     AsyncCall searchWalls(String query, Callback<List<SearchItem>> callback);

@@ -1,9 +1,5 @@
 package com.example.maxim.shortstories2.util;
 
-import com.example.maxim.shortstories2.walls.FactoryWall;
-import com.example.maxim.shortstories2.walls.FactoryWallTwitter;
-import com.example.maxim.shortstories2.walls.FactoryWallVk;
-
 public abstract class Strings {
     public final static String POST_INTENT = "Post";
     public final static String FACTORY_WALL_INTENT = "FactoryWall";

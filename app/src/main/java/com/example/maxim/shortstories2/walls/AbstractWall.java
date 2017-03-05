@@ -1,9 +1,11 @@
 package com.example.maxim.shortstories2.walls;
 
+import android.database.Cursor;
 import android.util.Log;
 
 import com.example.maxim.shortstories2.post.Post;
 import com.example.maxim.shortstories2.util.AsyncCall;
+import com.example.maxim.shortstories2.util.CallableException;
 import com.example.maxim.shortstories2.util.Callback;
 
 import java.util.ArrayList;
@@ -36,26 +38,15 @@ public abstract class AbstractWall implements Wall {
 
     @Override
     public AsyncCall<Void> update(final Callback<Void> callback) {
-        AsyncCall<Void> call = new AsyncCall<Void>() {
-            @Override
-            protected Callback.Result<Void> doInBackground(Void... voids) {
-                try {
-                    update();
-                    return Callback.Result.onSuccess(null);
-                } catch (Exception e) {
-                    return Callback.Result.onFailure(e);
-                }
-
-            }
-            @Override
-            protected void onPostExecute(Callback.Result<Void> result) {
-                if (result.exception != null) {
-                    callback.onFailure(result.exception);
-                } else {
-                    callback.onSuccess(result.result);
-                }
-            }
-        };
+        AsyncCall<Void> call = new AsyncCall<>(
+                new CallableException<Void>() {
+                    @Override
+                    public Void call() throws Exception {
+                        update();
+                        return null;
+                    }
+                },
+                callback);
         call.execute();
         return call;
     }
@@ -92,5 +83,18 @@ public abstract class AbstractWall implements Wall {
                     post.factoryWall));
         }
         return posts2;
+    }
+
+    public AsyncCall<Cursor> getPosts(final WallMode mode, final Callback<Cursor> callback) {
+        AsyncCall<Cursor> call = new AsyncCall<>(
+                new CallableException<Cursor>() {
+                    @Override
+                    public Cursor call() throws Exception {
+                        return getPosts(mode);
+                    }
+                },
+                callback);
+        call.execute();
+        return call;
     }
 }

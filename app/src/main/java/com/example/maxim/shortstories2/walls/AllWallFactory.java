@@ -3,15 +3,14 @@ package com.example.maxim.shortstories2.walls;
 import android.database.Cursor;
 
 import com.example.maxim.shortstories2.DBHelper;
-import com.example.maxim.shortstories2.post.Post;
 
 import java.util.List;
 
-public class FactoryWallAll extends AbstractFactoryWall {
+public class AllWallFactory extends AbstractWallFactory {
 
     @Override
     public Wall create(String name, long id, double ratio, long updated) {
-        return new WallAll(name, id, ratio, updated);
+        return new AllWall(name, id, ratio, updated);
     }
 
     public Wall create() {
@@ -24,8 +23,8 @@ public class FactoryWallAll extends AbstractFactoryWall {
     }
 }
 
-class WallAll extends AbstractWall {
-    public WallAll(String name, long id, double ratio, long updated) {
+class AllWall extends AbstractWall {
+    public AllWall(String name, long id, double ratio, long updated) {
         super(name, id, ratio, updated);
     }
 
@@ -52,6 +51,6 @@ class WallAll extends AbstractWall {
 
     @Override
     public String getFactoryClassName() {
-        return FactoryWallAll.class.getSimpleName();
+        return AllWallFactory.class.getSimpleName();
     }
 }

@@ -8,7 +8,6 @@ import com.example.maxim.shortstories2.post.Post;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.models.User;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -19,12 +18,12 @@ import retrofit2.Response;
 
 import static com.example.maxim.shortstories2.MyApplication.twitterApiClient;
 
-public class FactoryWallTwitter extends AbstractFactoryWall {
-    static final String className = FactoryWallTwitter.class.getSimpleName();
+public class TwitterWallFactory extends AbstractWallFactory {
+    static final String className = TwitterWallFactory.class.getSimpleName();
 
     @Override
     public Wall create(String name, long id, double ratio, long updated) {
-        return new WallTwitter(name, id, ratio, updated);
+        return new TwitterWall(name, id, ratio, updated);
     }
 
     @Override
@@ -45,11 +44,11 @@ public class FactoryWallTwitter extends AbstractFactoryWall {
     }
 }
 
-class WallTwitter extends AbstractWall {
+class TwitterWall extends AbstractWall {
     private final int maxTweetsPerGet = 200;
     private final int iterations = 8;
 
-    public WallTwitter(String name, long id, double ratio, long updated) {
+    public TwitterWall(String name, long id, double ratio, long updated) {
         super(name, id, ratio, updated);
     }
 
@@ -114,7 +113,7 @@ class WallTwitter extends AbstractWall {
 
     @Override
     public String getFactoryClassName() {
-        return FactoryWallTwitter.className;
+        return TwitterWallFactory.className;
     }
 
     private List<Post> tweetsToPosts(List<Tweet> tweets) {
@@ -128,7 +127,7 @@ class WallTwitter extends AbstractWall {
                     name,
                     date,
                     tweet.favoriteCount,
-                    FactoryWallTwitter.className));
+                    TwitterWallFactory.className));
         }
         return posts;
     }

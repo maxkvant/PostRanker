@@ -59,18 +59,20 @@ public class MainActivity extends AppCompatActivity {
     private AsyncCall<Void> updateCall = null;
     PostsAdapter adapter;
 
+    final Consumer<Cursor> onGetPosts = new Consumer<Cursor>() {
+        @Override
+        public void accept(Cursor cursor) {
+            setPostsAdapter(cursor);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         walls = dbHelper.getAllWalls();
         helper = new Helper(walls.get(0), BY_DATE);
-        helper.getPosts(new Consumer<Cursor>() {
-            @Override
-            public void accept(Cursor cursor) {
-                setPostsAdapter(cursor);
-            }
-        });
+        helper.getPosts(onGetPosts);
 
         initToolbar();
         initSpinner();
@@ -130,12 +132,7 @@ public class MainActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (0 < position && position <= walls.size()) {
                 helper = new Helper(walls.get(position - 1), BY_DATE);
-                helper.getPosts(new Consumer<Cursor>() {
-                    @Override
-                    public void accept(Cursor cursor) {
-                        setPostsAdapter(cursor);
-                    }
-                });
+                helper.getPosts(onGetPosts);
             }
         }
     }
@@ -166,12 +163,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             helper = new Helper(helper.wall, modes.get(position));
-            helper.getPosts(new Consumer<Cursor>() {
-                @Override
-                public void accept(Cursor cursor) {
-                    setPostsAdapter(cursor);
-                }
-            });
+            helper.getPosts(onGetPosts);
         }
 
         @Override
@@ -191,12 +183,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(Void result) {
                         refreshLayout.setRefreshing(false);
                         updateCall = null;
-                        helper.getPosts(new Consumer<Cursor>() {
-                            @Override
-                            public void accept(Cursor cursor) {
-                                setPostsAdapter(cursor);
-                            }
-                        });
+                        helper.getPosts(onGetPosts);
                     }
 
                     @Override
@@ -246,23 +233,18 @@ public class MainActivity extends AppCompatActivity {
             if (!hasAsyncTask) {
                 hasAsyncTask = true;
 
-                new AsyncTask<Void, Void, Cursor>() {
+                wall.getPosts(mode, new Callback<Cursor>() {
                     @Override
-                    protected Cursor doInBackground(Void... walls) {
-                        try {
-                            Thread.sleep(300);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        return wall.getPosts(mode);
-                    }
-
-                    @Override
-                    protected void onPostExecute(Cursor result) {
+                    public void onSuccess(Cursor result) {
                         onGetPosts.accept(result);
                         hasAsyncTask = false;
                     }
-                }.execute();
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        hasAsyncTask = false;
+                    }
+                });
             }
         }
     }

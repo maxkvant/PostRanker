@@ -24,7 +24,7 @@ import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.R;
 import com.example.maxim.shortstories2.util.Callback;
 import com.example.maxim.shortstories2.util.Consumer;
-import com.example.maxim.shortstories2.walls.FactoryWall;
+import com.example.maxim.shortstories2.walls.WallFactory;
 import com.example.maxim.shortstories2.walls.SearchItem;
 import com.example.maxim.shortstories2.walls.Wall;
 
@@ -39,7 +39,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
     private LinearLayout progressBarFill;
     ListView wallsList;
     private Helper helper = new Helper();
-    private FactoryWall factoryWall;
+    private WallFactory factoryWall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,7 @@ public class SearchActivity extends AppCompatActivity implements SearchView.OnQu
         progressBarFill = (LinearLayout) findViewById(R.id.progress_bar_fill);
         ((TextView) findViewById(R.id.progress_bar_fill_text)).setText(R.string.adding);
 
-        factoryWall = (FactoryWall) getIntent().getSerializableExtra(FACTORY_WALL_INTENT);
+        factoryWall = (WallFactory) getIntent().getSerializableExtra(FACTORY_WALL_INTENT);
 
         setTitle(getString(R.string.search));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);

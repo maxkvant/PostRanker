@@ -13,7 +13,8 @@ public interface Wall {
     long getId();
     double getRatio();
     long getUpdated();
-    Cursor getPosts(WallMode mode);
+    Cursor getPosts(WallMode mode) throws Exception;
+    AsyncCall<Cursor> getPosts(WallMode mode, Callback<Cursor> callback);
     void update() throws Exception;
     AsyncCall<Void> update(Callback<Void> callback);
     String getFactoryClassName();

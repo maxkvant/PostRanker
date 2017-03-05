@@ -9,7 +9,7 @@ import com.example.maxim.shortstories2.APIs.MyTwitterApiClient;
 import com.example.maxim.shortstories2.APIs.VkClient;
 import com.example.maxim.shortstories2.util.Callback;
 import com.example.maxim.shortstories2.util.SharedPrefs;
-import com.example.maxim.shortstories2.walls.FactoryWallAll;
+import com.example.maxim.shortstories2.walls.AllWallFactory;
 import com.example.maxim.shortstories2.walls.Wall;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
@@ -90,7 +90,7 @@ public class MyApplication extends Application {
 
         Log.d("MyApplication", "onCreate first_run:");
         if (SharedPrefs.getString(this, FIRST_RUN) == null) {
-            Wall wallAll = new FactoryWallAll().create();
+            Wall wallAll = new AllWallFactory().create();
             wallAll.update(new Callback<Void>() {
                 @Override
                 public void onSuccess(Void result) {

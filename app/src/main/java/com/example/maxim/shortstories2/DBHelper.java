@@ -9,7 +9,7 @@ import android.util.Log;
 import com.example.maxim.shortstories2.post.Comment;
 import com.example.maxim.shortstories2.post.Post;
 import com.example.maxim.shortstories2.util.SharedPrefs;
-import com.example.maxim.shortstories2.walls.FactoryWall;
+import com.example.maxim.shortstories2.walls.WallFactory;
 import com.example.maxim.shortstories2.walls.WallMode;
 import com.example.maxim.shortstories2.walls.Wall;
 
@@ -203,7 +203,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 long updated = cursor.getLong(cursor.getColumnIndex(Wall.WallsEntry.COLUMN_NAME_UPDATED));
                 try {
                     String classLongName = wallPath + className;
-                    FactoryWall factoryWall = (FactoryWall) Class.forName(classLongName)
+                    WallFactory factoryWall = (WallFactory) Class.forName(classLongName)
                             .getConstructor()
                             .newInstance();
                     res.add(factoryWall.create(name, id, ratio, updated));

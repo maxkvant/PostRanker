@@ -18,8 +18,8 @@ import com.example.maxim.shortstories2.APIs.MyTwitterApiClient;
 import com.example.maxim.shortstories2.DBHelper;
 import com.example.maxim.shortstories2.MyApplication;
 import com.example.maxim.shortstories2.R;
-import com.example.maxim.shortstories2.walls.FactoryWallTwitter;
-import com.example.maxim.shortstories2.walls.FactoryWallVk;
+import com.example.maxim.shortstories2.walls.TwitterWallFactory;
+import com.example.maxim.shortstories2.walls.VkWallFactory;
 import com.example.maxim.shortstories2.walls.Wall;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -121,7 +121,7 @@ public class WallsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(WallsActivity.this, SearchActivity.class);
-                intent.putExtra(FACTORY_WALL_INTENT, new FactoryWallVk());
+                intent.putExtra(FACTORY_WALL_INTENT, new VkWallFactory());
                 curButton = ButtonAction.ADD_WALL;
                 startActivityForResult(intent, 0);
             }
@@ -146,7 +146,7 @@ public class WallsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(WallsActivity.this, SearchActivity.class);
-                intent.putExtra(FACTORY_WALL_INTENT, new FactoryWallTwitter());
+                intent.putExtra(FACTORY_WALL_INTENT, new TwitterWallFactory());
                 curButton = ButtonAction.ADD_WALL;
                 startActivityForResult(intent, 1);
             }
