@@ -105,7 +105,7 @@ public class MyApplication extends Application {
                 }
             });
             try {
-                Thread.currentThread().sleep(2000);
+                Thread.currentThread().sleep(4000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

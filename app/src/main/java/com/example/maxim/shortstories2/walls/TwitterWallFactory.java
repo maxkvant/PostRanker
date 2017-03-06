@@ -73,8 +73,6 @@ class TwitterWall extends AbstractWall {
         List<Post> posts = new ArrayList<>();
         Calendar cal = Calendar.getInstance();
         long curDate = cal.getTimeInMillis() / 1000;
-        cal.add(Calendar.MONTH, -1);
-        int minDate = (int) (cal.getTimeInMillis() / 1000);
 
         for (int i = 0; i < iterations; i++) {
             Call<List<Tweet>> listCall = client
@@ -101,7 +99,7 @@ class TwitterWall extends AbstractWall {
 
             int lastDate = posts.get(posts.size() - 1).date;
             int seconds_in_day = 60 * 60 * 24;
-            if (lastDate < updated - seconds_in_day || lastDate < minDate) {
+            if (lastDate < updated - seconds_in_day) {
                 break;
             }
         }
