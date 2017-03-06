@@ -49,7 +49,7 @@ public class MyApplication extends Application {
     public static final Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
-            .addConverterFactory(JacksonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
             .build();
 
     public static final VkClient vkClient = retrofit.create(VkClient.class);

@@ -12,6 +12,7 @@ import com.example.maxim.shortstories2.util.Strings;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vk.sdk.VKServiceActivity;
+import com.vk.sdk.api.VKError;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -39,13 +40,16 @@ public class VkWallFactory extends AbstractWallFactory {
     @Override
     public List<SearchItem> searchWalls(String query) throws Exception {
         Log.d("searchWalls", query);
-        List<VkSearchItem> searchItemsVk = vkClient
+        Response<VkResponse<List<VkSearchItem>>> response = vkClient
                 .searchWalls(VERSION_API, getAccessToken(), query, 20, 1)
-                .execute()
-                .body()
-                .response;
+                .execute();
 
-        return toSearchItems(searchItemsVk);
+        if (response.isSuccessful() && response.body().response != null) {
+            List<VkSearchItem> searchItemsVk = response.body().response;
+            return toSearchItems(searchItemsVk);
+        } else {
+            throw new Exception("search failed");
+        }
     }
 
     private static List<SearchItem> toSearchItems(List<VkSearchItem> searchItemsVk) {
