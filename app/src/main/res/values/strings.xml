@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">ShortStories</string>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="by_date">Всё подряд</string>
+    <string name="top_daily">Лучшее за день</string>
+    <string name="top_weekly">Лучшее за неделю</string>
+    <string name="top_monthly">Лучшее за месяц</string>
+    <string name="top_all">Лучшее из скачанного</string>
+
+    <string name="adding">Добавляем</string>
+
+    <integer name="com_vk_sdk_AppId">5772831</integer>
+
+    <string name="title_activity_post">Post</string>
+
+    <string name="comment">комментарий</string>
+    <string name="commented">с комментарием</string>
+    <string name="default_comment">* комментарий *</string>
+    <string name="offline_mode">оффлайн режим</string>
+    <string name="title_activity_walls">Источники</string>
+    <string name="login_vk">войти в VK</string>
+    <string name="walls_vk">добавить источник из VK</string>
+    <string name="walls_twitter">добавить источник из Twitter</string>
+    <string name="sources">accounts</string>
+    <string name="delete_wall">Удалить источник</string>
+    <string name="title_activity_tweet">TweetActivity</string>
+    <string name="show">на сайте</string>
+    <string name="title_activity_vk_post">VK</string>
+    <string name="update_failed">не удалось обновить</string>
+    <string name="search_failed">не удалось выполнить поиск, проверьте сооединение или войдите заново</string>
+    <string name="add_wall_failed">не удалось добавить</string>
+    <string name="nothing_found">Ничего не найдено</string>
+    <string name="search">Search</string>
+    <string name="update_cancel">загрузка отменена</string>
+</resources>

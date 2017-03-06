@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/walls_list_item"
+    android:padding="5dp"
+    android:textSize="8pt"
+    android:layout_margin="5dp"
+    android:textStyle="bold"
+    android:textColor="@color/tw__composer_white"
+    android:background="@color/vk_color">
+</TextView>
